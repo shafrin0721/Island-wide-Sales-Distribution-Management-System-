@@ -6,20 +6,218 @@
     <title>RDC - Register</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 700px;
+            padding: 20px;
+        }
+
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: auto;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .login-box h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .login-box .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
         .signup-form {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .form-group input {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-group small {
+            color: #999;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
         .form-group-full {
             grid-column: 1 / -1;
         }
+
         .terms-checkbox {
             grid-column: 1 / -1;
         }
+
+        .terms-checkbox label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 400;
+            color: #666;
+        }
+
+        .terms-checkbox input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .button-group {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        #signup-message {
+            padding: 12px 16px;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        #signup-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        #signup-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        #signup-message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            display: inline-block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         @media (max-width: 600px) {
             .signup-form {
                 grid-template-columns: 1fr;
+            }
+            
+            .login-box {
+                padding: 30px 20px;
+            }
+
+            .login-box h1 {
+                font-size: 24px;
             }
         }
     </style>
@@ -28,7 +226,7 @@
     <!-- Registration Page -->
     <div class="page active">
         <div class="login-container">
-            <div class="login-box" style="max-width: 600px;">
+            <div class="login-box">
                 <h1>Create Account</h1>
                 <p class="subtitle">Join RDC for fast deliveries</p>
                 
@@ -70,19 +268,19 @@
                     </div>
                     
                     <div class="form-group-full terms-checkbox">
-                        <label style="display: flex; align-items: center; gap: 10px;">
+                        <label>
                             <input type="checkbox" id="terms" required>
                             <span>I agree to the Terms of Service and Privacy Policy</span>
                         </label>
                     </div>
                     
-                    <div style="grid-column: 1 / -1; display: flex; gap: 10px;">
-                        <button type="submit" class="btn btn-primary" style="flex: 1;">Create Account</button>
-                        <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="window.location.href='index.html'">Back to Login</button>
+                    <div class="form-group-full button-group">
+                        <button type="submit" class="btn btn-primary" id="submit-btn">Create Account</button>
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">Back to Login</button>
                     </div>
                 </form>
                 
-                <div id="signup-message" style="margin-top: 15px; text-align: center; display: none;"></div>
+                <div id="signup-message"></div>
             </div>
         </div>
     </div>
@@ -90,9 +288,17 @@
     <script>
         const API_URL = 'http://localhost:5000/api';
 
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('signup-message');
+            messageDiv.textContent = message;
+            messageDiv.className = type; // 'success', 'error', or 'info'
+            messageDiv.style.display = 'block';
+        }
+
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const submitBtn = document.getElementById('submit-btn');
             const firstName = document.getElementById('first_name').value.trim();
             const lastName = document.getElementById('last_name').value.trim();
             const email = document.getElementById('email').value.trim();
@@ -102,41 +308,33 @@
             const confirmPassword = document.getElementById('confirm_password').value;
             const terms = document.getElementById('terms').checked;
 
-            const messageDiv = document.getElementById('signup-message');
-
             // Validation
             if (!firstName || !lastName || !email || !phone || !address || !password) {
-                messageDiv.style.color = 'red';
-                messageDiv.textContent = 'All fields are required';
-                messageDiv.style.display = 'block';
+                showMessage('All fields are required', 'error');
                 return;
             }
 
             if (password.length < 6) {
-                messageDiv.style.color = 'red';
-                messageDiv.textContent = 'Password must be at least 6 characters';
-                messageDiv.style.display = 'block';
+                showMessage('Password must be at least 6 characters', 'error');
                 return;
             }
 
             if (password !== confirmPassword) {
-                messageDiv.style.color = 'red';
-                messageDiv.textContent = 'Passwords do not match';
-                messageDiv.style.display = 'block';
+                showMessage('Passwords do not match', 'error');
                 return;
             }
 
             if (!terms) {
-                messageDiv.style.color = 'red';
-                messageDiv.textContent = 'Please accept the Terms of Service';
-                messageDiv.style.display = 'block';
+                showMessage('Please accept the Terms of Service', 'error');
                 return;
             }
 
             try {
-                messageDiv.textContent = 'Creating account...';
-                messageDiv.style.color = 'blue';
-                messageDiv.style.display = 'block';
+                // Disable submit button
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner"></span>Creating account...';
+
+                showMessage('Creating account...', 'info');
 
                 const response = await fetch(`${API_URL}/auth/register`, {
                     method: 'POST',
@@ -168,20 +366,22 @@
                     }));
                     localStorage.setItem('currentCart', JSON.stringify([]));
 
-                    messageDiv.style.color = 'green';
-                    messageDiv.textContent = 'Account created successfully! Redirecting to dashboard...';
+                    showMessage('Account created successfully! Redirecting...', 'success');
                     
-                    // Redirect to customer dashboard
+                    // Redirect to customer dashboard after 1.5 seconds
                     setTimeout(() => {
                         window.location.href = 'pages/customer/products.html';
-                    }, 1000);
+                    }, 1500);
                 } else {
-                    messageDiv.style.color = 'red';
-                    messageDiv.textContent = data.message || 'Registration failed. Please try again.';
+                    showMessage(data.message || 'Registration failed. Please try again.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Create Account';
                 }
             } catch (error) {
-                messageDiv.style.color = 'red';
-                messageDiv.textContent = 'Error: ' + error.message;
+                console.error('Registration error:', error);
+                showMessage('Error: ' + error.message, 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Create Account';
             }
         });
     </script>
