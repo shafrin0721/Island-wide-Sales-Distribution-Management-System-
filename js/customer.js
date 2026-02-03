@@ -664,3 +664,16 @@ function logout() {
         window.location.href = '../../index.html';
     }
 }
+
+// =================== NAVIGATION ===================
+function goToPage(path) {
+    window.location.href = path;
+}
+
+function goToCheckout() {
+    if (currentCart.length === 0) {
+        alert('Your cart is empty. Please add products before checkout.');
+        return;
+    }
+    window.location.href = 'checkout.html';
+}
