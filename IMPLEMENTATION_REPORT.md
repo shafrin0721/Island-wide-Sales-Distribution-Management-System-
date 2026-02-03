@@ -11,6 +11,7 @@ Implementation Date: February 3, 2026
 ### File Created: `backend/services/RouteOptimizationService.js`
 
 **Features Implemented:**
+
 - **Haversine Distance Calculation**: Calculates great-circle distance between coordinates using accurate geographic formulas
 - **Nearest Neighbor Algorithm**: Optimizes delivery routes by selecting closest unvisited stops
 - **Multi-Vehicle Routing**: Assigns deliveries to vehicles based on capacity constraints
@@ -18,14 +19,16 @@ Implementation Date: February 3, 2026
 - **Route Metrics**: Provides total distance, delivery windows, and stop sequencing
 
 **Functions Exported:**
+
 1. `haversineDistance(lat1, lon1, lat2, lon2)` - Calculate distance between coordinates
 2. `optimizeRoute(deliveries, depot)` - Optimize single route
 3. `optimizeMultiVehicleRoute(deliveries, vehicles, depot)` - Multi-vehicle optimization
 4. `calculateEstimatedDeliveryTime(distance, startTime)` - Time estimation with traffic patterns
 
 **Usage Example:**
+
 ```javascript
-const RouteOptimization = require('./services/RouteOptimizationService');
+const RouteOptimization = require("./services/RouteOptimizationService");
 const optimized = RouteOptimization.optimizeRoute(deliveries, depot);
 // Returns: { sequence, totalDistance, totalTime, route, optimization }
 ```
@@ -59,6 +62,7 @@ const optimized = RouteOptimization.optimizeRoute(deliveries, depot);
    - Returns: current GPS, destination coordinates, address, speed
 
 **Database Schema Ready:**
+
 - `deliveries` table includes: `current_latitude`, `current_longitude`, `last_gps_update`, `gps_accuracy`, `current_speed`
 - `delivery_gps_logs` table for tracking history
 
@@ -77,15 +81,14 @@ const optimized = RouteOptimization.optimizeRoute(deliveries, depot);
 3. **POST `/api/promotions/validate`** - Validate promo code and calculate discount
    - Checks: code validity, usage limits, customer eligibility, minimum purchase
    - Returns: discount amount, final total
-   
 4. **POST `/api/promotions`** (Admin) - Create promotion
    - Parameters: code, title, discount_type (percentage/fixed), discount_value, dates
-   
 5. **PUT `/api/promotions/:id`** (Admin) - Update promotion
 6. **DELETE `/api/promotions/:id`** (Admin) - Soft delete promotion
 7. **GET `/api/promotions/:id/analytics`** (Admin) - Promotion usage analytics
 
 **Features:**
+
 - Percentage and fixed amount discounts
 - Minimum purchase requirements
 - Maximum discount caps
@@ -117,13 +120,14 @@ const optimized = RouteOptimization.optimizeRoute(deliveries, depot);
    - Accounts for vehicle availability and distance
 
 **Order Confirmation Response:**
+
 ```json
 {
   "success": true,
   "data": {
     "orderNumber": "ORD-2026-000001",
     "estimatedDeliveryDate": "2026-02-06",
-    "totalAmount": 150.50,
+    "totalAmount": 150.5,
     "confirmation": "Order ORD-2026-000001 confirmed. Expected delivery: 2/6/2026"
   }
 }
@@ -178,6 +182,7 @@ const optimized = RouteOptimization.optimizeRoute(deliveries, depot);
 **Enhanced Socket.io Implementation:**
 
 **User Connection Management:**
+
 - Track active user sessions
 - Route notifications to specific users
 - Connection lifecycle management
@@ -217,27 +222,29 @@ const optimized = RouteOptimization.optimizeRoute(deliveries, depot);
    - `tracking:subscribe` - Live delivery tracking
 
 **Global Broadcast Functions:**
+
 ```javascript
 // Available globally in routes
-global.broadcastInventoryUpdate(data)
-global.broadcastDeliveryUpdate(data)
-global.broadcastOrderUpdate(data)
-global.notifyUser(userId, event, data)
+global.broadcastInventoryUpdate(data);
+global.broadcastDeliveryUpdate(data);
+global.broadcastOrderUpdate(data);
+global.notifyUser(userId, event, data);
 ```
 
 **Client Usage Example:**
+
 ```javascript
-const socket = io('http://localhost:5000');
+const socket = io("http://localhost:5000");
 
 // Join user channel for personalized updates
-socket.emit('user:join', { userId: 123 });
+socket.emit("user:join", { userId: 123 });
 
 // Subscribe to delivery tracking
-socket.emit('tracking:subscribe', { deliveryId: 456 });
+socket.emit("tracking:subscribe", { deliveryId: 456 });
 
 // Listen for real-time location updates
-socket.on('delivery:location_real-time', (data) => {
-    console.log(`Delivery at: ${data.latitude}, ${data.longitude}`);
+socket.on("delivery:location_real-time", (data) => {
+  console.log(`Delivery at: ${data.latitude}, ${data.longitude}`);
 });
 ```
 
@@ -248,50 +255,55 @@ socket.on('delivery:location_real-time', (data) => {
 ### File Modified: `backend/server.js`
 
 **Added Route:**
+
 ```javascript
-const promotionsRoutes = require('./routes/promotions');
-app.use('/api/promotions', promotionsRoutes);
+const promotionsRoutes = require("./routes/promotions");
+app.use("/api/promotions", promotionsRoutes);
 ```
 
 ---
 
 ## Summary of Changes
 
-| Component | Status | Files | Changes |
-|-----------|--------|-------|---------|
-| Route Optimization | ✅ | NEW | RouteOptimizationService.js |
-| GPS Tracking | ✅ | MODIFIED | delivery.js (+100 lines) |
-| Promotions | ✅ | NEW | promotions.js |
-| Estimated Delivery | ✅ | MODIFIED | orders.js (+30 lines) |
-| Invoice PDF | ✅ | NEW | InvoiceService.js |
-| WebSocket Updates | ✅ | MODIFIED | server.js (+200 lines) |
-| Dependencies | ✅ | MODIFIED | package.json (added pdfkit) |
+| Component          | Status | Files    | Changes                     |
+| ------------------ | ------ | -------- | --------------------------- |
+| Route Optimization | ✅     | NEW      | RouteOptimizationService.js |
+| GPS Tracking       | ✅     | MODIFIED | delivery.js (+100 lines)    |
+| Promotions         | ✅     | NEW      | promotions.js               |
+| Estimated Delivery | ✅     | MODIFIED | orders.js (+30 lines)       |
+| Invoice PDF        | ✅     | NEW      | InvoiceService.js           |
+| WebSocket Updates  | ✅     | MODIFIED | server.js (+200 lines)      |
+| Dependencies       | ✅     | MODIFIED | package.json (added pdfkit) |
 
 ---
 
 ## Integration Points
 
 ### 1. Order to Invoice Pipeline
+
 ```
-Order Created → Estimated Delivery Calculated → 
+Order Created → Estimated Delivery Calculated →
 Payment Processed → Invoice Generated & Emailed
 ```
 
 ### 2. Delivery to GPS Tracking
+
 ```
-Delivery Created → Driver Location Updates → 
+Delivery Created → Driver Location Updates →
 WebSocket Broadcasts to Customer → GPS History Logged
 ```
 
 ### 3. Inventory Real-Time Sync
+
 ```
-Stock Movement → WebSocket Broadcast → 
+Stock Movement → WebSocket Broadcast →
 Dashboard Updates & Alerts
 ```
 
 ### 4. Promotion Validation
+
 ```
-Customer Applies Code → Validation & Calculation → 
+Customer Applies Code → Validation & Calculation →
 Discount Applied to Order Total
 ```
 
@@ -300,6 +312,7 @@ Discount Applied to Order Total
 ## Testing Recommendations
 
 ### Route Optimization
+
 ```bash
 POST /api/deliveries/optimize-route
 {
@@ -310,6 +323,7 @@ POST /api/deliveries/optimize-route
 ```
 
 ### GPS Update
+
 ```bash
 POST /api/deliveries/1/gps-update
 {
@@ -321,6 +335,7 @@ POST /api/deliveries/1/gps-update
 ```
 
 ### Promotion Validation
+
 ```bash
 POST /api/promotions/validate
 {
@@ -331,6 +346,7 @@ POST /api/promotions/validate
 ```
 
 ### Invoice Generation
+
 ```bash
 POST /api/payments/invoice/generate
 {
@@ -339,10 +355,11 @@ POST /api/payments/invoice/generate
 ```
 
 ### WebSocket Connection
+
 ```javascript
-const socket = io('http://localhost:5000');
-socket.emit('user:join', { userId: 123 });
-socket.on('delivery:location_real-time', console.log);
+const socket = io("http://localhost:5000");
+socket.emit("user:join", { userId: 123 });
+socket.on("delivery:location_real-time", console.log);
 ```
 
 ---

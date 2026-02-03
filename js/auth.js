@@ -2,20 +2,23 @@
 // AUTHENTICATION & NAVIGATION
 // =====================================================
 
+const API_URL = 'http://localhost:5000/api';
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     
-    // Check if user is logged in
-    const storedUser = sessionStorage.getItem('currentUser');
+    // Check if user is logged in using localStorage (persists across sessions)
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
     
-    if (storedUser) {
+    if (storedToken && storedUser) {
         currentUser = JSON.parse(storedUser);
-        currentCart = JSON.parse(sessionStorage.getItem('currentCart') || '[]');
+        currentCart = JSON.parse(localStorage.getItem('currentCart') || '[]');
         updateUserDisplay();
         updateCartBadge();
-    } else if (currentPage !== 'index.html') {
-        // Redirect to login if not on login page
+    } else if (currentPage !== 'index.html' && currentPage !== 'signup.html') {
+        // Redirect to login if not on login/signup page
         window.location.href = '../../index.html';
     }
     
@@ -27,27 +30,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Handle Login Form
 if (document.getElementById('login-form')) {
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
         e.preventDefault();
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
 
-        const user = systemData.users.find(u => (u.email === email || u.name === email) && u.password === password);
+        try {
+            const response = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            });
 
-        if (user) {
-            currentUser = user;
-            currentCart = [];
-            
-            // Store in session
-            sessionStorage.setItem('currentUser', JSON.stringify(user));
-            sessionStorage.setItem('currentCart', JSON.stringify(currentCart));
-            
-            // Redirect based on role
-            redirectToDashboard(user.role);
-        } else {
-            alert('Invalid credentials. Please try again.');
-            document.getElementById('email').value = '';
-            document.getElementById('password').value = '';
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                // Store token and user
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem('currentCart', JSON.stringify([]));
+
+                currentUser = data.user;
+                currentCart = [];
+
+                // Redirect based on role
+                redirectToDashboard(data.user.role);
+            } else {
+                alert(data.message || 'Invalid credentials. Please try again.');
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+            console.error('Login error:', error);
         }
     });
 }
@@ -61,9 +81,11 @@ function redirectToDashboard(role) {
         case 'admin':
             window.location.href = 'pages/admin/dashboard.html';
             break;
+        case 'rdc':
         case 'rdc_staff':
             window.location.href = 'pages/rdc/dashboard.html';
             break;
+        case 'delivery':
         case 'delivery_staff':
             window.location.href = 'pages/delivery/dashboard.html';
             break;
@@ -75,8 +97,9 @@ function redirectToDashboard(role) {
 // Logout function
 function logout() {
     if (confirm('Are you sure you want to logout?')) {
-        sessionStorage.removeItem('currentUser');
-        sessionStorage.removeItem('currentCart');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('currentCart');
         currentUser = null;
         currentCart = [];
         window.location.href = '../../index.html';
@@ -85,7 +108,7 @@ function logout() {
 
 // Navigation helper
 function goToPage(pageName) {
-    if (!currentUser) {
+    if (!currentUser && localStorage.getItem('token') === null) {
         alert('Please login first');
         window.location.href = '../../index.html';
         return;
@@ -109,10 +132,12 @@ function updateUserDisplay() {
         const roleDisplay = {
             'customer': 'Customer',
             'admin': 'Administrator',
+            'rdc': 'RDC Staff',
             'rdc_staff': 'RDC Staff',
+            'delivery': 'Delivery Staff',
             'delivery_staff': 'Delivery Staff'
         }[currentUser.role] || currentUser.role;
-        userDisplay.textContent = `${currentUser.name} (${roleDisplay})`;
+        userDisplay.textContent = `Welcome, ${currentUser.full_name || currentUser.name || 'User'} (${roleDisplay})`;
     }
 }
 
@@ -120,7 +145,7 @@ function updateUserDisplay() {
 function updateCartBadge() {
     const badge = document.getElementById('cart-badge');
     if (badge) {
-        const total = currentCart.reduce((sum, item) => sum + item.quantity, 0);
+        const total = (currentCart || []).reduce((sum, item) => sum + (item.quantity || 0), 0);
         badge.textContent = total;
     }
 }
@@ -142,7 +167,7 @@ window.addEventListener('click', function(event) {
 
 // Save session data
 function saveSession() {
-    sessionStorage.setItem('currentCart', JSON.stringify(currentCart));
+    localStorage.setItem('currentCart', JSON.stringify(currentCart));
 }
 
 // Auto-save session

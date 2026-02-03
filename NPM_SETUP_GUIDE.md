@@ -26,16 +26,19 @@ APP/
 ## ✅ CORRECT WAY TO INSTALL DEPENDENCIES
 
 ### Step 1: Navigate to Backend Directory
+
 ```powershell
 cd backend
 ```
 
 ### Step 2: Install Dependencies
+
 ```powershell
 npm install
 ```
 
 ### Step 3: Verify Installation
+
 ```powershell
 npm list --depth=0
 ```
@@ -68,17 +71,20 @@ This fails because there's no `package.json` in the root directory.
 ## 🚀 QUICK START (Correct Steps)
 
 ### 1. Navigate to Backend
+
 ```powershell
 cd "d:\top up\Advance Software Engineerinh\APP\backend"
 ```
 
 ### 2. Start Development Server
+
 ```powershell
 npm start       # Production mode
 npm run dev     # Development mode with auto-reload
 ```
 
 ### 3. Open Frontend in Browser
+
 ```
 File → Open: index.html
 Or: http://localhost:8000 (if using http-server)
@@ -107,26 +113,31 @@ etc.
 ## 🔧 TROUBLESHOOTING
 
 ### Error: "Cannot find package.json"
+
 - **Cause:** Running npm from root directory
 - **Solution:** `cd backend` then run npm commands
 
 ### Error: "node_modules not found"
+
 - **Cause:** Dependencies not installed in backend
 - **Solution:** `npm install` (from backend folder)
 
 ### Error: "Port already in use"
+
 - **Cause:** Another process on port 5000
 - **Solution:** Change PORT in .env or kill process
 
 ### Error: "Firebase not initialized"
+
 - **Cause:** Missing .env credentials
-- **Solution:** Add FIREBASE_* variables to .env
+- **Solution:** Add FIREBASE\_\* variables to .env
 
 ---
 
 ## 📦 WHAT'S INSTALLED
 
 ✅ **21 Production & Development Packages:**
+
 - Express.js (Web framework)
 - Socket.io (Real-time updates)
 - Firebase Admin (Database)

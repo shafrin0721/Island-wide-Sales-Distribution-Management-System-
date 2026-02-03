@@ -40,6 +40,25 @@ i18n.configure({
 
 app.use(i18n.init);
 
+// =====================================================
+// STATIC FILE SERVING (FRONTEND)
+// =====================================================
+
+// Serve static files from parent directory
+app.use(express.static(path.join(__dirname, '..')));
+
+// Serve pages directory
+app.use('/pages', express.static(path.join(__dirname, '../pages')));
+
+// Serve CSS and JS
+app.use('/css', express.static(path.join(__dirname, '../css')));
+app.use('/js', express.static(path.join(__dirname, '../js')));
+
+// Root route - serve index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../index.html'));
+});
+
 // Firebase Connection (Cloud Database)
 const { db, auth, testConnection } = require('./config/firebase');
 
