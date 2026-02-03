@@ -68,12 +68,18 @@ function loadProducts() {
 }
 
 function showProductDetails(productID) {
+    console.log('showProductDetails called with productID:', productID);
     const product = systemData.products.find(p => p.productID === productID);
     const inventory = systemData.inventory.find(inv => inv.productID === productID);
     const inStock = inventory && inventory.stockLevel > 0;
 
     const modal = document.getElementById('product-modal');
     const detailsDiv = document.getElementById('product-details');
+    
+    if (!modal || !detailsDiv) {
+        console.error('Modal or details div not found');
+        return;
+    }
 
     detailsDiv.innerHTML = `
         <div class="product-details-container">
@@ -98,7 +104,10 @@ function showProductDetails(productID) {
         </div>
     `;
 
+    // Ensure modal is visible and active
+    modal.style.display = 'block';
     modal.classList.add('active');
+    console.log('Product modal opened for', product.name);
 }
 
 function decreaseQty() {
@@ -112,6 +121,7 @@ function increaseQty(max) {
 }
 
 function addToCart(productID) {
+    console.log('addToCart called with productID:', productID);
     const product = systemData.products.find(p => p.productID === productID);
     const inventory = systemData.inventory.find(inv => inv.productID === productID);
 
@@ -136,6 +146,7 @@ function addToCart(productID) {
         });
     }
 
+    console.log('Updated cart:', currentCart);
     updateCartBadge();
     saveSession();
     alert('Product added to cart!');
@@ -582,6 +593,7 @@ function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.style.display = 'block';
+        modal.classList.add('active');
     }
 }
 
@@ -589,6 +601,7 @@ function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.style.display = 'none';
+        modal.classList.remove('active');
     }
 }
 
@@ -596,17 +609,20 @@ function closeModal(modalId) {
 window.onclick = function(event) {
     if (event.target.classList.contains('modal')) {
         event.target.style.display = 'none';
+        event.target.classList.remove('active');
     }
 }
 
 // =================== LOGOUT ===================
 function logout() {
+    console.log('Logout clicked');
     if (confirm('Are you sure you want to logout?')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         localStorage.removeItem('currentCart');
         currentUser = null;
         currentCart = [];
+        console.log('Logged out, redirecting to index.html');
         window.location.href = '../../index.html';
     }
 }
