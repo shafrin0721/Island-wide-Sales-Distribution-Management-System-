@@ -4,7 +4,9 @@
 
 // Load products on products page
 if (document.getElementById('products-grid')) {
+    console.log('products-grid found, setting up DOMContentLoaded listener');
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded fired, calling loadProducts');
         loadProducts();
         setupFilters();
     });
@@ -39,6 +41,8 @@ function loadProducts() {
     const grid = document.getElementById('products-grid');
     if (!grid) return;
     
+    console.log('loadProducts called, found', systemData.products.length, 'products');
+    
     grid.innerHTML = '';
     systemData.products.forEach(product => {
         const inventory = systemData.inventory.find(inv => inv.productID === product.productID);
@@ -56,14 +60,25 @@ function loadProducts() {
                     ${inStock ? `✓ In Stock (${inventory.stockLevel} available)` : '✗ Out of Stock'}
                 </div>
                 <div class="product-actions">
-                    <button class="view-details-btn" onclick="showProductDetails(${product.productID})">Details</button>
-                    <button class="add-to-cart-btn" onclick="addToCart(${product.productID})" ${!inStock ? 'disabled' : ''}>
+                    <button class="view-details-btn" data-product-id="${product.productID}" onclick="showProductDetails(${product.productID})">Details</button>
+                    <button class="add-to-cart-btn" data-product-id="${product.productID}" onclick="addToCart(${product.productID})" ${!inStock ? 'disabled' : ''}>
                         Add to Cart
                     </button>
                 </div>
             </div>
         `;
         grid.appendChild(card);
+    });
+    
+    // Add event delegation
+    grid.addEventListener('click', function(e) {
+        if (e.target.classList.contains('view-details-btn')) {
+            const productID = parseInt(e.target.dataset.productId);
+            showProductDetails(productID);
+        } else if (e.target.classList.contains('add-to-cart-btn')) {
+            const productID = parseInt(e.target.dataset.productId);
+            addToCart(productID);
+        }
     });
 }
 
