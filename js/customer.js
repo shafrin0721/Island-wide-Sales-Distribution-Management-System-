@@ -108,11 +108,11 @@ function showProductDetails(productID) {
                 </div>
                 <div class="product-details-description">${product.description}</div>
                 <div class="product-quantity-input">
-                    <button onclick="decreaseQty()">−</button>
+                    <button class="qty-decrease-btn" id="qty-decrease">−</button>
                     <input type="number" id="qty-input" value="1" min="1" max="${inventory?.stockLevel || 1}">
-                    <button onclick="increaseQty(${inventory?.stockLevel || 1})">+</button>
+                    <button class="qty-increase-btn" id="qty-increase">+</button>
                 </div>
-                <button class="btn btn-primary" onclick="addToCartWithQty(${product.productID})" ${!inStock ? 'disabled' : ''}>
+                <button class="btn btn-primary add-cart-btn" data-product-id="${product.productID}" ${!inStock ? 'disabled' : ''}>
                     Add to Cart
                 </button>
             </div>
@@ -123,6 +123,37 @@ function showProductDetails(productID) {
     modal.style.display = 'block';
     modal.classList.add('active');
     console.log('Product modal opened for', product.name);
+    
+    // Add event listeners for quantity controls
+    const decreaseBtn = document.getElementById('qty-decrease');
+    const increaseBtn = document.getElementById('qty-increase');
+    const qtyInput = document.getElementById('qty-input');
+    const addBtn = document.querySelector('.add-cart-btn');
+    
+    if (decreaseBtn) {
+        decreaseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Decrease quantity button clicked');
+            decreaseQty();
+        });
+    }
+    
+    if (increaseBtn) {
+        increaseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Increase quantity button clicked');
+            increaseQty(parseInt(qtyInput.max) || 1);
+        });
+    }
+    
+    if (addBtn) {
+        addBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Add to cart button clicked from modal');
+            const productId = parseInt(this.dataset.productId);
+            addToCartWithQty(productId);
+        });
+    }
 }
 
 function decreaseQty() {

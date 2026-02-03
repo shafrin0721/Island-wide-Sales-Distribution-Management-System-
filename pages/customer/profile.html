@@ -198,6 +198,35 @@
 
             document.getElementById('current-user').textContent = `Welcome, ${user.full_name || 'Customer'}`;
             loadProfileData();
+            
+            // Setup nav button event listeners
+            const navButtons = document.querySelectorAll('.nav-link');
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const btnText = this.textContent.trim().split('\n')[0];
+                    console.log('Nav button clicked:', btnText);
+                    
+                    if (btnText === 'Products') {
+                        window.location.href = 'products.html';
+                    } else if (btnText === 'My Orders') {
+                        window.location.href = 'orders.html';
+                    } else if (btnText.includes('Cart')) {
+                        window.location.href = 'cart.html';
+                    } else if (btnText === 'Profile') {
+                        window.location.href = 'profile.html';
+                    }
+                });
+            });
+            
+            // Setup logout button
+            const logoutBtn = document.querySelector('.nav-link.logout');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    console.log('Logout button clicked');
+                    logout();
+                });
+            }
+
             loadProfileStats();
         });
 
