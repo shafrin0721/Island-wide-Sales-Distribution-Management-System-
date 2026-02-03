@@ -4,6 +4,8 @@
 
 All 6 missing features for the RDC Management System have been **successfully implemented, tested, and committed** to version control. The system is now feature-complete and ready for testing and production deployment.
 
+**GitHub Repository:** https://github.com/shafrin0721/Island-wide-Sales-Distribution-Management-System-
+
 ---
 
 ## 📋 DELIVERABLES

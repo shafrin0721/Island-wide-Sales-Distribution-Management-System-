@@ -3,13 +3,15 @@
 ## Installation Status: SUCCESS
 
 **Date:** February 3, 2026  
-**Project:** RDC Management System - Backend
+**Project:** RDC Management System - Backend  
+**GitHub:** https://github.com/shafrin0721/Island-wide-Sales-Distribution-Management-System-
 
 ---
 
 ## 📦 DEPENDENCIES INSTALLED
 
 ### All 21 dependencies installed successfully:
+
 ✅ `express` (^4.22.1)
 ✅ `cors` (^2.8.5)
 ✅ `dotenv` (^16.6.1)
@@ -37,6 +39,7 @@
 ## 🔍 SERVICES VERIFICATION
 
 ### All services loaded successfully:
+
 ✅ RouteOptimizationService loaded
 ✅ InvoiceService loaded
 ✅ All imports working correctly
@@ -45,14 +48,14 @@
 
 ## 📊 INSTALLATION METRICS
 
-| Metric | Value |
-|--------|-------|
-| Total Packages | 650 |
-| Direct Dependencies | 21 |
+| Metric                         | Value                            |
+| ------------------------------ | -------------------------------- |
+| Total Packages                 | 650                              |
+| Direct Dependencies            | 21                               |
 | High Vulnerabilities Remaining | 3 (Firebase/Google Cloud - safe) |
-| Moderate Vulnerabilities | 0 |
-| Critical Vulnerabilities | 0 |
-| Installation Status | ✅ COMPLETE |
+| Moderate Vulnerabilities       | 0                                |
+| Critical Vulnerabilities       | 0                                |
+| Installation Status            | ✅ COMPLETE                      |
 
 ---
 

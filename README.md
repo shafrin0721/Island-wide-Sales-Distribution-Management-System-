@@ -5,7 +5,11 @@
 **Implementation Status:** ✅ 100% COMPLETE  
 **Date:** February 3, 2026  
 **All 6 Features:** Implemented & Tested  
-**Dependencies:** Installed & Verified  
+**Dependencies:** Installed & Verified
+
+### 🔗 GitHub Repository
+
+**Repository:** https://github.com/shafrin0721/Island-wide-Sales-Distribution-Management-System-
 
 ---
 
@@ -377,6 +381,7 @@ APP/
 ## 🎯 QUICK START GUIDE
 
 ### Prerequisites
+
 - Node.js (v14+)
 - npm or yarn
 - Git
@@ -418,31 +423,37 @@ npx http-server
 ## 📋 6 ADVANCED FEATURES IMPLEMENTED
 
 ### 1. ✅ Route Optimisation Algorithm
+
 - **Service:** Nearest Neighbor algorithm with Haversine distance
 - **Use Case:** Optimize delivery routes for efficiency
 - **Benefits:** Reduce travel time, lower costs, improve delivery speed
 
 ### 2. ✅ Active GPS Tracking
+
 - **Real-Time Updates:** Live location tracking via WebSocket
 - **Location History:** Full tracking record for auditing
 - **API Endpoints:** 4 dedicated GPS tracking endpoints
 
 ### 3. ✅ Promotion Management
+
 - **Complete CRUD:** Create, read, update, delete promotions
 - **Smart Validation:** Validate promo codes with discount calculation
 - **Analytics:** Track promotion usage and effectiveness
 
 ### 4. ✅ Estimated Delivery Calculation
+
 - **Auto-Calculate:** Business day calculation on order creation
 - **Smart Logic:** Excludes weekends, configurable timing
 - **Customer Experience:** Show delivery date at checkout
 
 ### 5. ✅ PDF Invoice Generation
+
 - **Professional Format:** Branded invoice PDFs
 - **Email Integration:** Auto-email invoices to customers
 - **Storage:** Local file persistence with download option
 
 ### 6. ✅ Real-Time WebSocket Updates
+
 - **20+ Events:** Orders, deliveries, inventory, payments
 - **Live Dashboard:** Real-time updates for admin/staff
 - **Scalable:** Handles 1000+ concurrent connections
@@ -451,13 +462,13 @@ npx http-server
 
 ## 📚 DOCUMENTATION
 
-| Document | Purpose | Read Time |
-|----------|---------|-----------|
-| `QUICK_REFERENCE.md` | Quick API guide | 5 min |
-| `IMPLEMENTATION_REPORT.md` | Feature details | 10 min |
-| `VERIFICATION_REPORT_FEATURES.md` | Verification checklist | 5 min |
-| `DEPLOYMENT_READY.md` | Deployment guide | 10 min |
-| `SETUP_COMPLETE.md` | Setup status | 3 min |
+| Document                          | Purpose                | Read Time |
+| --------------------------------- | ---------------------- | --------- |
+| `QUICK_REFERENCE.md`              | Quick API guide        | 5 min     |
+| `IMPLEMENTATION_REPORT.md`        | Feature details        | 10 min    |
+| `VERIFICATION_REPORT_FEATURES.md` | Verification checklist | 5 min     |
+| `DEPLOYMENT_READY.md`             | Deployment guide       | 10 min    |
+| `SETUP_COMPLETE.md`               | Setup status           | 3 min     |
 
 ---
 
@@ -502,25 +513,30 @@ JWT_EXPIRY=24h
 ## 🧪 API ENDPOINTS
 
 ### Order Management
+
 - `POST /api/orders` - Create order
 - `GET /api/orders` - List orders
 - `GET /api/orders/:id` - Get order details
 
 ### GPS Tracking
+
 - `POST /api/deliveries/:id/gps-update` - Update location
 - `GET /api/deliveries/:id/current-location` - Get current location
 - `GET /api/deliveries/:id/location-history` - Location history
 
 ### Promotions
+
 - `GET /api/promotions` - List promotions
 - `POST /api/promotions/validate` - Validate promo code
 - `POST /api/promotions` - Create promotion (admin)
 
 ### Invoices
+
 - `POST /api/payments/invoice/generate` - Generate & email invoice
 - `GET /api/payments/invoice/:order_id` - Download invoice PDF
 
 ### Analytics
+
 - `GET /api/analytics/sales/overview` - Sales analytics
 - `GET /api/analytics/deliveries/performance` - Delivery metrics
 
@@ -529,6 +545,7 @@ JWT_EXPIRY=24h
 ## 🌐 WEBSOCKET EVENTS
 
 ### Real-Time Updates
+
 - `order:created` - New order notification
 - `delivery:location_update` - Live GPS location
 - `inventory:stock_changed` - Stock level update
