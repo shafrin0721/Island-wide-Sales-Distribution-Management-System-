@@ -156,11 +156,25 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
+                    // Store token and user info
+                    localStorage.setItem('token', data.token || 'temp_token');
+                    localStorage.setItem('user', JSON.stringify({
+                        id: data.user?.id,
+                        email: email,
+                        full_name: `${firstName} ${lastName}`,
+                        phone: phone,
+                        address: address,
+                        role: 'customer'
+                    }));
+                    localStorage.setItem('currentCart', JSON.stringify([]));
+
                     messageDiv.style.color = 'green';
-                    messageDiv.textContent = 'Account created successfully! Redirecting to login...';
+                    messageDiv.textContent = 'Account created successfully! Redirecting to dashboard...';
+                    
+                    // Redirect to customer dashboard
                     setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 2000);
+                        window.location.href = 'pages/customer/products.html';
+                    }, 1000);
                 } else {
                     messageDiv.style.color = 'red';
                     messageDiv.textContent = data.message || 'Registration failed. Please try again.';
