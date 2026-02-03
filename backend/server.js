@@ -434,6 +434,68 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
+    // Initialize demo test users for development
+    const bcryptjs = require('bcryptjs');
+    const crypto = require('crypto');
+    
+    if (process.env.NODE_ENV !== 'production') {
+        // Create test users for demo
+        global.mockUsers = global.mockUsers || {};
+        global.mockUsersByEmail = global.mockUsersByEmail || {};
+        
+        const testUsers = [
+            {
+                email: 'customer@test.com',
+                password: 'password123',
+                fullName: 'John Customer',
+                role: 'customer',
+                phone: '1234567890',
+                address: '123 Main St'
+            },
+            {
+                email: 'rdc@test.com',
+                password: 'password123',
+                fullName: 'RDC Admin',
+                role: 'rdc',
+                phone: '0987654321',
+                address: '456 RDC St'
+            },
+            {
+                email: 'delivery@test.com',
+                password: 'password123',
+                fullName: 'Delivery Driver',
+                role: 'delivery',
+                phone: '5555555555',
+                address: '789 Delivery Ave'
+            }
+        ];
+        
+        testUsers.forEach(user => {
+            const uid = crypto.randomUUID();
+            const passwordHash = bcryptjs.hashSync(user.password, 10);
+            
+            global.mockUsers[uid] = {
+                uid,
+                email: user.email,
+                passwordHash,
+                displayName: user.fullName,
+                phone: user.phone,
+                address: user.address,
+                role: user.role,
+                status: 'active',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+            
+            global.mockUsersByEmail[user.email] = uid;
+        });
+        
+        console.log(`\n✓ Demo test users initialized for development mode`);
+        console.log(`  - customer@test.com (password123)`);
+        console.log(`  - rdc@test.com (password123)`);
+        console.log(`  - delivery@test.com (password123)\n`);
+    }
+
     console.log(`
     ╔═════════════════════════════════════════╗
     ║   RDC BACKEND SERVER STARTED            ║

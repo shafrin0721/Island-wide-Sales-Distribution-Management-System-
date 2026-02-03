@@ -36,6 +36,8 @@ if (document.getElementById('login-form')) {
         const password = document.getElementById('password').value;
 
         try {
+            console.log('Attempting login with email:', email);
+            
             const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
@@ -48,6 +50,7 @@ if (document.getElementById('login-form')) {
             });
 
             const data = await response.json();
+            console.log('Login response:', data);
 
             if (response.ok && data.success) {
                 // Store token and user
