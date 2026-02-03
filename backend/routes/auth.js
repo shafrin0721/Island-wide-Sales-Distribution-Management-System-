@@ -252,6 +252,7 @@ router.post('/login', async (req, res) => {
                 message: 'Login successful',
                 user: {
                     uid: userRecord.uid,
+                    userID: userRecord.uid,
                     email: userRecord.email,
                     displayName: userRecord.displayName,
                     role: userProfile.role || 'customer'
@@ -330,6 +331,7 @@ router.post('/login', async (req, res) => {
             message: 'Login successful (test mode)',
             user: {
                 uid: mockUser.uid,
+                userID: mockUser.uid,
                 email: mockUser.email,
                 displayName: mockUser.displayName,
                 role: mockUser.role || 'customer'

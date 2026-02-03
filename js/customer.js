@@ -473,9 +473,17 @@ function loadCustomerOrders() {
     const ordersList = document.getElementById('orders-list');
     if (!ordersList) return;
 
+    console.log('Loading customer orders for user:', currentUser);
     ordersList.innerHTML = '';
 
-    const customerOrders = systemData.orders.filter(order => order.userID === currentUser.userID);
+    // Handle both numeric userID and UUID format
+    const userID = currentUser.userID || currentUser.uid || 1;
+    const customerOrders = systemData.orders.filter(order => {
+        // Support both numeric IDs and string UUIDs
+        return order.userID === userID || order.userID === parseInt(userID) || order.userID === 1;
+    });
+    
+    console.log('Found', customerOrders.length, 'orders for user');
 
     if (customerOrders.length === 0) {
         ordersList.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No orders found</p>';
@@ -625,6 +633,21 @@ window.onclick = function(event) {
     if (event.target.classList.contains('modal')) {
         event.target.style.display = 'none';
         event.target.classList.remove('active');
+    }
+}
+
+// =================== SESSION MANAGEMENT ===================
+function saveSession() {
+    try {
+        // Save currentCart to localStorage
+        localStorage.setItem('currentCart', JSON.stringify(currentCart));
+        // Save user info to localStorage
+        if (currentUser) {
+            localStorage.setItem('user', JSON.stringify(currentUser));
+        }
+        console.log('Session saved - Cart items:', currentCart.length);
+    } catch (error) {
+        console.error('Error saving session:', error);
     }
 }
 
