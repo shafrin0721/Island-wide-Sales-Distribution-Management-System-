@@ -323,4 +323,127 @@ router.get('/history/list', verifyToken, async (req, res) => {
     }
 });
 
+/**
+ * GENERATE AND SEND INVOICE
+ * POST /api/payments/invoice/generate
+ */
+router.post('/invoice/generate', verifyToken, async (req, res) => {
+    try {
+        const { order_id } = req.body;
+
+        if (!order_id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Order ID is required'
+            });
+        }
+
+        // Get order details
+        const orderResult = await query(
+            `SELECT o.*, u.email, u.full_name, u.phone, u.address, u.city, u.country, u.postal_code
+             FROM orders o
+             JOIN users u ON o.customer_id = u.id
+             WHERE o.id = $1`,
+            [order_id]
+        );
+
+        if (orderResult.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Order not found'
+            });
+        }
+
+        // Get order items
+        const itemsResult = await query(
+            `SELECT oi.*, p.name as product_name
+             FROM order_items oi
+             JOIN products p ON oi.product_id = p.id
+             WHERE oi.order_id = $1`,
+            [order_id]
+        );
+
+        const InvoiceService = require('../services/InvoiceService');
+        const result = await InvoiceService.generateAndSendInvoice(
+            orderResult.rows[0],
+            itemsResult.rows,
+            orderResult.rows[0],
+            true // send email
+        );
+
+        if (result.success) {
+            res.json({
+                success: true,
+                message: 'Invoice generated and sent successfully',
+                data: {
+                    invoiceFile: result.data.invoiceFile,
+                    emailSent: result.data.emailSent
+                }
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: result.message
+            });
+        }
+    } catch (error) {
+        console.error('Generate invoice error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to generate invoice'
+        });
+    }
+});
+
+/**
+ * GET INVOICE
+ * GET /api/payments/invoice/:order_id
+ */
+router.get('/invoice/:order_id', verifyToken, async (req, res) => {
+    try {
+        const { order_id } = req.params;
+
+        // Get order details
+        const orderResult = await query(
+            `SELECT o.*, u.email, u.full_name, u.phone, u.address, u.city, u.country, u.postal_code
+             FROM orders o
+             JOIN users u ON o.customer_id = u.id
+             WHERE o.id = $1`,
+            [order_id]
+        );
+
+        if (orderResult.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Order not found'
+            });
+        }
+
+        // Get order items
+        const itemsResult = await query(
+            `SELECT oi.*, p.name as product_name
+             FROM order_items oi
+             JOIN products p ON oi.product_id = p.id
+             WHERE oi.order_id = $1`,
+            [order_id]
+        );
+
+        const InvoiceService = require('../services/InvoiceService');
+        const pdfBuffer = await InvoiceService.generateInvoicePDF(
+            orderResult.rows[0],
+            itemsResult.rows,
+            orderResult.rows[0]
+        );
+
+        res.contentType('application/pdf');
+        res.send(pdfBuffer);
+    } catch (error) {
+        console.error('Get invoice error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to retrieve invoice'
+        });
+    }
+});
+
 module.exports = router;

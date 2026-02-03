@@ -100,45 +100,292 @@ app.use('/api/notifications', notificationRoutes);
 const recommendationRoutes = require('./routes/recommendations');
 app.use('/api/recommendations', recommendationRoutes);
 
+// Promotions Routes
+const promotionsRoutes = require('./routes/promotions');
+app.use('/api/promotions', promotionsRoutes);
+
 // =====================================================
 // REAL-TIME EVENTS (Socket.io)
+// Enhanced with inventory and delivery tracking
 // =====================================================
+
+// Track active user connections
+const userConnections = new Map();
+const deliveryTracking = new Map();
 
 io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
 
-    // Order events
+    // User joins - track for real-time updates
+    socket.on('user:join', (data) => {
+        const userId = data.userId;
+        userConnections.set(userId, socket.id);
+        socket.join(`user:${userId}`);
+        console.log(`User ${userId} joined`);
+    });
+
+    // ===== ORDER EVENTS =====
     socket.on('order:created', (data) => {
-        io.emit('order:updated', data);
+        io.emit('order:created', {
+            ...data,
+            timestamp: new Date()
+        });
+        console.log('Order created:', data.orderNumber);
     });
 
     socket.on('order:status_changed', (data) => {
-        io.emit('order:status_changed', data);
+        io.emit('order:status_changed', {
+            ...data,
+            timestamp: new Date()
+        });
+        // Notify specific customer
+        io.to(`user:${data.customerId}`).emit('my-order:updated', data);
     });
 
-    // Delivery events
+    socket.on('order:payment_received', (data) => {
+        io.emit('order:payment_confirmed', {
+            ...data,
+            timestamp: new Date()
+        });
+        io.to(`user:${data.customerId}`).emit('payment:confirmed', data);
+    });
+
+    // ===== DELIVERY EVENTS =====
+    socket.on('delivery:created', (data) => {
+        const deliveryId = data.deliveryId;
+        deliveryTracking.set(deliveryId, {
+            id: deliveryId,
+            orderId: data.orderId,
+            customerId: data.customerId,
+            startTime: new Date()
+        });
+        
+        io.emit('delivery:assigned', {
+            ...data,
+            timestamp: new Date()
+        });
+        io.to(`user:${data.customerId}`).emit('delivery:on-way', data);
+    });
+
     socket.on('delivery:location_updated', (data) => {
-        io.emit('delivery:location_updated', data);
+        const deliveryId = data.deliveryId;
+        
+        // Update tracking cache
+        if (deliveryTracking.has(deliveryId)) {
+            const tracking = deliveryTracking.get(deliveryId);
+            tracking.lastLocation = {
+                lat: data.latitude,
+                lon: data.longitude,
+                timestamp: new Date()
+            };
+            tracking.lastUpdate = new Date();
+        }
+
+        // Broadcast to all users tracking this delivery
+        io.emit('delivery:location_update', {
+            deliveryId: data.deliveryId,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            speed: data.speed || 0,
+            accuracy: data.accuracy || 10,
+            timestamp: new Date()
+        });
+
+        // Notify customer
+        const tracking = deliveryTracking.get(deliveryId);
+        if (tracking) {
+            io.to(`user:${tracking.customerId}`).emit('delivery:location_real-time', data);
+        }
     });
 
     socket.on('delivery:status_changed', (data) => {
-        io.emit('delivery:status_changed', data);
+        io.emit('delivery:status_update', {
+            ...data,
+            timestamp: new Date()
+        });
+
+        const tracking = deliveryTracking.get(data.deliveryId);
+        if (tracking) {
+            io.to(`user:${tracking.customerId}`).emit('delivery:status_update', data);
+        }
+
+        // Clean up completed deliveries
+        if (data.status === 'completed' || data.status === 'failed') {
+            setTimeout(() => {
+                deliveryTracking.delete(data.deliveryId);
+            }, 60000); // Keep for 1 minute
+        }
     });
 
-    // Inventory events
-    socket.on('inventory:stock_changed', (data) => {
-        io.emit('inventory:stock_changed', data);
+    socket.on('delivery:arrived', (data) => {
+        io.emit('delivery:arrived_notification', {
+            ...data,
+            timestamp: new Date()
+        });
     });
 
-    // Notification events
+    // ===== INVENTORY EVENTS =====
+    socket.on('inventory:stock_updated', (data) => {
+        io.emit('inventory:stock_changed', {
+            productId: data.productId,
+            oldStock: data.oldStock,
+            newStock: data.newStock,
+            location: data.location,
+            reason: data.reason, // 'order', 'restock', 'adjustment'
+            timestamp: new Date()
+        });
+        console.log(`Inventory updated: Product ${data.productId}, Stock: ${data.oldStock} → ${data.newStock}`);
+    });
+
+    socket.on('inventory:low_stock_alert', (data) => {
+        io.emit('inventory:alert', {
+            type: 'low_stock',
+            productId: data.productId,
+            productName: data.productName,
+            currentStock: data.currentStock,
+            reorderLevel: data.reorderLevel,
+            location: data.location,
+            timestamp: new Date()
+        });
+    });
+
+    socket.on('inventory:stock_transfer', (data) => {
+        io.emit('inventory:transfer_initiated', {
+            ...data,
+            status: 'in_transit',
+            timestamp: new Date()
+        });
+    });
+
+    socket.on('inventory:transfer_received', (data) => {
+        io.emit('inventory:transfer_completed', {
+            ...data,
+            status: 'completed',
+            timestamp: new Date()
+        });
+    });
+
+    // ===== PAYMENT EVENTS =====
+    socket.on('payment:processing', (data) => {
+        io.to(`user:${data.customerId}`).emit('payment:status', {
+            orderId: data.orderId,
+            status: 'processing',
+            amount: data.amount,
+            timestamp: new Date()
+        });
+    });
+
+    socket.on('payment:completed', (data) => {
+        io.emit('payment:success', {
+            ...data,
+            timestamp: new Date()
+        });
+        io.to(`user:${data.customerId}`).emit('order:paid', data);
+    });
+
+    socket.on('payment:failed', (data) => {
+        io.to(`user:${data.customerId}`).emit('payment:error', {
+            orderId: data.orderId,
+            reason: data.reason,
+            timestamp: new Date()
+        });
+    });
+
+    // ===== NOTIFICATION EVENTS =====
     socket.on('notification:send', (data) => {
-        io.emit('notification:received', data);
+        if (data.userId) {
+            io.to(`user:${data.userId}`).emit('notification:received', {
+                ...data,
+                timestamp: new Date()
+            });
+        } else {
+            io.emit('notification:broadcast', {
+                ...data,
+                timestamp: new Date()
+            });
+        }
     });
 
+    socket.on('notification:read', (data) => {
+        socket.broadcast.emit('notification:marked_read', {
+            notificationId: data.notificationId,
+            userId: data.userId
+        });
+    });
+
+    // ===== DASHBOARD/ANALYTICS EVENTS =====
+    socket.on('dashboard:subscribe', (data) => {
+        socket.join('dashboard:updates');
+        socket.emit('dashboard:subscribed', {
+            message: 'Subscribed to real-time dashboard updates',
+            timestamp: new Date()
+        });
+    });
+
+    socket.on('analytics:subscribe', (data) => {
+        socket.join('analytics:updates');
+    });
+
+    // ===== LIVE TRACKING SUBSCRIPTION =====
+    socket.on('tracking:subscribe', (data) => {
+        socket.join(`delivery:${data.deliveryId}`);
+        socket.emit('tracking:subscribed', {
+            deliveryId: data.deliveryId,
+            timestamp: new Date()
+        });
+    });
+
+    socket.on('tracking:unsubscribe', (data) => {
+        socket.leave(`delivery:${data.deliveryId}`);
+    });
+
+    // ===== USER DISCONNECT =====
     socket.on('disconnect', () => {
+        // Remove user from connections
+        for (let [userId, socketId] of userConnections.entries()) {
+            if (socketId === socket.id) {
+                userConnections.delete(userId);
+                console.log(`User ${userId} disconnected`);
+                break;
+            }
+        }
         console.log('Client disconnected:', socket.id);
     });
+
+    // Error handling
+    socket.on('error', (error) => {
+        console.error('Socket error:', error);
+    });
 });
+
+// ===== BROADCAST FUNCTIONS FOR SERVER-SIDE EVENTS =====
+global.broadcastInventoryUpdate = (data) => {
+    io.emit('inventory:stock_changed', {
+        ...data,
+        timestamp: new Date()
+    });
+};
+
+global.broadcastDeliveryUpdate = (data) => {
+    io.emit('delivery:status_update', {
+        ...data,
+        timestamp: new Date()
+    });
+};
+
+global.broadcastOrderUpdate = (data) => {
+    io.emit('order:status_changed', {
+        ...data,
+        timestamp: new Date()
+    });
+};
+
+global.notifyUser = (userId, event, data) => {
+    io.to(`user:${userId}`).emit(event, {
+        ...data,
+        timestamp: new Date()
+    });
+};
 
 // =====================================================
 // ERROR HANDLING

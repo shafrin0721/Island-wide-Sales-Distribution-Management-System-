@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 const { query, transaction } = require('../config/database');
 const { verifyToken, checkRole } = require('../middleware/auth');
+const RouteOptimization = require('../services/RouteOptimizationService');
 
 /**
  * CREATE NEW ORDER
@@ -60,15 +61,26 @@ router.post('/', verifyToken, async (req, res) => {
             taxAmount = subtotal * 0.10;
             const totalAmount = subtotal + taxAmount;
 
+            // Calculate estimated delivery date (3-5 business days)
+            const today = new Date();
+            const businessDaysToAdd = today.getDay() === 5 ? 4 : (today.getDay() === 6 ? 3 : 3);
+            const estimatedDeliveryDate = new Date(today);
+            let daysAdded = 0;
+            while (daysAdded < businessDaysToAdd) {
+                estimatedDeliveryDate.setDate(estimatedDeliveryDate.getDate() + 1);
+                const day = estimatedDeliveryDate.getDay();
+                if (day !== 0 && day !== 6) daysAdded++;
+            }
+
             // Create order
             const orderResult = await client.query(
                 `INSERT INTO orders 
                  (order_number, customer_id, delivery_address, delivery_city, delivery_country,
-                  delivery_postal_code, special_instructions, notes, subtotal, tax_amount, total_amount, status)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'pending')
-                 RETURNING id, order_number, total_amount, created_at`,
+                  delivery_postal_code, special_instructions, notes, subtotal, tax_amount, total_amount, status, estimated_delivery_date)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'pending', $12)
+                 RETURNING id, order_number, total_amount, created_at, estimated_delivery_date`,
                 [orderNumber, req.user.id, delivery_address, delivery_city, delivery_country,
-                 delivery_postal_code, special_instructions, notes, subtotal, taxAmount, totalAmount]
+                 delivery_postal_code, special_instructions, notes, subtotal, taxAmount, totalAmount, estimatedDeliveryDate]
             );
 
             const orderId = orderResult.rows[0].id;
@@ -103,7 +115,15 @@ router.post('/', verifyToken, async (req, res) => {
         res.status(201).json({
             success: true,
             message: 'Order created successfully',
-            data: result
+            data: {
+                orderId: result.id,
+                orderNumber: result.order_number,
+                totalAmount: result.total_amount,
+                estimatedDeliveryDate: result.estimated_delivery_date,
+                createdAt: result.created_at,
+                status: 'pending',
+                confirmation: `Order ${result.order_number} has been confirmed. Expected delivery: ${new Date(result.estimated_delivery_date).toLocaleDateString()}`
+            }
         });
     } catch (error) {
         console.error('Create order error:', error);

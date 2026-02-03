@@ -334,4 +334,220 @@ router.get('/stats/summary', verifyToken, checkRole('admin'), async (req, res) =
     }
 });
 
+/**
+ * UPDATE GPS LOCATION
+ * POST /api/deliveries/:id/gps-update
+ * Real-time GPS location update for tracking
+ */
+router.post('/:id/gps-update', verifyToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { latitude, longitude, accuracy, speed } = req.body;
+
+        if (!latitude || !longitude) {
+            return res.status(400).json({
+                success: false,
+                message: 'Latitude and longitude are required'
+            });
+        }
+
+        const result = await query(
+            `UPDATE deliveries 
+             SET current_latitude = $1, 
+                 current_longitude = $2,
+                 last_gps_update = CURRENT_TIMESTAMP,
+                 gps_accuracy = $3,
+                 current_speed = $4
+             WHERE id = $5
+             RETURNING id, delivery_number, status, current_latitude, current_longitude`,
+            [latitude, longitude, accuracy || null, speed || null, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Delivery not found'
+            });
+        }
+
+        // Emit real-time update to connected clients
+        const io = require('../server').io;
+        if (io) {
+            io.emit('delivery-location-update', {
+                deliveryId: id,
+                latitude: latitude,
+                longitude: longitude,
+                speed: speed,
+                accuracy: accuracy,
+                timestamp: new Date()
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'GPS location updated',
+            data: result.rows[0]
+        });
+    } catch (error) {
+        console.error('GPS update error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to update GPS location'
+        });
+    }
+});
+
+/**
+ * GET DELIVERY LOCATION HISTORY
+ * GET /api/deliveries/:id/location-history
+ * Retrieve GPS tracking history for a delivery
+ */
+router.get('/:id/location-history', verifyToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const limit = parseInt(req.query.limit) || 50;
+
+        const result = await query(
+            `SELECT 
+                id, delivery_id, latitude, longitude, accuracy, speed, 
+                distance_from_destination, created_at
+             FROM delivery_gps_logs
+             WHERE delivery_id = $1
+             ORDER BY created_at DESC
+             LIMIT $2`,
+            [id, limit]
+        );
+
+        res.json({
+            success: true,
+            count: result.rows.length,
+            data: result.rows
+        });
+    } catch (error) {
+        console.error('Get location history error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch location history'
+        });
+    }
+});
+
+/**
+ * OPTIMIZE DELIVERY ROUTE
+ * POST /api/deliveries/optimize-route
+ * Calculate optimized delivery route for multiple stops
+ */
+router.post('/optimize-route', verifyToken, checkRole('admin', 'logistics'), async (req, res) => {
+    try {
+        const { delivery_ids, depot_lat, depot_lon } = req.body;
+
+        if (!delivery_ids || delivery_ids.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Delivery IDs are required'
+            });
+        }
+
+        // Get delivery details
+        const placeholders = delivery_ids.map((_, i) => `$${i + 1}`).join(',');
+        const deliveryResult = await query(
+            `SELECT id, delivery_address, delivery_city, estimated_latitude, estimated_longitude,
+                    special_instructions, estimated_weight
+             FROM deliveries
+             WHERE id IN (${placeholders})`,
+            delivery_ids
+        );
+
+        if (deliveryResult.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No deliveries found'
+            });
+        }
+
+        const RouteOptimization = require('../services/RouteOptimizationService');
+        
+        const depot = {
+            address: 'Main RDC',
+            latitude: depot_lat || -6.9271,
+            longitude: depot_lon || 104.6488
+        };
+
+        const optimizedRoute = RouteOptimization.optimizeRoute(
+            deliveryResult.rows,
+            depot
+        );
+
+        res.json({
+            success: true,
+            message: 'Route optimized successfully',
+            data: optimizedRoute
+        });
+    } catch (error) {
+        console.error('Optimize route error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to optimize route'
+        });
+    }
+});
+
+/**
+ * GET CURRENT DELIVERY LOCATION
+ * GET /api/deliveries/:id/current-location
+ * Get real-time current location of delivery
+ */
+router.get('/:id/current-location', verifyToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await query(
+            `SELECT 
+                id, delivery_number, order_id, status,
+                current_latitude, current_longitude,
+                estimated_latitude, estimated_longitude,
+                delivery_address, current_speed, last_gps_update
+             FROM deliveries
+             WHERE id = $1`,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Delivery not found'
+            });
+        }
+
+        const delivery = result.rows[0];
+
+        res.json({
+            success: true,
+            data: {
+                deliveryId: delivery.id,
+                deliveryNumber: delivery.delivery_number,
+                status: delivery.status,
+                currentLocation: {
+                    latitude: delivery.current_latitude,
+                    longitude: delivery.current_longitude,
+                    accuracy: delivery.gps_accuracy,
+                    speed: delivery.current_speed,
+                    timestamp: delivery.last_gps_update
+                },
+                destination: {
+                    latitude: delivery.estimated_latitude,
+                    longitude: delivery.estimated_longitude,
+                    address: delivery.delivery_address
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Get current location error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch current location'
+        });
+    }
+});
+
 module.exports = router;
