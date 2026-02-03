@@ -576,3 +576,37 @@ function trackDelivery(orderID) {
 
     alert(`📍 DELIVERY TRACKING\n\nOrder #${orderID}\nStatus: ${delivery.status.toUpperCase()}\nRoute: ${delivery.route}\nEstimated Arrival: ${delivery.estimatedTime}\n\n🚗 GPS Location: Available in mobile app\n\nYou will receive SMS updates as your delivery progresses.`);
 }
+
+// =================== MODALS ===================
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'block';
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+    }
+}
+
+// =================== LOGOUT ===================
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('currentCart');
+        currentUser = null;
+        currentCart = [];
+        window.location.href = '../../index.html';
+    }
+}
