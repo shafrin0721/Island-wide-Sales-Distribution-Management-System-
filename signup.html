@@ -258,8 +258,8 @@
                     
                     <div class="form-group-full">
                         <label for="key">Unique Key (Optional)</label>
-                        <input type="text" id="key" placeholder="Leave empty for customer, or enter RDC/Delivery key">
-                        <small>Enter a unique key if you're registering as RDC or Delivery staff</small>
+                        <input type="text" id="key" placeholder="Leave empty for customer, or enter RDC/DELIVERY">
+                        <small>Leave empty = Customer | Contains "RDC" = RDC Staff | Contains "DELIVERY" = Delivery Staff</small>
                     </div>
                     
                     <div class="form-group-full">
@@ -318,14 +318,19 @@
             // Determine user role based on key
             let role = 'customer'; // default role
             
-            // Check if key matches RDC or Delivery keys (you can configure these)
+            // Check if key is provided - any key makes you RDC or Delivery
             if (key) {
-                if (key === 'RDC_KEY_2024' || key.toUpperCase().startsWith('RDC')) {
+                // Check if it's an RDC key (starts with RDC or contains RDC)
+                if (key.toUpperCase().includes('RDC')) {
                     role = 'rdc';
-                } else if (key === 'DELIVERY_KEY_2024' || key.toUpperCase().startsWith('DELIVERY')) {
+                } 
+                // Check if it's a Delivery key (starts with DELIVERY or contains DELIVERY)
+                else if (key.toUpperCase().includes('DELIVERY')) {
                     role = 'delivery';
-                } else {
-                    showMessage('Invalid key. Please check and try again.', 'error');
+                } 
+                // Any other non-empty key is invalid
+                else {
+                    showMessage('Invalid key. Use "RDC" for RDC staff or "DELIVERY" for delivery staff.', 'error');
                     return;
                 }
             }
