@@ -85,19 +85,24 @@
         // Add event listeners for navigation buttons as backup
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Products page fully loaded');
-            
-            // Setup nav button listeners
-            const navButtons = document.querySelectorAll('.nav-link');
-            navButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    console.log('Nav button clicked:', this.textContent);
-                });
-            });
-            
-            // Log auth state
-            console.log('Current user:', currentUser);
-            console.log('Current cart:', currentCart);
+            console.log('Window object available:', typeof window === 'object');
+            console.log('currentUser:', currentUser);
+            console.log('currentCart:', currentCart);
+            console.log('showProductDetails function:', typeof showProductDetails);
+            console.log('addToCart function:', typeof addToCart);
+            console.log('logout function:', typeof logout);
             console.log('Stored token:', localStorage.getItem('token') ? 'YES' : 'NO');
+            console.log('Stored user:', localStorage.getItem('user') ? 'YES' : 'NO');
+            
+            // Create a test button
+            const testBtn = document.createElement('button');
+            testBtn.textContent = 'TEST BUTTON';
+            testBtn.style.cssText = 'padding: 10px 20px; background: red; color: white; border: none; cursor: pointer; position: fixed; top: 100px; right: 10px; z-index: 9999;';
+            testBtn.onclick = function() {
+                alert('Test button works! onclick is functional.');
+                console.log('Test button clicked');
+            };
+            document.body.appendChild(testBtn);
         });
     </script>
 </body>
