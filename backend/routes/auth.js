@@ -279,7 +279,13 @@ router.post('/login', async (req, res) => {
         console.log('Found mock user:', mockUser.email);
 
         // Check password with bcrypt
+        console.log('Comparing password for user:', mockUser.email);
+        console.log('Password provided:', password.substring(0, 3) + '***');
+        console.log('Password hash exists:', !!mockUser.passwordHash);
+        
         const isPasswordValid = bcryptjs.compareSync(password, mockUser.passwordHash || '');
+        console.log('Password valid:', isPasswordValid);
+        
         if (!isPasswordValid) {
             console.log('Password mismatch for:', email);
             return res.status(401).json({
