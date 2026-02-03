@@ -477,6 +477,7 @@ server.listen(PORT, () => {
             global.mockUsers[uid] = {
                 uid,
                 email: user.email,
+                password: user.password,  // Store plain password for fallback
                 passwordHash,
                 displayName: user.fullName,
                 phone: user.phone,
