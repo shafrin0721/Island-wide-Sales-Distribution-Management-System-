@@ -258,8 +258,10 @@
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
             document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
-            document.getElementById(tab + '-tab').style.display = 'block';
-            event.target.classList.add('active');
+            const targetTab = document.getElementById(tab + '-tab');
+            if (targetTab) targetTab.style.display = 'block';
+            const btn = document.querySelector(`.btn-tab[onclick="switchTab('${tab}')"]`);
+            if (btn) btn.classList.add('active');
         }
 
         function setupNavigation() {
