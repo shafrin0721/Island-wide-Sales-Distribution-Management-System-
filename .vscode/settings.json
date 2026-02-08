@@ -13,5 +13,10 @@
         "**/*tsconfig.json": true,
         ".cache": true,
         "retool.config.json": true
+    },
+    "cSpell.enabled": false,
+    "html.validate.styles": false,
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     }
 }
