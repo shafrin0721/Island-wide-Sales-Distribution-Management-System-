@@ -1,5 +1,6 @@
 // =====================================================
 // SHARED DATA - GLOBAL DATA STORE
+// All products now use local Assets/ image paths
 // =====================================================
 
 if (typeof window.systemData !== 'undefined' && window.systemData) {
