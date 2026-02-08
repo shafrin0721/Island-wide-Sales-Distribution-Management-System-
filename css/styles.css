@@ -2310,3 +2310,22 @@ body.light-mode .table-wrapper {
     font-size: 16px;
     margin-top: 10px;
 }
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: #999;
+}
+
+.text-small {
+    font-size: 12px;
+}
+
+.text-small.muted {
+    font-size: 12px;
+    color: #666;
+}
+

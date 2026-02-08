@@ -32,7 +32,7 @@
         <div style="max-width: 900px; margin: 20px auto;">
             <!-- Filter -->
             <div style="margin-bottom: 20px;">
-                <select id="payment-filter" onchange="filterPayments()" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+                <select id="payment-filter" aria-label="Filter payments by status" onchange="filterPayments()" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
                     <option value="">All Payments</option>
                     <option value="pending">Pending Collection</option>
                     <option value="cash">Cash Received</option>
@@ -89,7 +89,7 @@
                 <div id="cash-fields" style="display: none;">
                     <div class="form-group">
                         <label>Amount Received (Rs):</label>
-                        <input type="number" id="cash-amount" step="0.01" placeholder="Enter amount">
+                        <input type="number" id="cash-amount" aria-label="Cash Amount Received" step="0.01" placeholder="Enter amount">
                     </div>
                 </div>
 
@@ -97,19 +97,19 @@
                 <div id="cheque-fields" style="display: none;">
                     <div class="form-group">
                         <label>Cheque Number:</label>
-                        <input type="text" id="cheque-number" placeholder="e.g., CHQ-123456">
+                        <input type="text" id="cheque-number" aria-label="Cheque Number" placeholder="e.g., CHQ-123456">
                     </div>
                     <div class="form-group">
                         <label>Cheque Date:</label>
-                        <input type="date" id="cheque-date">
+                        <input type="date" id="cheque-date" aria-label="Cheque Date">
                     </div>
                     <div class="form-group">
                         <label>Bank Name:</label>
-                        <input type="text" id="bank-name" placeholder="e.g., Bank of Ceylon">
+                        <input type="text" id="bank-name" aria-label="Bank Name" placeholder="e.g., Bank of Ceylon">
                     </div>
                     <div class="form-group">
                         <label>Cheque Amount (Rs):</label>
-                        <input type="number" id="cheque-amount" step="0.01" placeholder="Enter amount">
+                        <input type="number" id="cheque-amount" aria-label="Cheque Amount" step="0.01" placeholder="Enter amount">
                     </div>
                 </div>
 
@@ -117,11 +117,11 @@
                 <div id="digital-fields" style="display: none;">
                     <div class="form-group">
                         <label>Transaction ID:</label>
-                        <input type="text" id="transaction-id" placeholder="e.g., TXN-123456">
+                        <input type="text" id="transaction-id" aria-label="Transaction ID" placeholder="e.g., TXN-123456">
                     </div>
                     <div class="form-group">
                         <label>Amount Received (Rs):</label>
-                        <input type="number" id="digital-amount" step="0.01" placeholder="Enter amount">
+                        <input type="number" id="digital-amount" aria-label="Digital Amount Received" step="0.01" placeholder="Enter amount">
                     </div>
                 </div>
 

@@ -32,7 +32,7 @@
 
         <!-- Filter Controls -->
         <div class="filters" style="margin-bottom: 20px;">
-            <select id="status-filter" onchange="filterDeliveries()">
+            <select id="status-filter" aria-label="Filter deliveries by status" onchange="filterDeliveries()">
                 <option value="">All Statuses</option>
                 <option value="assigned">Assigned</option>
                 <option value="out for delivery">Out for Delivery</option>
@@ -71,11 +71,11 @@
             <form id="location-form" style="margin-top: 20px;">
                 <div class="form-group">
                     <label>Latitude:</label>
-                    <input type="number" id="location-lat" step="0.0001" placeholder="e.g., 6.9271" required>
+                    <input type="number" id="location-lat" aria-label="Latitude" step="0.0001" placeholder="e.g., 6.9271" required>
                 </div>
                 <div class="form-group">
                     <label>Longitude:</label>
-                    <input type="number" id="location-lon" step="0.0001" placeholder="e.g., 80.6369" required>
+                    <input type="number" id="location-lon" aria-label="Longitude" step="0.0001" placeholder="e.g., 80.6369" required>
                 </div>
                 <button type="button" class="btn btn-primary" onclick="getCurrentLocation()">Use Current Location</button>
                 <button type="submit" class="btn btn-success" style="margin-top: 10px;">Update Location</button>
@@ -91,11 +91,11 @@
             <form id="complete-form" style="margin-top: 20px;">
                 <div class="form-group">
                     <label>Recipient Name:</label>
-                    <input type="text" id="recipient-name" placeholder="Name of person who received" required>
+                    <input type="text" id="recipient-name" aria-label="Recipient Name" placeholder="Name of person who received" required>
                 </div>
                 <div class="form-group">
                     <label>Signature (optional):</label>
-                    <input type="text" id="recipient-signature" placeholder="Signature data">
+                    <input type="text" id="recipient-signature" aria-label="Signature" placeholder="Signature data">
                 </div>
                 <div class="form-group">
                     <label>Notes:</label>

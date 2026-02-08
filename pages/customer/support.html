@@ -47,7 +47,7 @@
                     <form id="support-form" style="padding: 20px;">
                         <div class="form-group">
                             <label>Request Type:</label>
-                            <select id="request-type" required>
+                            <select id="request-type" aria-label="Request Type" required>
                                 <option value="">Select type</option>
                                 <option value="complaint">Complaint</option>
                                 <option value="product">Product Issue</option>
@@ -60,12 +60,12 @@
 
                         <div class="form-group">
                             <label>Order ID (if applicable):</label>
-                            <input type="text" id="order-id" placeholder="ORD-xxx">
+                            <input type="text" id="order-id" aria-label="Order ID" placeholder="ORD-xxx">
                         </div>
 
                         <div class="form-group">
                             <label>Subject:</label>
-                            <input type="text" id="subject" placeholder="Brief subject" required>
+                            <input type="text" id="subject" aria-label="Subject" placeholder="Brief subject" required>
                         </div>
 
                         <div class="form-group">
@@ -75,7 +75,7 @@
 
                         <div class="form-group">
                             <label>Priority:</label>
-                            <select id="priority">
+                            <select id="priority" aria-label="Priority Level">
                                 <option value="low">Low</option>
                                 <option value="medium" selected>Medium</option>
                                 <option value="high">High</option>
