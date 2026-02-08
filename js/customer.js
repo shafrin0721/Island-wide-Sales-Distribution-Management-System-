@@ -747,6 +747,12 @@ async function submitCheckout(e) {
         currentUser.userID = currentUser.userID || 1;
     }
 
+    // Ensure systemData has all required arrays
+    if (!systemData.payments) systemData.payments = [];
+    if (!systemData.deliveries) systemData.deliveries = [];
+    if (!systemData.inventory) systemData.inventory = [];
+    if (!systemData.orders) systemData.orders = [];
+
     const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'card';
 
     const orderID = 1000 + systemData.orders.length + 1;
