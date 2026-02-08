@@ -292,20 +292,28 @@ APP/
 
 ## Security Features
 
-- Client-side authentication
-- Session expiry (30 minutes)
-- Password validation
-- XSS protection via innerHTML sanitization
-- CSRF considerations (client-side only)
-- Data encryption: None (client-side storage)
+- **Client-side authentication**: Via Firebase Auth
+- **Role-based access control**: Admin, Manager, RDC Staff, Delivery, Customer
+- **Hidden Credentials**: API keys & secrets stored in environment variables (not in code)
+- **Firebase Security Rules**: Restrict data access by user role
+- **Session expiry**: 30 minutes (configurable)
+- **Password validation**: Strong password requirements
+- **XSS protection**: Via innerHTML sanitization
+- **HTTPS encryption**: Firebase Hosting enforces SSL/TLS
+- **Credential Masking**: Sensitive data hidden in UI (show only last 4 digits for cards)
+- **Admin-Only Access**: Credentials, API keys, payment details visible only to authorized admins
+- **Audit Logging**: Track all sensitive data access by user
+- **Data encryption**: Firebase Realtime Database encrypted at rest
 
-⚠️ **Note**: This is a demo system. Production deployment requires:
+⚠️ **Credential Management Best Practices:**
 
-- Server-side authentication
-- HTTPS encryption
-- Database backend
-- API security measures
-- Data backup strategy
+- Store API keys in Firebase Cloud Functions environment variables
+- Never commit credentials to Git repository
+- Use `.env` files locally (add to `.gitignore`)
+- Rotate API keys regularly
+- Use Firebase IAM for service account access
+- Enable Google Cloud Secret Manager for production
+- Monitor access to sensitive endpoints
 
 ## Getting Started
 
@@ -468,11 +476,14 @@ firebase deploy
 
 ### 2. ✅ Real GPS Tracking & Device Integration
 
-- **GPS Device Integration:** Live tracking from Garmin, TomTom, Apple Maps, Google Maps
-- **Real-Time Location Updates:** Firebase synced coordinates every 30 seconds
+- **High-Accuracy GPS Tracking:** ±5-10 meter accuracy using GPS/GNSS devices
+- **Real-Time Location Updates:** Firebase synced coordinates every 10 seconds (configurable)
+- **Live Map Display:** Google Maps/TomTom API with real-time marker updates
 - **Route Optimization:** Haversine distance calculation for delivery efficiency
 - **Geofencing Alerts:** Automatic notifications on delivery zone entry/exit
-- **Location History:** Complete tracking audit trail for all deliveries
+- **Location History:** Complete tracking audit trail with timestamp for all deliveries
+- **Altitude & Speed:** Track elevation and vehicle speed in real-time
+- **GPS Accuracy Metrics:** Display confidence radius and accuracy levels
 
 ### 3. ✅ Promotion Management
 
@@ -485,6 +496,16 @@ firebase deploy
 - **Auto-Calculate:** Business day calculation on order creation
 - **Smart Logic:** Excludes weekends, configurable timing
 - **Customer Experience:** Show delivery date at checkout
+
+### 4.5. ✅ Real-Time Inventory Sync Across Departments
+
+- **Department-Wide Stock Updates:** All departments see inventory changes instantly
+- **Firebase Realtime Sync:** No delays between departments
+- **Automatic Stock Deduction:** Stock decreases on order creation
+- **Stock Alerts:** Low stock notifications to admin & RDC managers
+- **Department-Specific Views:** Each department sees only relevant inventory
+- **Warehouse Transfers:** Update stock when items move between departments
+- **Multi-Location Support:** Track stock across multiple RDC locations
 
 ### 5. ✅ Real Payment Gateway Integration
 
@@ -506,11 +527,11 @@ firebase deploy
 
 ## 📚 DOCUMENTATION
 
-| Document                          | Purpose                | Read Time |
-| --------------------------------- | ---------------------- | --------- |
-| `ACCESS_GUIDE.md`                 | System access guide    | 5 min     |
-| `API_ENDPOINTS_REFERENCE.md`      | Endpoint documentation | 10 min    |
-| `DELIVERY_API_FIXED.md`           | Delivery API guide     | 5 min     |
+| Document                     | Purpose                | Read Time |
+| ---------------------------- | ---------------------- | --------- |
+| `ACCESS_GUIDE.md`            | System access guide    | 5 min     |
+| `API_ENDPOINTS_REFERENCE.md` | Endpoint documentation | 10 min    |
+| `DELIVERY_API_FIXED.md`      | Delivery API guide     | 5 min     |
 
 ---
 
@@ -560,11 +581,12 @@ const firebaseConfig = {
 const stripeConfig = {
   publishableKey: "pk_live_your_publishable_key",
   secretKey: "sk_live_your_secret_key",
-  webhookSecret: "whsec_your_webhook_secret"
+  webhookSecret: "whsec_your_webhook_secret",
 };
 ```
 
 **Features:**
+
 - Process credit/debit card payments
 - Handle refunds and disputes
 - Webhook notifications for payment events
@@ -576,11 +598,12 @@ const stripeConfig = {
 const paypalConfig = {
   clientId: "your_paypal_client_id",
   secret: "your_paypal_secret",
-  mode: "live" // or "sandbox"
+  mode: "live", // or "sandbox"
 };
 ```
 
 **Features:**
+
 - PayPal wallet payments
 - Express checkout integration
 - Transaction verification
@@ -590,27 +613,46 @@ const paypalConfig = {
 
 ## 📍 GPS DEVICE INTEGRATION
 
+### GPS Accuracy Standards
+
+| Metric              | Requirement      | Notes                         |
+| ------------------- | ---------------- | ----------------------------- |
+| Horizontal Accuracy | ±5-10 meters     | Standard GPS/GNSS accuracy    |
+| Vertical Accuracy   | ±10-20 meters    | Altitude tracking             |
+| Update Frequency    | Every 10 seconds | Configurable via settings     |
+| Latency             | < 2 seconds      | Firebase sync latency         |
+| Availability        | 99.5%            | Device must have signal       |
+| Supported Devices   | 4+ GPS services  | Garmin, TomTom, Google, Apple |
+
 ### Supported GPS Devices & Services
 
 **Garmin Connect API:**
+
 - Real-time location from Garmin devices
 - Activity tracking integration
 - Health metrics sync
+- Accuracy: ±5 meters
 
 **TomTom API:**
+
 - Route optimization
 - Traffic-aware routing
 - Geofencing support
+- Accuracy: ±10 meters
 
 **Google Maps API:**
+
 - Real-time tracking display
 - Direction calculation
 - Distance matrix
+- Accuracy: ±5-10 meters
 
 **Apple Maps API:**
+
 - iOS device tracking
 - Native navigation integration
 - Offline maps support
+- Accuracy: ±10 meters
 
 ### Configuration Example
 
@@ -618,24 +660,30 @@ const paypalConfig = {
 const gpsConfig = {
   garmin: {
     apiKey: "your_garmin_api_key",
-    refreshInterval: 30000 // 30 seconds
+    refreshInterval: 10000, // 10 seconds for accuracy
+    accuracyThreshold: 10, // meters
   },
   tomtom: {
     apiKey: "your_tomtom_api_key",
-    routeOptimization: true
+    routeOptimization: true,
+    refreshInterval: 10000,
   },
   googleMaps: {
     apiKey: "your_google_maps_api_key",
-    trackingEnabled: true
-  }
+    trackingEnabled: true,
+    refreshInterval: 10000,
+  },
 };
 ```
 
 **Real-Time Tracking Features:**
-- Live delivery location on map
-- ETA calculation
-- Route deviation alerts
+
+- Live delivery location on map with accuracy radius
+- Real-time ETA calculation
+- Route deviation alerts (if > 50 meters off route)
 - Geofence entry/exit notifications
+- Speed monitoring (alerts for excessive speed)
+- Altitude tracking for mountain deliveries
 
 ---
 
@@ -649,30 +697,77 @@ firebase-project/
 │   └── {userId}
 │       ├── name
 │       ├── email
-│       ├── role
-│       └── profile
+│       ├── role (admin, manager, rdc_staff, delivery, customer)
+│       ├── department
+│       └── permissions
 ├── orders/
 │   └── {orderId}
 │       ├── customerId
 │       ├── items
 │       ├── total
 │       └── status
+├── inventory/
+│   └── {departmentId}
+│       └── {productId}
+│           ├── quantity
+│           ├── location
+│           ├── lastUpdated
+│           └── reorderLevel
 ├── products/
 │   └── {productId}
 │       ├── name
 │       ├── price
 │       ├── category
-│       └── stock
+│       └── totalStock
 ├── deliveries/
 │   └── {deliveryId}
 │       ├── orderId
-│       ├── location
-│       └── status
+│       ├── location (lat, lng, accuracy)
+│       ├── timestamp
+│       ├── status
+│       └── locationHistory
 └── promotions/
     └── {promoId}
         ├── code
         ├── discount
         └── expiry
+```
+
+### Real-Time Inventory Sync
+
+```
+// Inventory updates trigger Firebase listeners
+inventory/{departmentId}/{productId}/quantity changes →
+  All subscribed departments notified immediately
+  UI updates automatically without page refresh
+```
+
+### Firebase Security Rules (Role-Based Access)
+
+```json
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin'",
+        ".write": "auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin'"
+      }
+    },
+    "inventory": {
+      "$departmentId": {
+        ".read": "root.child('users').child(auth.uid).child('department').val() === $departmentId || root.child('users').child(auth.uid).child('role').val() === 'admin'",
+        ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'manager'"
+      }
+    },
+    "deliveries": {
+      "$deliveryId": {
+        "location": {
+          ".read": "root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('deliveries').child($deliveryId).child('staffId').val() === auth.uid"
+        }
+      }
+    }
+  }
+}
 ```
 
 ### Firebase Cloud Functions
@@ -681,6 +776,103 @@ firebase-project/
 - `sendDeliveryNotification` - Delivery status updates
 - `sendInvoicePDF` - Generate and send invoice
 - `sendPromotionAlert` - Promotional notifications
+
+---
+
+## 🔐 CREDENTIAL MANAGEMENT & ACCESS CONTROL
+
+### Hidden Credentials (Environment Variables Only)
+
+Never store credentials in code. Use environment variables:
+
+**Backend Environment Variables (`backend/.env`):**
+
+```env
+# Firebase Admin SDK
+FIREBASE_PRIVATE_KEY=your_private_key
+FIREBASE_CLIENT_EMAIL=your_client_email
+FIREBASE_PROJECT_ID=your_project_id
+
+# Payment Gateways (Hidden from frontend)
+STRIPE_SECRET_KEY=sk_live_secret_key
+PAYPAL_SECRET=paypal_secret_key
+
+# GPS APIs
+GARMIN_API_KEY=garmin_api_key
+TOMTOM_API_KEY=tomtom_api_key
+
+# Email Service
+SENDGRID_API_KEY=sendgrid_api_key
+
+# SMS Notifications
+TWILIO_AUTH_TOKEN=twilio_auth_token
+```
+
+**Frontend Environment Variables (Public Only):**
+
+```env
+REACT_APP_FIREBASE_API_KEY=public_api_key_only
+REACT_APP_STRIPE_PUBLIC_KEY=pk_live_public_key
+REACT_APP_GOOGLE_MAPS_KEY=public_google_maps_key
+```
+
+### Role-Based Access Control
+
+| Role          | Access Level      | Can View                                      |
+| ------------- | ----------------- | --------------------------------------------- |
+| **Admin**     | Full Access       | All credentials, payments, GPS, all inventory |
+| **Manager**   | Department Access | Department inventory, staff, local GPS data   |
+| **RDC Staff** | Inventory Only    | Own department stock, basic order info        |
+| **Delivery**  | Delivery Only     | Only own delivery GPS and order details       |
+| **Customer**  | Order Only        | Only own orders and delivery status           |
+
+### Implementing Access Control in Firebase
+
+```javascript
+// Only show credentials to admins
+const canViewCredentials = async (userId) => {
+  const userDoc = await admin.firestore().collection("users").doc(userId).get();
+  return userDoc.data().role === "admin";
+};
+
+// Hide payment information
+const maskPaymentInfo = (cardNumber) => {
+  return "**** **** **** " + cardNumber.slice(-4);
+};
+
+// GPS location only visible to assigned delivery staff & admin
+const canViewLocation = (userId, deliveryId) => {
+  const userRole = currentUser.role;
+  const assignedStaff = deliveryData.staffId;
+  return userRole === "admin" || userId === assignedStaff;
+};
+
+// Inventory visible only to authorized departments
+const getInventoryByDepartment = (userId) => {
+  const userDept = currentUser.department;
+  return inventory.filter(
+    (item) => item.department === userDept || currentUser.role === "admin",
+  );
+};
+```
+
+### Audit Logging for Sensitive Access
+
+```javascript
+// Log all credential access
+const logCredentialAccess = (userId, resource, action) => {
+  admin.database().ref("auditLogs").push({
+    userId,
+    resource,
+    action,
+    timestamp: admin.database.ServerValue.TIMESTAMP,
+    ipAddress: request.ip,
+  });
+};
+
+// Example: Log when payment details are viewed
+logCredentialAccess(currentUser.id, "payment_details", "view");
+```
 
 ---
 
