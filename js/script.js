@@ -2,8 +2,19 @@
 // RDC SYSTEM - JAVASCRIPT APPLICATION
 // =====================================================
 
+// CSP-safe placeholder image generator (data: URI with SVG)
+function getSafePlaceholder(width = 200, height = 200, text = 'Image') {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">` +
+        `<rect width="${width}" height="${height}" fill="#e0e0e0"/>` +
+        `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="14" fill="#999">` +
+        `${String(text).substring(0, 20)}` +
+        `</text></svg>`;
+    return 'data:image/svg+xml;base64,' + btoa(svg);
+}
+
 // ================== DATA STORAGE ==================
-const systemData = {
+// Use existing global `window.systemData` if provided (e.g., from js/data.js)
+const systemData = window.systemData || {
     users: [
         { userID: 1, name: 'John Customer', email: 'customer@email.com', password: 'pass123', role: 'customer' },
         { userID: 2, name: 'Admin User', email: 'admin@email.com', password: 'admin123', role: 'admin' },
@@ -48,6 +59,8 @@ const systemData = {
         { paymentID: 2, orderID: 1002, amount: 165, method: 'card', paymentDate: '2024-01-12', status: 'completed' }
     ]
 };
+// ensure the global reference points to the chosen systemData
+window.systemData = systemData;
 
 let currentUser = null;
 let currentCart = [];
@@ -202,12 +215,15 @@ function loadProducts() {
 
         const card = document.createElement('div');
         card.className = 'product-card';
+        const imgSrc = (product.image && typeof product.image === 'string') ? product.image : getSafePlaceholder(300, 200, product.name || 'Product');
         card.innerHTML = `
-            <div class="product-image">${product.emoji}</div>
+            <div class="product-image">
+                <img src="${imgSrc}" alt="${product.name}" loading="lazy" style="width:100%;height:200px;object-fit:cover;border-radius:6px;">
+            </div>
             <div class="product-info">
                 <div class="product-name">${product.name}</div>
                 <div class="product-category">${product.category}</div>
-                <div class="product-price">$${product.price.toFixed(2)}</div>
+                <div class="product-price">$${(parseFloat(product.price)||0).toFixed(2)}</div>
                 <div class="product-availability ${inStock ? 'in-stock' : 'out-stock'}">
                     ${inStock ? `✓ In Stock (${inventory.stockLevel} available)` : '✗ Out of Stock'}
                 </div>
@@ -220,6 +236,12 @@ function loadProducts() {
             </div>
         `;
         grid.appendChild(card);
+        const cardImg = card.querySelector('.product-image img');
+        if (cardImg) {
+            cardImg.addEventListener('error', function() {
+                this.src = getSafePlaceholder(300, 200, product.name || 'Image');
+            });
+        }
     });
 }
 
@@ -231,13 +253,14 @@ function showProductDetails(productID) {
     const modal = document.getElementById('product-modal');
     const detailsDiv = document.getElementById('product-details');
 
+    const detailsImg = (product.image && typeof product.image === 'string') ? product.image : getSafePlaceholder(400, 300, product.name || 'Product');
     detailsDiv.innerHTML = `
         <div class="product-details-container">
-            <div class="product-details-image">${product.emoji}</div>
+            <div class="product-details-image"><img src="${detailsImg}" alt="${product.name}" loading="lazy" style="width:100%;height:300px;object-fit:cover;border-radius:8px;"></div>
             <div class="product-details-info">
                 <h2>${product.name}</h2>
                 <div class="product-details-category">${product.category}</div>
-                <div class="product-details-price">$${product.price.toFixed(2)}</div>
+                <div class="product-details-price">$${(parseFloat(product.price)||0).toFixed(2)}</div>
                 <div class="product-details-availability ${inStock ? 'in-stock' : 'out-stock'}">
                     ${inStock ? `✓ In Stock (${inventory.stockLevel} available)` : '✗ Out of Stock'}
                 </div>
@@ -846,21 +869,22 @@ function editProduct(productID) {
     alert('Product editing feature coming soon');
 }
 
-function deleteProduct(productID) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        const index = systemData.products.findIndex(p => p.productID === productID);
-        if (index > -1) {
-            systemData.products.splice(index, 1);
-            updateProductsTable();
-            alert('Product deleted successfully');
-        }
-    }
-}
-
-document.getElementById('add-product-btn')?.addEventListener('click', function() {
-    alert('Add product feature coming soon');
-});
-
+        const inventory = getInventoryForProduct(product.productID) || {};
+        const inStock = inventory.stockLevel > 0;
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        const imgSrc = (product.image && typeof product.image === 'string') ? product.image : getSafePlaceholder(200, 160, product.name || 'Product');
+        card.innerHTML = `
+            <div class="product-card-image"><img src="${imgSrc}" alt="${product.name}" loading="lazy" onerror="this.onerror=null;this.src=getSafePlaceholder(200,160,'${product.name.replace(/'/g, "\'")}')"></div>
+            <div class="product-card-body">
+                <h3>${product.name}</h3>
+                <div class="product-card-price">$${(parseFloat(product.price)||0).toFixed(2)}</div>
+                <div class="product-card-actions">
+                    <button class="btn btn-small" onclick="showProductDetails(${product.productID})">Details</button>
+                    <button class="btn btn-primary" onclick="addToCart(${product.productID})" ${!inStock ? 'disabled' : ''}>Add</button>
+                </div>
+            </div>
+        `;
 document.getElementById('generate-report-btn')?.addEventListener('click', function() {
     const reportType = document.getElementById('report-type').value;
     const startDate = document.getElementById('report-start-date').value;

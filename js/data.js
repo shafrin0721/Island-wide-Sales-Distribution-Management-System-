@@ -2,7 +2,10 @@
 // SHARED DATA - GLOBAL DATA STORE
 // =====================================================
 
-const systemData = {
+if (typeof window.systemData !== 'undefined' && window.systemData) {
+    var systemData = window.systemData;
+} else {
+    var systemData = window.systemData = {
     users: [
         { userID: 1, name: 'John Customer', email: 'customer@email.com', password: 'pass123', role: 'customer', phone: '+94 77 111 2222', address: 'No. 12, Customer Road, Colombo' },
         { userID: 2, name: 'Admin User', email: 'admin@email.com', password: 'admin123', role: 'admin', phone: '+94 77 000 0000' },
@@ -54,7 +57,7 @@ const systemData = {
         { productID: 31, name: 'Wireless Headphones - Pro', brand: 'Baseus', price: 79.99, retailPrice: 129.99, wholesalePrice: 60.00, quantity: 85, category: 'Electronics', subcategory: 'Audio', description: 'Premium wireless headphones. Noise cancellation. 30-hour battery.', image: 'Assets/Wireless Headphones - Pro.webp', rating: 4.8, reviews: 2341, sku: 'AUDIO-WIFI-PRO', supplier: 'AudioMax', packaging: 'Box with accessories', expiryDate: '2027-12-31', minOrder: 5, discount: 38 },
         { productID: 32, name: 'USB-C Charger - 65W', brand: 'PowerHub', price: 24.99, retailPrice: 39.99, wholesalePrice: 18.00, quantity: 250, category: 'Electronics', subcategory: 'Chargers', description: 'Fast charging 65W USB-C charger. Multi-device compatible.', image: 'Assets/USB-C Charger - 65W.avif', rating: 4.6, reviews: 1876, sku: 'CHARGE-USB-65W', supplier: 'PowerHub', packaging: 'Retail box', expiryDate: '2027-06-30', minOrder: 12, discount: 37 },
         { productID: 33, name: 'Smart Watch - Fitness', brand: 'FitTech', price: 149.99, retailPrice: 249.99, wholesalePrice: 110.00, quantity: 45, category: 'Electronics', subcategory: 'Wearables', description: 'Advanced fitness smartwatch. Heart rate monitor. 7-day battery.', image: 'Assets/Smart Watch - Fitness.jpg', rating: 4.7, reviews: 1543, sku: 'WATCH-FIT-PRO', supplier: 'FitTech', packaging: 'Original packaging', expiryDate: '2027-12-31', minOrder: 3, discount: 40 },
-        { productID: 34, name: 'Portable Speaker - Bluetooth', brand: 'Sonyt', price: 39.99, retailPrice: 69.99, wholesalePrice: 28.00, quantity: 120, category: 'Electronics', subcategory: 'Audio', description: 'Portable Bluetooth speaker. Waterproof. 12-hour battery.', image: 'Assets/Portable Speaker - Bluetooth.webp', rating: 4.6, reviews: 1234, sku: 'SPEAK-SOUND-BT', supplier: 'SoundBlast', packaging: 'Retail box', expiryDate: '2027-08-31', minOrder: 8, discount: 42 },
+        { productID: 34, name: 'Portable Speaker - Bluetooth', brand: 'Sony', price: 39.99, retailPrice: 69.99, wholesalePrice: 28.00, quantity: 120, category: 'Electronics', subcategory: 'Audio', description: 'Portable Bluetooth speaker. Waterproof. 12-hour battery.', image: 'Assets/Portable Speaker - Bluetooth.webp', rating: 4.6, reviews: 1234, sku: 'SPEAK-SOUND-BT', supplier: 'SoundBlast', packaging: 'Retail box', expiryDate: '2027-08-31', minOrder: 8, discount: 42 },
         { productID: 35, name: 'Power Bank - 20000mAh', brand: 'Aspor', price: 29.99, retailPrice: 49.99, wholesalePrice: 21.00, quantity: 180, category: 'Electronics', subcategory: 'Power Banks', description: 'High-capacity power bank. Fast charging. Dual USB ports.', image: 'Assets/Power Bank - 20000mAh.jpg', rating: 4.5, reviews: 1987, sku: 'BANK-CHARGE-20K', supplier: 'ChargePro', packaging: 'Original box', expiryDate: '2027-12-31', minOrder: 6, discount: 40 },
         { productID: 36, name: 'LED Desk Lamp - USB', brand: 'Ott Lite', price: 19.99, retailPrice: 34.99, wholesalePrice: 14.00, quantity: 200, category: 'Electronics', subcategory: 'Lighting', description: 'USB-powered LED desk lamp. Adjustable brightness. Eye-caring.', image: 'Assets/CSN30G5W_1LED Desk Lamp - USB.webp', rating: 4.4, reviews: 876, sku: 'LAMP-BRIGHT-USB', supplier: 'BrightDesk', packaging: 'Retail box', expiryDate: '2027-09-30', minOrder: 10, discount: 42 },
 
@@ -171,3 +174,4 @@ const systemData = {
         }
     ]
 };
+}
