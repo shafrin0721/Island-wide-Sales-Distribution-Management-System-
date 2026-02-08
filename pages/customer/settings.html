@@ -270,7 +270,7 @@
                         <p>Choose when you prefer deliveries</p>
                     </div>
                     <div class="setting-control">
-                        <select id="delivery-time-pref">
+                        <select id="delivery-time-pref" aria-label="Delivery time preference">
                             <option value="morning">Morning (6 AM - 12 PM)</option>
                             <option value="afternoon" selected>Afternoon (12 PM - 6 PM)</option>
                             <option value="evening">Evening (6 PM - 10 PM)</option>
@@ -315,7 +315,7 @@
                         <p>Choose your preferred payment method</p>
                     </div>
                     <div class="setting-control">
-                        <select id="default-payment" onchange="savePaymentMethod()">
+                        <select id="default-payment" aria-label="Default payment method" onchange="savePaymentMethod()">
                             <option value="credit-card">Credit Card</option>
                             <option value="debit-card">Debit Card</option>
                             <option value="bank-transfer">Bank Transfer</option>
@@ -347,7 +347,7 @@
                         <p>Choose your preferred language</p>
                     </div>
                     <div class="setting-control">
-                        <select id="language-pref" onchange="saveLanguagePreference()">
+                        <select id="language-pref" aria-label="Language preference" onchange="saveLanguagePreference()">
                             <option value="english" selected>English</option>
                             <option value="spanish">Spanish</option>
                             <option value="french">French</option>
@@ -362,7 +362,7 @@
                         <p>Display prices in</p>
                     </div>
                     <div class="setting-control">
-                        <select id="currency-pref" onchange="saveCurrencyPreference()">
+                        <select id="currency-pref" aria-label="Currency preference" onchange="saveCurrencyPreference()">
                             <option value="usd" selected>USD ($)</option>
                             <option value="eur">EUR (€)</option>
                             <option value="gbp">GBP (£)</option>
