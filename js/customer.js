@@ -29,6 +29,25 @@ if (document.addEventListener) {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOMContentLoaded fired, initializing page content');
     
+    // Clear any cached systemData from localStorage that might have old Unsplash URLs
+    // This ensures we use the fresh data from js/data.js instead
+    const cachedData = localStorage.getItem('systemData');
+    if (cachedData) {
+        try {
+            const parsed = JSON.parse(cachedData);
+            // Check if this data has Unsplash URLs (old cached version)
+            const hasUnsplash = parsed.products && parsed.products.some(p => 
+                p.image && typeof p.image === 'string' && p.image.includes('unsplash')
+            );
+            if (hasUnsplash) {
+                console.warn('🔄 Clearing cached systemData with Unsplash URLs - using fresh data.js instead');
+                localStorage.removeItem('systemData');
+            }
+        } catch (e) {
+            console.log('Could not parse cached systemData');
+        }
+    }
+    
     // Fix any invalid delivery coordinates (ensure Sri Lanka only)
     if (systemData && systemData.deliveries) {
         systemData.deliveries.forEach(delivery => {
