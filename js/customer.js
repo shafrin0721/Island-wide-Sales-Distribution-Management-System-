@@ -779,13 +779,13 @@ async function submitCheckout(e) {
         estimatedTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleString(),
         assignedStaff: null,
         gpsLocation: { 
-            latitude: 40.7128 + Math.random() * 0.1, 
-            longitude: -74.0060 + Math.random() * 0.1, 
+            latitude: 6.9271,
+            longitude: 80.6369,
             address: `${newOrder.shippingInfo.address}, ${newOrder.shippingInfo.city}` 
         },
         currentLocation: { 
-            latitude: 40.7128 + Math.random() * 0.1, 
-            longitude: -74.0060 + Math.random() * 0.1 
+            latitude: 6.9271,
+            longitude: 80.6369
         },
         smsUpdates: [
             { timestamp: new Date().toLocaleString(), message: 'Order confirmed and prepared for delivery.' }
