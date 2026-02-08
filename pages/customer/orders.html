@@ -1,67 +1,68 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RDC - My Orders</title>
-    <link rel="stylesheet" href="../../css/styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../../css/styles.css" />
+  </head>
+  <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <span class="logo-text">RDC System</span>
-                <span id="current-user"></span>
-            </div>
-            <div class="nav-menu">
-                <button class="nav-link" data-nav="products">Products</button>
-                <button class="nav-link active" data-nav="orders">My Orders</button>
-                <button class="nav-link" data-nav="cart">Cart<span id="cart-badge" class="badge">0</span></button>
-                <button class="nav-link" data-nav="profile">Profile</button>
-                <button class="nav-link" data-nav="settings">Settings</button>
-                <button class="nav-link logout" data-nav="logout">Logout</button>
-            </div>
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span class="logo-text">RDC System</span>
+          <span id="current-user"></span>
         </div>
+        <div class="nav-menu">
+          <button class="nav-link" data-nav="products">Products</button>
+          <button class="nav-link active" data-nav="orders">My Orders</button>
+          <button class="nav-link" data-nav="cart">
+            Cart<span id="cart-badge" class="badge">0</span>
+          </button>
+          <button class="nav-link" data-nav="profile">Profile</button>
+          <button class="nav-link" data-nav="settings">Settings</button>
+          <button class="nav-link logout" data-nav="logout">Logout</button>
+        </div>
+      </div>
     </nav>
 
     <!-- Main Content -->
     <div class="page-content">
-        <div class="page-header">
-            <h2>My Orders</h2>
-            <p>Track and manage your orders</p>
-        </div>
+      <div class="page-header">
+        <h2>My Orders</h2>
+        <p>Track and manage your orders</p>
+      </div>
 
-        <div id="orders-list" class="orders-list">
-            <!-- Orders will be populated here -->
-        </div>
+      <div id="orders-list" class="orders-list">
+        <!-- Orders will be populated here -->
+      </div>
     </div>
 
     <!-- Order Details Modal -->
     <div id="order-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Order Details</h2>
-            <div id="order-details">
-                <!-- Order details will be populated here -->
-            </div>
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Order Details</h2>
+        <div id="order-details">
+          <!-- Order details will be populated here -->
         </div>
+      </div>
     </div>
 
     <!-- Tracking Modal -->
     <div id="tracking-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" data-close-modal="tracking-modal">&times;</span>
-            <h2>📍 Delivery Tracking</h2>
-            <div id="tracking-content">
-                <!-- Tracking info will be populated here -->
-            </div>
+      <div class="modal-content">
+        <span class="close" data-close-modal="tracking-modal">&times;</span>
+        <h2>📍 Delivery Tracking</h2>
+        <div id="tracking-content">
+          <!-- Tracking info will be populated here -->
         </div>
+      </div>
     </div>
 
-    <script src="../../js/data.js?v=20260209-002"></script>
+    <script src="../../js/data.js?v=20260209-005"></script>
     <script src="../../js/auth.js?v=20260209-002"></script>
-    <script src="../../js/customer.js?v=20260209-003"></script>
-
-</body>
+    <script src="../../js/customer.js?v=20260209-004"></script>
+  </body>
 </html>

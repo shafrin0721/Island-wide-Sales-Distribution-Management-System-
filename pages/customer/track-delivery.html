@@ -1,501 +1,552 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Track Delivery - ISDN System</title>
-    <link rel="stylesheet" href="../../css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../../css/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+    />
+  </head>
+  <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <span class="logo-text">ISDN - Track Delivery</span>
-                <span id="current-user"></span>
-            </div>
-            <div class="nav-menu">
-                <button class="nav-link" data-nav="products">Products</button>
-                <button class="nav-link" data-nav="orders">My Orders</button>
-                <button class="nav-link active" data-nav="track">Track Delivery</button>
-                <button class="nav-link" data-nav="cart">Cart</button>
-                <button class="nav-link" data-nav="profile">Profile</button>
-                <button class="nav-link logout" data-nav="logout">Logout</button>
-            </div>
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span class="logo-text">ISDN - Track Delivery</span>
+          <span id="current-user"></span>
         </div>
+        <div class="nav-menu">
+          <button class="nav-link" data-nav="products">Products</button>
+          <button class="nav-link" data-nav="orders">My Orders</button>
+          <button class="nav-link active" data-nav="track">
+            Track Delivery
+          </button>
+          <button class="nav-link" data-nav="cart">Cart</button>
+          <button class="nav-link" data-nav="profile">Profile</button>
+          <button class="nav-link logout" data-nav="logout">Logout</button>
+        </div>
+      </div>
     </nav>
 
     <!-- Main Content -->
     <div class="page-content">
-        <div class="page-header">
-            <h2>📍 Track Your Delivery</h2>
-            <p>Real-time tracking for your orders</p>
-        </div>
+      <div class="page-header">
+        <h2>📍 Track Your Delivery</h2>
+        <p>Real-time tracking for your orders</p>
+      </div>
 
-        <!-- Search Order -->
-        <div class="card" style="max-width: 500px; margin: 20px auto;">
-            <div class="card-header">
-                <h3>Find Your Order</h3>
-            </div>
-            <form id="search-form" style="padding: 20px;">
-                <div class="form-group">
-                    <label>Order ID:</label>
-                    <input type="text" id="order-search" aria-label="Order ID" placeholder="Enter your order ID (e.g., ORD-001)" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Search Order</button>
-            </form>
+      <!-- Search Order -->
+      <div class="card max-width-500 margin-auto">
+        <div class="card-header">
+          <h3>Find Your Order</h3>
         </div>
+        <form id="search-form" class="padding-20">
+          <div class="form-group">
+            <label>Order ID:</label>
+            <input
+              type="text"
+              id="order-search"
+              aria-label="Order ID"
+              placeholder="Enter your order ID (e.g., ORD-001)"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary width-100">
+            Search Order
+          </button>
+        </form>
+      </div>
 
-        <!-- Order Details -->
-        <div class="card" id="order-details" style="max-width: 800px; margin: 20px auto; display: none;">
-            <div class="card-header">
-                <h3 id="order-title">Order Details</h3>
-            </div>
-            <div style="padding: 20px;">
-                <div class="order-info">
-                    <div class="info-row">
-                        <label>Order ID:</label>
-                        <span id="detail-order-id"></span>
-                    </div>
-                    <div class="info-row">
-                        <label>Order Date:</label>
-                        <span id="detail-order-date"></span>
-                    </div>
-                    <div class="info-row">
-                        <label>Status:</label>
-                        <span id="detail-status"></span>
-                    </div>
-                    <div class="info-row">
-                        <label>Total Amount:</label>
-                        <span id="detail-amount"></span>
-                    </div>
-                </div>
-            </div>
+      <!-- Order Details -->
+      <div
+        class="card max-width-800 margin-auto display-none"
+        id="order-details"
+      >
+        <div class="card-header">
+          <h3 id="order-title">Order Details</h3>
         </div>
-
-        <!-- Delivery Tracking -->
-        <div class="card" id="delivery-tracking" style="max-width: 800px; margin: 20px auto; display: none;">
-            <div class="card-header">
-                <h3>📦 Delivery Status</h3>
+        <div class="padding-20">
+          <div class="order-info">
+            <div class="info-row">
+              <label>Order ID:</label>
+              <span id="detail-order-id"></span>
             </div>
-            <div style="padding: 20px;">
-                <div class="tracking-timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-marker" id="marker-confirmed">✓</div>
-                        <div class="timeline-content">
-                            <h4>Order Confirmed</h4>
-                            <p id="time-confirmed">Pending</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-marker" id="marker-processing">✓</div>
-                        <div class="timeline-content">
-                            <h4>Processing</h4>
-                            <p id="time-processing">Pending</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-marker" id="marker-shipped">✓</div>
-                        <div class="timeline-content">
-                            <h4>Out for Delivery</h4>
-                            <p id="time-shipped">Pending</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-marker" id="marker-delivered">✓</div>
-                        <div class="timeline-content">
-                            <h4>Delivered</h4>
-                            <p id="time-delivered">Pending</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="margin-top: 30px;">
-                    <h4>📊 Delivery Information</h4>
-                    <div class="info-row">
-                        <label>Assigned to:</label>
-                        <span id="detail-driver"></span>
-                    </div>
-                    <div class="info-row">
-                        <label>Driver Phone:</label>
-                        <span id="detail-driver-phone"></span>
-                    </div>
-                    <div class="info-row">
-                        <label>Vehicle:</label>
-                        <span id="detail-vehicle"></span>
-                    </div>
-                    <div class="info-row">
-                        <label>Estimated Delivery:</label>
-                        <span id="detail-eta"></span>
-                    </div>
-                </div>
+            <div class="info-row">
+              <label>Order Date:</label>
+              <span id="detail-order-date"></span>
             </div>
+            <div class="info-row">
+              <label>Status:</label>
+              <span id="detail-status"></span>
+            </div>
+            <div class="info-row">
+              <label>Total Amount:</label>
+              <span id="detail-amount"></span>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <!-- Map -->
-        <div class="card" id="map-section" style="max-width: 800px; margin: 20px auto; display: none;">
-            <div class="card-header">
-                <h3>🗺️ Live Location Map</h3>
-            </div>
-            <div id="map" style="height: 400px; border-radius: 0 0 8px 8px;"></div>
+      <!-- Delivery Tracking -->
+      <div
+        class="card max-width-800 margin-auto display-none"
+        id="delivery-tracking"
+      >
+        <div class="card-header">
+          <h3>📦 Delivery Status</h3>
         </div>
+        <div class="padding-20">
+          <div class="tracking-timeline">
+            <div class="timeline-item">
+              <div class="timeline-marker" id="marker-confirmed">✓</div>
+              <div class="timeline-content">
+                <h4>Order Confirmed</h4>
+                <p id="time-confirmed">Pending</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker" id="marker-processing">✓</div>
+              <div class="timeline-content">
+                <h4>Processing</h4>
+                <p id="time-processing">Pending</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker" id="marker-shipped">✓</div>
+              <div class="timeline-content">
+                <h4>Out for Delivery</h4>
+                <p id="time-shipped">Pending</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker" id="marker-delivered">✓</div>
+              <div class="timeline-content">
+                <h4>Delivered</h4>
+                <p id="time-delivered">Pending</p>
+              </div>
+            </div>
+          </div>
 
-        <!-- My Active Deliveries -->
-        <div class="card" style="max-width: 800px; margin: 20px auto;">
-            <div class="card-header">
-                <h3>📋 My Active Deliveries</h3>
+          <div class="margin-top-30">
+            <h4>📊 Delivery Information</h4>
+            <div class="info-row">
+              <label>Assigned to:</label>
+              <span id="detail-driver"></span>
             </div>
-            <div class="table-wrapper">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Status</th>
-                            <th>Delivery Status</th>
-                            <th>Estimated Delivery</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="active-deliveries-table">
-                        <!-- Active deliveries will be populated here -->
-                    </tbody>
-                </table>
+            <div class="info-row">
+              <label>Driver Phone:</label>
+              <span id="detail-driver-phone"></span>
             </div>
+            <div class="info-row">
+              <label>Vehicle:</label>
+              <span id="detail-vehicle"></span>
+            </div>
+            <div class="info-row">
+              <label>Estimated Delivery:</label>
+              <span id="detail-eta"></span>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Map -->
+      <div class="card max-width-800 margin-auto display-none" id="map-section">
+        <div class="card-header">
+          <h3>🗺️ Live Location Map</h3>
+        </div>
+        <div id="map" class="height-400 border-radius-5"></div>
+      </div>
+
+      <!-- My Active Deliveries -->
+      <div class="card max-width-800 margin-auto">
+        <div class="card-header">
+          <h3>📋 My Active Deliveries</h3>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Status</th>
+                <th>Delivery Status</th>
+                <th>Estimated Delivery</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="active-deliveries-table">
+              <!-- Active deliveries will be populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
-    <script src="../../js/data.js?v=20260209-002"></script>
+    <script src="../../js/data.js?v=20260209-005"></script>
     <script src="../../js/auth.js?v=20260209-002"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
     <script>
-        let map = null;
-        let currentDelivery = null;
-        let locationMarker = null;
+      let map = null;
+      let currentDelivery = null;
+      let locationMarker = null;
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (!currentUser || currentUser.role !== 'customer') {
-                window.location.href = '../../index.html';
-                return;
-            }
+      // Initialize on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser || currentUser.role !== "customer") {
+          window.location.href = "../../index.html";
+          return;
+        }
 
-            document.getElementById('current-user').textContent = `Logged in as: ${currentUser.name}`;
-            setupNavigation();
-            loadActiveDeliveries();
+        document.getElementById("current-user").textContent =
+          `Logged in as: ${currentUser.name}`;
+        setupNavigation();
+        loadActiveDeliveries();
 
-            // Setup search form
-            document.getElementById('search-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                searchOrder();
-            });
-        });
+        // Setup search form
+        document
+          .getElementById("search-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            searchOrder();
+          });
+      });
 
-        // Load active deliveries
-        function loadActiveDeliveries() {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            const tbody = document.getElementById('active-deliveries-table');
-            tbody.innerHTML = '';
+      // Load active deliveries
+      function loadActiveDeliveries() {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const tbody = document.getElementById("active-deliveries-table");
+        tbody.innerHTML = "";
 
-            const customerOrders = (systemData.orders || [])
-                .filter(o => o.customerID === currentUser.id && o.status !== 'delivered')
-                .sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+        const customerOrders = (systemData.orders || [])
+          .filter(
+            (o) => o.customerID === currentUser.id && o.status !== "delivered",
+          )
+          .sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
 
-            if (customerOrders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #666;">No active deliveries</td></tr>';
-                return;
-            }
+        if (customerOrders.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="5" style="text-align: center; color: #666;">No active deliveries</td></tr>';
+          return;
+        }
 
-            customerOrders.forEach(order => {
-                const delivery = systemData.deliveries.find(d => d.orderID === order.orderID);
-                const row = document.createElement('tr');
-                row.innerHTML = `
+        customerOrders.forEach((order) => {
+          const delivery = systemData.deliveries.find(
+            (d) => d.orderID === order.orderID,
+          );
+          const row = document.createElement("tr");
+          row.innerHTML = `
                     <td>${order.orderID}</td>
                     <td><span class="badge badge-${order.status?.toLowerCase()}">${order.status}</span></td>
-                    <td><span class="badge badge-${delivery?.status?.toLowerCase()}">${delivery?.status || 'Pending'}</span></td>
-                    <td>${delivery?.estimatedDelivery ? new Date(delivery.estimatedDelivery).toLocaleDateString() : 'TBD'}</td>
+                    <td><span class="badge badge-${delivery?.status?.toLowerCase()}">${delivery?.status || "Pending"}</span></td>
+                    <td>${delivery?.estimatedDelivery ? new Date(delivery.estimatedDelivery).toLocaleDateString() : "TBD"}</td>
                     <td><button class="btn btn-small btn-info" onclick="trackOrder('${order.orderID}')">Track</button></td>
                 `;
-                tbody.appendChild(row);
-            });
+          tbody.appendChild(row);
+        });
+      }
+
+      // Search for order
+      function searchOrder() {
+        const orderID = document.getElementById("order-search").value.trim();
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+        const order = systemData.orders.find(
+          (o) => o.orderID === orderID && o.customerID === currentUser.id,
+        );
+
+        if (!order) {
+          alert("⚠️ Order not found. Please check the order ID.");
+          return;
         }
 
-        // Search for order
-        function searchOrder() {
-            const orderID = document.getElementById('order-search').value.trim();
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        trackOrder(orderID);
+      }
 
-            const order = systemData.orders.find(o => 
-                o.orderID === orderID && o.customerID === currentUser.id
-            );
+      // Track order
+      function trackOrder(orderID) {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const order = systemData.orders.find(
+          (o) => o.orderID === orderID && o.customerID === currentUser.id,
+        );
 
-            if (!order) {
-                alert('⚠️ Order not found. Please check the order ID.');
-                return;
-            }
-
-            trackOrder(orderID);
+        if (!order) {
+          alert("⚠️ Order not found");
+          return;
         }
 
-        // Track order
-        function trackOrder(orderID) {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            const order = systemData.orders.find(o => 
-                o.orderID === orderID && o.customerID === currentUser.id
-            );
+        const delivery = systemData.deliveries.find(
+          (d) => d.orderID === orderID,
+        );
 
-            if (!order) {
-                alert('⚠️ Order not found');
-                return;
-            }
+        // Show order details
+        document.getElementById("detail-order-id").textContent = order.orderID;
+        document.getElementById("detail-order-date").textContent = new Date(
+          order.orderDate,
+        ).toLocaleDateString();
+        document.getElementById("detail-status").textContent = order.status;
+        document.getElementById("detail-amount").textContent =
+          `Rs. ${order.totalPrice?.toFixed(2) || "0.00"}`;
+        document.getElementById("order-details").style.display = "block";
 
-            const delivery = systemData.deliveries.find(d => d.orderID === orderID);
+        if (delivery) {
+          // Show delivery tracking
+          updateDeliveryTimeline(delivery);
+          document.getElementById("delivery-tracking").style.display = "block";
 
-            // Show order details
-            document.getElementById('detail-order-id').textContent = order.orderID;
-            document.getElementById('detail-order-date').textContent = new Date(order.orderDate).toLocaleDateString();
-            document.getElementById('detail-status').textContent = order.status;
-            document.getElementById('detail-amount').textContent = `Rs. ${order.totalPrice?.toFixed(2) || '0.00'}`;
-            document.getElementById('order-details').style.display = 'block';
+          // Show driver info
+          const driver = systemData.users.find(
+            (u) => u.id === delivery.assignedTo,
+          );
+          document.getElementById("detail-driver").textContent =
+            driver?.name || "Not Assigned";
+          document.getElementById("detail-driver-phone").textContent =
+            driver?.phone || "N/A";
+          document.getElementById("detail-vehicle").textContent =
+            driver?.vehicle || "Not Assigned";
+          document.getElementById("detail-eta").textContent =
+            delivery.estimatedDelivery
+              ? new Date(delivery.estimatedDelivery).toLocaleString()
+              : "Calculating...";
 
-            if (delivery) {
-                // Show delivery tracking
-                updateDeliveryTimeline(delivery);
-                document.getElementById('delivery-tracking').style.display = 'block';
-
-                // Show driver info
-                const driver = systemData.users.find(u => u.id === delivery.assignedTo);
-                document.getElementById('detail-driver').textContent = driver?.name || 'Not Assigned';
-                document.getElementById('detail-driver-phone').textContent = driver?.phone || 'N/A';
-                document.getElementById('detail-vehicle').textContent = driver?.vehicle || 'Not Assigned';
-                document.getElementById('detail-eta').textContent = 
-                    delivery.estimatedDelivery ? new Date(delivery.estimatedDelivery).toLocaleString() : 'Calculating...';
-
-                // Show map if location available
-                if (delivery.gpsLocation) {
-                    showDeliveryMap(delivery);
-                }
-            }
-
-            // Scroll to results
-            document.getElementById('order-details').scrollIntoView({ behavior: 'smooth' });
+          // Show map if location available
+          if (delivery.gpsLocation) {
+            showDeliveryMap(delivery);
+          }
         }
 
-        // Update delivery timeline
-        function updateDeliveryTimeline(delivery) {
-            const statuses = ['assigned', 'out for delivery', 'delivered', 'failed'];
-            const markers = ['confirmed', 'processing', 'shipped', 'delivered'];
-            const currentStatus = delivery.status?.toLowerCase();
+        // Scroll to results
+        document
+          .getElementById("order-details")
+          .scrollIntoView({ behavior: "smooth" });
+      }
 
-            markers.forEach((marker, index) => {
-                const markerEl = document.getElementById(`marker-${marker}`);
-                if (markerEl) {
-                    if (index < statuses.indexOf(currentStatus) || currentStatus === 'delivered') {
-                        markerEl.classList.add('completed');
-                        markerEl.textContent = '✓';
-                    } else if (statuses[index] === currentStatus) {
-                        markerEl.classList.add('active');
-                        markerEl.textContent = '●';
-                    } else {
-                        markerEl.classList.remove('completed', 'active');
-                        markerEl.textContent = '○';
-                    }
-                }
-            });
+      // Update delivery timeline
+      function updateDeliveryTimeline(delivery) {
+        const statuses = [
+          "assigned",
+          "out for delivery",
+          "delivered",
+          "failed",
+        ];
+        const markers = ["confirmed", "processing", "shipped", "delivered"];
+        const currentStatus = delivery.status?.toLowerCase();
+
+        markers.forEach((marker, index) => {
+          const markerEl = document.getElementById(`marker-${marker}`);
+          if (markerEl) {
+            if (
+              index < statuses.indexOf(currentStatus) ||
+              currentStatus === "delivered"
+            ) {
+              markerEl.classList.add("completed");
+              markerEl.textContent = "✓";
+            } else if (statuses[index] === currentStatus) {
+              markerEl.classList.add("active");
+              markerEl.textContent = "●";
+            } else {
+              markerEl.classList.remove("completed", "active");
+              markerEl.textContent = "○";
+            }
+          }
+        });
+      }
+
+      // Show delivery map
+      function showDeliveryMap(delivery) {
+        document.getElementById("map-section").style.display = "block";
+
+        if (!map) {
+          // Initialize map at Sri Lanka center
+          map = L.map("map").setView([7.8731, 80.7718], 7);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap contributors",
+            maxZoom: 19,
+          }).addTo(map);
         }
 
-        // Show delivery map
-        function showDeliveryMap(delivery) {
-            document.getElementById('map-section').style.display = 'block';
-
-            if (!map) {
-                // Initialize map at Sri Lanka center
-                map = L.map('map').setView([7.8731, 80.7718], 7);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19
-                }).addTo(map);
-            }
-
-            // Clear previous marker
-            if (locationMarker) {
-                map.removeLayer(locationMarker);
-            }
-
-            // Add delivery location marker
-            const gps = delivery.gpsLocation || delivery.currentLocation;
-            if (gps) {
-                const lat = gps.latitude || gps.lat || 0;
-                const lon = gps.longitude || gps.lon || 0;
-                
-                if (lat && lon) {
-                    locationMarker = L.marker([lat, lon])
-                        .bindPopup(`<b>Delivery Location</b><br>Delivery ID: ${delivery.deliveryID}`)
-                        .addTo(map);
-                    
-                    map.setView([lat, lon], 13);
-                }
-            }
+        // Clear previous marker
+        if (locationMarker) {
+          map.removeLayer(locationMarker);
         }
 
-        // Setup navigation
-        function setupNavigation() {
-            document.addEventListener('click', function(e) {
-                const nav = e.target.getAttribute('data-nav');
-                if (nav === 'products') {
-                    window.location.href = 'products.html';
-                } else if (nav === 'orders') {
-                    window.location.href = 'orders.html';
-                } else if (nav === 'track') {
-                    window.location.href = 'track-delivery.html';
-                } else if (nav === 'cart') {
-                    window.location.href = 'cart.html';
-                } else if (nav === 'profile') {
-                    window.location.href = 'profile.html';
-                } else if (nav === 'logout') {
-                    localStorage.removeItem('currentUser');
-                    localStorage.removeItem('authToken');
-                    window.location.href = '../../index.html';
-                }
-            });
+        // Add delivery location marker
+        const gps = delivery.gpsLocation || delivery.currentLocation;
+        if (gps) {
+          const lat = gps.latitude || gps.lat || 0;
+          const lon = gps.longitude || gps.lon || 0;
+
+          if (lat && lon) {
+            locationMarker = L.marker([lat, lon])
+              .bindPopup(
+                `<b>Delivery Location</b><br>Delivery ID: ${delivery.deliveryID}`,
+              )
+              .addTo(map);
+
+            map.setView([lat, lon], 13);
+          }
         }
+      }
+
+      // Setup navigation
+      function setupNavigation() {
+        document.addEventListener("click", function (e) {
+          const nav = e.target.getAttribute("data-nav");
+          if (nav === "products") {
+            window.location.href = "products.html";
+          } else if (nav === "orders") {
+            window.location.href = "orders.html";
+          } else if (nav === "track") {
+            window.location.href = "track-delivery.html";
+          } else if (nav === "cart") {
+            window.location.href = "cart.html";
+          } else if (nav === "profile") {
+            window.location.href = "profile.html";
+          } else if (nav === "logout") {
+            localStorage.removeItem("currentUser");
+            localStorage.removeItem("authToken");
+            window.location.href = "../../index.html";
+          }
+        });
+      }
     </script>
 
     <style>
-        .order-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
+      .order-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
 
-        .info-row {
-            padding: 12px;
-            background: #f9f9f9;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      .info-row {
+        padding: 12px;
+        background: #f9f9f9;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        .info-row label {
-            font-weight: bold;
-            color: #333;
-        }
+      .info-row label {
+        font-weight: bold;
+        color: #333;
+      }
 
-        .tracking-timeline {
-            position: relative;
-            padding: 20px 0;
-        }
+      .tracking-timeline {
+        position: relative;
+        padding: 20px 0;
+      }
 
-        .timeline-item {
-            display: flex;
-            margin-bottom: 30px;
-            position: relative;
-        }
+      .timeline-item {
+        display: flex;
+        margin-bottom: 30px;
+        position: relative;
+      }
 
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: 25px;
-            top: 45px;
-            width: 2px;
-            height: 45px;
-            background: #ddd;
-        }
+      .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: 25px;
+        top: 45px;
+        width: 2px;
+        height: 45px;
+        background: #ddd;
+      }
 
-        .timeline-item:last-child::before {
-            display: none;
-        }
+      .timeline-item:last-child::before {
+        display: none;
+      }
 
-        .timeline-marker {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #e9ecef;
-            border: 2px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #999;
-            flex-shrink: 0;
-            position: relative;
-            z-index: 2;
-            transition: all 0.3s ease;
-        }
+      .timeline-marker {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #e9ecef;
+        border: 2px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #999;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s ease;
+      }
 
-        .timeline-marker.completed {
-            background: #27ae60;
-            border-color: #27ae60;
-            color: white;
-        }
+      .timeline-marker.completed {
+        background: #27ae60;
+        border-color: #27ae60;
+        color: white;
+      }
 
-        .timeline-marker.active {
-            background: #3498db;
-            border-color: #3498db;
-            color: white;
-            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
-        }
+      .timeline-marker.active {
+        background: #3498db;
+        border-color: #3498db;
+        color: white;
+        box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
+      }
 
-        .timeline-content {
-            margin-left: 20px;
-            flex: 1;
-        }
+      .timeline-content {
+        margin-left: 20px;
+        flex: 1;
+      }
 
-        .timeline-content h4 {
-            margin: 0 0 5px 0;
-            color: #333;
-        }
+      .timeline-content h4 {
+        margin: 0 0 5px 0;
+        color: #333;
+      }
 
-        .timeline-content p {
-            margin: 0;
-            color: #666;
-            font-size: 14px;
-        }
+      .timeline-content p {
+        margin: 0;
+        color: #666;
+        font-size: 14px;
+      }
 
-        .badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
+      .badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+      }
 
-        .badge-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
+      .badge-pending {
+        background: #fff3cd;
+        color: #856404;
+      }
 
-        .badge-confirmed {
-            background: #cce5ff;
-            color: #004085;
-        }
+      .badge-confirmed {
+        background: #cce5ff;
+        color: #004085;
+      }
 
-        .badge-delivered {
-            background: #d4edda;
-            color: #155724;
-        }
+      .badge-delivered {
+        background: #d4edda;
+        color: #155724;
+      }
 
-        .badge-failed {
-            background: #f8d7da;
-            color: #721c24;
-        }
+      .badge-failed {
+        background: #f8d7da;
+        color: #721c24;
+      }
 
-        .badge-processing {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
+      .badge-processing {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
 
-        .badge-assigned {
-            background: #e7d4f5;
-            color: #5a1e7a;
-        }
+      .badge-assigned {
+        background: #e7d4f5;
+        color: #5a1e7a;
+      }
 
-        .badge-out\ for\ delivery {
-            background: #fff3cd;
-            color: #856404;
-        }
+      .badge-out\ for\ delivery {
+        background: #fff3cd;
+        color: #856404;
+      }
     </style>
-</body>
+  </body>
 </html>

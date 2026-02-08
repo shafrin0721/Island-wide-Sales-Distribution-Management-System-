@@ -1,438 +1,511 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Settings - RDC System</title>
-    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/styles.css" />
     <style>
-        .settings-container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        .settings-section {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .settings-section h3 {
-            margin-top: 0;
-            color: #333;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
-        }
-        .setting-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .setting-item:last-child {
-            border-bottom: none;
-        }
-        .setting-label {
-            flex: 1;
-        }
-        .setting-label h4 {
-            margin: 0;
-            color: #333;
-            font-weight: 600;
-        }
-        .setting-label p {
-            margin: 5px 0 0 0;
-            color: #666;
-            font-size: 0.9em;
-        }
-        .setting-control {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 26px;
-            background-color: #ccc;
-            border-radius: 13px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .toggle-switch.active {
-            background-color: #28a745;
-        }
-        .toggle-slider {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 20px;
-            height: 20px;
-            background-color: white;
-            border-radius: 50%;
-            transition: left 0.3s;
-        }
-        .toggle-switch.active .toggle-slider {
-            left: 27px;
-        }
-        .preference-group {
-            margin-top: 15px;
-        }
-        .preference-group label {
-            display: flex;
-            align-items: center;
-            margin: 8px 0;
-            cursor: pointer;
-        }
-        .preference-group input[type="checkbox"],
-        .preference-group input[type="radio"] {
-            margin-right: 10px;
-            cursor: pointer;
-        }
-        select {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .danger-zone {
-            background-color: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        .danger-zone h4 {
-            color: #856404;
-            margin-top: 0;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .status-message {
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 10px;
-            display: none;
-        }
-        .status-message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .status-message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
+      .settings-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .settings-section {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .settings-section h3 {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+      }
+      .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+      }
+      .setting-item:last-child {
+        border-bottom: none;
+      }
+      .setting-label {
+        flex: 1;
+      }
+      .setting-label h4 {
+        margin: 0;
+        color: #333;
+        font-weight: 600;
+      }
+      .setting-label p {
+        margin: 5px 0 0 0;
+        color: #666;
+        font-size: 0.9em;
+      }
+      .setting-control {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .toggle-switch {
+        position: relative;
+        width: 50px;
+        height: 26px;
+        background-color: #ccc;
+        border-radius: 13px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .toggle-switch.active {
+        background-color: #28a745;
+      }
+      .toggle-slider {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 20px;
+        height: 20px;
+        background-color: white;
+        border-radius: 50%;
+        transition: left 0.3s;
+      }
+      .toggle-switch.active .toggle-slider {
+        left: 27px;
+      }
+      .preference-group {
+        margin-top: 15px;
+      }
+      .preference-group label {
+        display: flex;
+        align-items: center;
+        margin: 8px 0;
+        cursor: pointer;
+      }
+      .preference-group input[type="checkbox"],
+      .preference-group input[type="radio"] {
+        margin-right: 10px;
+        cursor: pointer;
+      }
+      select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .danger-zone {
+        background-color: #fff3cd;
+        border: 2px solid #ffc107;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+      }
+      .danger-zone h4 {
+        color: #856404;
+        margin-top: 0;
+      }
+      .btn-danger {
+        background-color: #dc3545;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .btn-danger:hover {
+        background-color: #c82333;
+      }
+      .btn-primary {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .btn-primary:hover {
+        background-color: #0056b3;
+      }
+      .status-message {
+        padding: 10px;
+        border-radius: 4px;
+        margin-top: 10px;
+        display: none;
+      }
+      .status-message.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .status-message.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <span class="logo-text">RDC System</span>
-                <span id="current-user"></span>
-            </div>
-            <div class="nav-menu">
-                <button class="nav-link" data-nav="products">Products</button>
-                <button class="nav-link" data-nav="orders">My Orders</button>
-                <button class="nav-link" data-nav="cart">Cart<span id="cart-badge" class="badge">0</span></button>
-                <button class="nav-link" data-nav="profile">Profile</button>
-                <button class="nav-link active" data-nav="settings">Settings</button>
-                <button class="nav-link logout" data-nav="logout">Logout</button>
-            </div>
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span class="logo-text">RDC System</span>
+          <span id="current-user"></span>
         </div>
+        <div class="nav-menu">
+          <button class="nav-link" data-nav="products">Products</button>
+          <button class="nav-link" data-nav="orders">My Orders</button>
+          <button class="nav-link" data-nav="cart">
+            Cart<span id="cart-badge" class="badge">0</span>
+          </button>
+          <button class="nav-link" data-nav="profile">Profile</button>
+          <button class="nav-link active" data-nav="settings">Settings</button>
+          <button class="nav-link logout" data-nav="logout">Logout</button>
+        </div>
+      </div>
     </nav>
 
     <!-- Main Content -->
     <div class="page-content">
-        <div class="page-header">
-            <h2>Settings</h2>
-            <p>Manage your preferences and account settings</p>
+      <div class="page-header">
+        <h2>Settings</h2>
+        <p>Manage your preferences and account settings</p>
+      </div>
+
+      <div class="settings-container">
+        <!-- Notification Preferences -->
+        <div class="settings-section">
+          <h3>Notification Preferences</h3>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Email Notifications</h4>
+              <p>Receive updates about your orders and promotions</p>
+            </div>
+            <div class="setting-control">
+              <div
+                class="toggle-switch active"
+                id="toggle-email"
+                data-toggle="email_notifications"
+              >
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>SMS Notifications</h4>
+              <p>Receive SMS for urgent order updates</p>
+            </div>
+            <div class="setting-control">
+              <div
+                class="toggle-switch active"
+                id="toggle-sms"
+                data-toggle="sms_notifications"
+              >
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Promotional Emails</h4>
+              <p>Receive special offers and discounts</p>
+            </div>
+            <div class="setting-control">
+              <div
+                class="toggle-switch"
+                id="toggle-promo"
+                data-toggle="promotional_emails"
+              >
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Delivery Updates</h4>
+              <p>Get real-time delivery status updates</p>
+            </div>
+            <div class="setting-control">
+              <div
+                class="toggle-switch active"
+                id="toggle-delivery"
+                data-toggle="delivery_notifications"
+              >
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="settings-container">
-            <!-- Notification Preferences -->
-            <div class="settings-section">
-                <h3>Notification Preferences</h3>
-                
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Email Notifications</h4>
-                        <p>Receive updates about your orders and promotions</p>
-                    </div>
-                    <div class="setting-control">
-                        <div class="toggle-switch active" id="toggle-email" data-toggle="email_notifications">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Email Notification Types -->
+        <div class="settings-section">
+          <h3>Email Notification Types</h3>
+          <p class="color-666 margin-bottom-15">
+            Choose which types of emails you want to receive:
+          </p>
 
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>SMS Notifications</h4>
-                        <p>Receive SMS for urgent order updates</p>
-                    </div>
-                    <div class="setting-control">
-                        <div class="toggle-switch active" id="toggle-sms" data-toggle="sms_notifications">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Promotional Emails</h4>
-                        <p>Receive special offers and discounts</p>
-                    </div>
-                    <div class="setting-control">
-                        <div class="toggle-switch" id="toggle-promo" data-toggle="promotional_emails">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Delivery Updates</h4>
-                        <p>Get real-time delivery status updates</p>
-                    </div>
-                    <div class="setting-control">
-                        <div class="toggle-switch active" id="toggle-delivery" data-toggle="delivery_notifications">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Email Notification Types -->
-            <div class="settings-section">
-                <h3>Email Notification Types</h3>
-                <p style="color: #666; margin-bottom: 15px;">Choose which types of emails you want to receive:</p>
-                
-                <div class="preference-group">
-                    <label>
-                        <input type="checkbox" id="email-order-confirmation" checked>
-                        Order Confirmation
-                    </label>
-                    <label>
-                        <input type="checkbox" id="email-delivery-status" checked>
-                        Delivery Status
-                    </label>
-                    <label>
-                        <input type="checkbox" id="email-promotion">
-                        Promotions & Offers
-                    </label>
-                    <label>
-                        <input type="checkbox" id="email-product-alerts" checked>
-                        Product Availability Alerts
-                    </label>
-                    <label>
-                        <input type="checkbox" id="email-newsletter">
-                        Weekly Newsletter
-                    </label>
-                </div>
-                <button class="btn-primary" data-action="save-email-prefs" style="margin-top: 15px;">Save Preferences</button>
-                <div id="email-prefs-message" class="status-message"></div>
-            </div>
-
-            <!-- Delivery Preferences -->
-            <div class="settings-section">
-                <h3>Delivery Preferences</h3>
-                
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Preferred Delivery Time</h4>
-                        <p>Choose when you prefer deliveries</p>
-                    </div>
-                    <div class="setting-control">
-                        <select id="delivery-time-pref" aria-label="Delivery time preference">
-                            <option value="morning">Morning (6 AM - 12 PM)</option>
-                            <option value="afternoon" selected>Afternoon (12 PM - 6 PM)</option>
-                            <option value="evening">Evening (6 PM - 10 PM)</option>
-                            <option value="flexible">Flexible</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Special Instructions</h4>
-                        <p>Any special delivery instructions</p>
-                    </div>
-                    <div class="setting-control">
-                        <textarea id="delivery-instructions" placeholder="e.g., Leave at front door, Call before arriving..." style="width: 300px; height: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Require Signature</h4>
-                        <p>Require signature on delivery</p>
-                    </div>
-                    <div class="setting-control">
-                        <div class="toggle-switch active" id="toggle-signature" data-toggle="require_signature">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn-primary" data-action="save-delivery-prefs" style="margin-top: 15px;">Save Delivery Preferences</button>
-                <div id="delivery-prefs-message" class="status-message"></div>
-            </div>
-
-            <!-- Payment Settings -->
-            <div class="settings-section">
-                <h3>Payment Settings</h3>
-                
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Default Payment Method</h4>
-                        <p>Choose your preferred payment method</p>
-                    </div>
-                    <div class="setting-control">
-                        <select id="default-payment" aria-label="Default payment method" onchange="savePaymentMethod()">
-                            <option value="credit-card">Credit Card</option>
-                            <option value="debit-card">Debit Card</option>
-                            <option value="bank-transfer">Bank Transfer</option>
-                            <option value="wallet">Digital Wallet</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Auto-Reorder</h4>
-                        <p>Automatically reorder frequently purchased items</p>
-                    </div>
-                    <div class="setting-control">
-                        <div class="toggle-switch" id="toggle-autoreorder" data-toggle="auto_reorder">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Account Preferences -->
-            <div class="settings-section">
-                <h3>Account Preferences</h3>
-                
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Language</h4>
-                        <p>Choose your preferred language</p>
-                    </div>
-                    <div class="setting-control">
-                        <select id="language-pref" aria-label="Language preference" onchange="saveLanguagePreference()">
-                            <option value="english" selected>English</option>
-                            <option value="spanish">Spanish</option>
-                            <option value="french">French</option>
-                            <option value="creole">Creole</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Currency</h4>
-                        <p>Display prices in</p>
-                    </div>
-                    <div class="setting-control">
-                        <select id="currency-pref" aria-label="Currency preference" onchange="saveCurrencyPreference()">
-                            <option value="usd" selected>USD ($)</option>
-                            <option value="eur">EUR (€)</option>
-                            <option value="gbp">GBP (£)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Dark Mode</h4>
-                        <p>Use dark theme for the interface</p>
-                    </div>
-                    <div class="setting-control">
-                        <div class="toggle-switch" id="toggle-darkmode" data-toggle="dark_mode">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Privacy & Security -->
-            <div class="settings-section">
-                <h3>Privacy & Security</h3>
-                
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Data Collection</h4>
-                        <p>Allow us to collect data for personalization</p>
-                    </div>
-                    <div class="setting-control">
-                        <div class="toggle-switch active" id="toggle-datacollection" data-toggle="data_collection">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Two-Factor Authentication</h4>
-                        <p>Add extra security to your account</p>
-                    </div>
-                    <div class="setting-control">
-                        <button class="btn-primary" data-action="setup-2fa">Enable 2FA</button>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <h4>Active Sessions</h4>
-                        <p>View and manage your active sessions</p>
-                    </div>
-                    <div class="setting-control">
-                        <button class="btn-primary" data-action="view-sessions">View Sessions</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Danger Zone -->
-            <div class="danger-zone">
-                <h4>Danger Zone</h4>
-                <p>These actions cannot be undone. Please proceed with caution.</p>
-                <button class="btn-danger" data-action="delete-account">Delete Account</button>
-            </div>
-
-            <div id="settings-message" class="status-message" style="margin-top: 20px;"></div>
+          <div class="preference-group">
+            <label>
+              <input type="checkbox" id="email-order-confirmation" checked />
+              Order Confirmation
+            </label>
+            <label>
+              <input type="checkbox" id="email-delivery-status" checked />
+              Delivery Status
+            </label>
+            <label>
+              <input type="checkbox" id="email-promotion" />
+              Promotions & Offers
+            </label>
+            <label>
+              <input type="checkbox" id="email-product-alerts" checked />
+              Product Availability Alerts
+            </label>
+            <label>
+              <input type="checkbox" id="email-newsletter" />
+              Weekly Newsletter
+            </label>
+          </div>
+          <button
+            class="btn-primary margin-top-15"
+            data-action="save-email-prefs"
+          >
+            Save Preferences
+          </button>
+          <div id="email-prefs-message" class="status-message"></div>
         </div>
+
+        <!-- Delivery Preferences -->
+        <div class="settings-section">
+          <h3>Delivery Preferences</h3>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Preferred Delivery Time</h4>
+              <p>Choose when you prefer deliveries</p>
+            </div>
+            <div class="setting-control">
+              <select
+                id="delivery-time-pref"
+                aria-label="Delivery time preference"
+              >
+                <option value="morning">Morning (6 AM - 12 PM)</option>
+                <option value="afternoon" selected>
+                  Afternoon (12 PM - 6 PM)
+                </option>
+                <option value="evening">Evening (6 PM - 10 PM)</option>
+                <option value="flexible">Flexible</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Special Instructions</h4>
+              <p>Any special delivery instructions</p>
+            </div>
+            <div class="setting-control">
+              <textarea
+                id="delivery-instructions"
+                placeholder="e.g., Leave at front door, Call before arriving..."
+                class="width-300px height-60px padding-8 border-1-ddd border-radius-5"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Require Signature</h4>
+              <p>Require signature on delivery</p>
+            </div>
+            <div class="setting-control">
+              <div
+                class="toggle-switch active"
+                id="toggle-signature"
+                data-toggle="require_signature"
+              >
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="btn-primary margin-top-15"
+            data-action="save-delivery-prefs"
+          >
+            Save Delivery Preferences
+          </button>
+          <div id="delivery-prefs-message" class="status-message"></div>
+        </div>
+
+        <!-- Payment Settings -->
+        <div class="settings-section">
+          <h3>Payment Settings</h3>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Default Payment Method</h4>
+              <p>Choose your preferred payment method</p>
+            </div>
+            <div class="setting-control">
+              <select
+                id="default-payment"
+                aria-label="Default payment method"
+                onchange="savePaymentMethod()"
+              >
+                <option value="credit-card">Credit Card</option>
+                <option value="debit-card">Debit Card</option>
+                <option value="bank-transfer">Bank Transfer</option>
+                <option value="wallet">Digital Wallet</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Auto-Reorder</h4>
+              <p>Automatically reorder frequently purchased items</p>
+            </div>
+            <div class="setting-control">
+              <div
+                class="toggle-switch"
+                id="toggle-autoreorder"
+                data-toggle="auto_reorder"
+              >
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Preferences -->
+        <div class="settings-section">
+          <h3>Account Preferences</h3>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Language</h4>
+              <p>Choose your preferred language</p>
+            </div>
+            <div class="setting-control">
+              <select
+                id="language-pref"
+                aria-label="Language preference"
+                onchange="saveLanguagePreference()"
+              >
+                <option value="english" selected>English</option>
+                <option value="spanish">Spanish</option>
+                <option value="french">French</option>
+                <option value="creole">Creole</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Currency</h4>
+              <p>Display prices in</p>
+            </div>
+            <div class="setting-control">
+              <select
+                id="currency-pref"
+                aria-label="Currency preference"
+                onchange="saveCurrencyPreference()"
+              >
+                <option value="usd" selected>USD ($)</option>
+                <option value="eur">EUR (€)</option>
+                <option value="gbp">GBP (£)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Dark Mode</h4>
+              <p>Use dark theme for the interface</p>
+            </div>
+            <div class="setting-control">
+              <div
+                class="toggle-switch"
+                id="toggle-darkmode"
+                data-toggle="dark_mode"
+              >
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Privacy & Security -->
+        <div class="settings-section">
+          <h3>Privacy & Security</h3>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Data Collection</h4>
+              <p>Allow us to collect data for personalization</p>
+            </div>
+            <div class="setting-control">
+              <div
+                class="toggle-switch active"
+                id="toggle-datacollection"
+                data-toggle="data_collection"
+              >
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Two-Factor Authentication</h4>
+              <p>Add extra security to your account</p>
+            </div>
+            <div class="setting-control">
+              <button class="btn-primary" data-action="setup-2fa">
+                Enable 2FA
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <h4>Active Sessions</h4>
+              <p>View and manage your active sessions</p>
+            </div>
+            <div class="setting-control">
+              <button class="btn-primary" data-action="view-sessions">
+                View Sessions
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="danger-zone">
+          <h4>Danger Zone</h4>
+          <p>These actions cannot be undone. Please proceed with caution.</p>
+          <button class="btn-danger" data-action="delete-account">
+            Delete Account
+          </button>
+        </div>
+
+        <div id="settings-message" class="status-message margin-top-20"></div>
+      </div>
     </div>
 
-    <script src="../../js/data.js?v=20260209-002"></script>
+    <script src="../../js/data.js?v=20260209-005"></script>
     <script src="../../js/auth.js?v=20260209-002"></script>
-    <script src="../../js/customer.js?v=20260209-003"></script>
-</body>
+    <script src="../../js/customer.js?v=20260209-004"></script>
+  </body>
 </html>

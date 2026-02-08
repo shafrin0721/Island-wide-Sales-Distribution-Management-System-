@@ -261,10 +261,10 @@ function loadProducts() {
                 <div class="product-category">${product.subcategory || product.category || 'Category'}</div>
                 <div class="product-rating">⭐ ${product.rating || '4.5'} (${product.reviews || '0'} reviews)</div>
                 <div class="product-pricing">
-                    <span class="wholesale-price">Wholesale: $${wholesalePriceDisplay}</span>
-                    <span class="retail-price">Retail: $${retailPriceDisplay}</span>
+                    <span class="wholesale-price">Wholesale: Rs. ${wholesalePriceDisplay}</span>
+                    <span class="retail-price">Retail: Rs. ${retailPriceDisplay}</span>
                 </div>
-                <div class="product-price">Your Price: $${priceDisplay}</div>
+                <div class="product-price">Your Price: Rs. ${priceDisplay}</div>
                 <div class="product-availability ${inStock ? 'in-stock' : 'out-stock'}">
                     ${inStock ? `✓ In Stock (${inventory.stockLevel} available)` : '✗ Out of Stock'}
                 </div>
@@ -328,19 +328,19 @@ function showProductDetails(productID) {
                 <div class="product-details-pricing">
                     <div class="price-row">
                         <span class="label">Wholesale Price:</span>
-                        <span class="price">$${(parseFloat(product.wholesalePrice) || 0).toFixed(2)}</span>
+                        <span class="price">Rs. ${(parseFloat(product.wholesalePrice) || 0).toFixed(2)}</span>
                     </div>
                     <div class="price-row">
                         <span class="label">Retail Price:</span>
-                        <span class="price">$${(parseFloat(product.retailPrice) || 0).toFixed(2)}</span>
+                        <span class="price">Rs. ${(parseFloat(product.retailPrice) || 0).toFixed(2)}</span>
                     </div>
                     <div class="price-row highlight">
                         <span class="label">Your Price:</span>
-                        <span class="price">$${(parseFloat(product.price) || 0).toFixed(2)}</span>
+                        <span class="price">Rs. ${(parseFloat(product.price) || 0).toFixed(2)}</span>
                     </div>
                     <div class="price-row">
                         <span class="label">You Save:</span>
-                        <span class="price savings">$${((parseFloat(product.retailPrice) || 0) - (parseFloat(product.price) || 0)).toFixed(2)} (${product.discount || 0}%)</span>
+                        <span class="price savings">Rs. ${((parseFloat(product.retailPrice) || 0) - (parseFloat(product.price) || 0)).toFixed(2)} (${product.discount || 0}%)</span>
                     </div>
                 </div>
                 
@@ -590,10 +590,10 @@ function displayFilteredProducts(products) {
                 <div class="product-category">${product.subcategory || product.category || 'Category'}</div>
                 <div class="product-rating">⭐ ${product.rating || '4.5'} (${product.reviews || '0'} reviews)</div>
                 <div class="product-pricing">
-                    <span class="wholesale-price">Wholesale: $${wholesalePriceDisplay}</span>
-                    <span class="retail-price">Retail: $${retailPriceDisplay}</span>
+                    <span class="wholesale-price">Wholesale: Rs. ${wholesalePriceDisplay}</span>
+                    <span class="retail-price">Retail: Rs. ${retailPriceDisplay}</span>
                 </div>
-                <div class="product-price">Your Price: $${priceDisplay}</div>
+                <div class="product-price">Your Price: Rs. ${priceDisplay}</div>
                 <div class="product-availability ${inStock ? 'in-stock' : 'out-stock'}">
                     ${inStock ? `✓ In Stock (${inventory.stockLevel} available)` : '✗ Out of Stock'}
                 </div>
@@ -1505,7 +1505,7 @@ function loadProfileStats() {
     
     // These would come from API in real scenario
     if (document.getElementById('stat-total-orders')) document.getElementById('stat-total-orders').textContent = user.totalOrders || '0';
-    if (document.getElementById('stat-total-spent')) document.getElementById('stat-total-spent').textContent = '$' + (user.totalSpent || '0');
+    if (document.getElementById('stat-total-spent')) document.getElementById('stat-total-spent').textContent = 'Rs. ' + (user.totalSpent || '0');
     if (document.getElementById('stat-pending-orders')) document.getElementById('stat-pending-orders').textContent = user.pendingOrders || '0';
     if (document.getElementById('stat-delivered-orders')) document.getElementById('stat-delivered-orders').textContent = user.deliveredOrders || '0';
 }

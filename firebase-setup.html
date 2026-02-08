@@ -1,107 +1,125 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Firebase Setup Instructions</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 { color: #1976d2; }
-        h2 { color: #1565c0; margin-top: 30px; }
-        .step { 
-            margin: 20px 0;
-            padding: 15px;
-            background: #f9f9f9;
-            border-left: 4px solid #1976d2;
-        }
-        code {
-            background: #f5f5f5;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-        }
-        pre {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 15px;
-            border-radius: 4px;
-            overflow-x: auto;
-            font-size: 13px;
-        }
-        .note {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-        .success {
-            background: #e8f5e9;
-            border-left: 4px solid #4caf50;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-        .tab-container {
-            display: flex;
-            border-bottom: 2px solid #ddd;
-            margin: 20px 0;
-        }
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background: #f5f5f5;
-            border: none;
-            font-size: 14px;
-        }
-        .tab.active {
-            background: white;
-            border-bottom: 3px solid #1976d2;
-            margin-bottom: -2px;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #1976d2;
+      }
+      h2 {
+        color: #1565c0;
+        margin-top: 30px;
+      }
+      .step {
+        margin: 20px 0;
+        padding: 15px;
+        background: #f9f9f9;
+        border-left: 4px solid #1976d2;
+      }
+      code {
+        background: #f5f5f5;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: "Courier New", monospace;
+      }
+      pre {
+        background: #2d2d2d;
+        color: #f8f8f2;
+        padding: 15px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-size: 13px;
+      }
+      .note {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 4px;
+      }
+      .success {
+        background: #e8f5e9;
+        border-left: 4px solid #4caf50;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 4px;
+      }
+      .tab-container {
+        display: flex;
+        border-bottom: 2px solid #ddd;
+        margin: 20px 0;
+      }
+      .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        background: #f5f5f5;
+        border: none;
+        font-size: 14px;
+      }
+      .tab.active {
+        background: white;
+        border-bottom: 3px solid #1976d2;
+        margin-bottom: -2px;
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>🔥 Firebase Integration Setup Guide</h1>
-        
-        <div class="note">
-            <strong>📌 Note:</strong> Firebase is configured in the ISDN system. Choose your integration method below.
-        </div>
+      <h1>🔥 Firebase Integration Setup Guide</h1>
 
-        <div class="tab-container">
-            <button class="tab active" onclick="switchTab(event, 'method1')">CDN Script Tags</button>
-            <button class="tab" onclick="switchTab(event, 'method2')">NPM Package</button>
-            <button class="tab" onclick="switchTab(event, 'method3')">Backend Firebase Admin</button>
-            <button class="tab" onclick="switchTab(event, 'method4')">Configuration Check</button>
-        </div>
+      <div class="note">
+        <strong>📌 Note:</strong> Firebase is configured in the ISDN system.
+        Choose your integration method below.
+      </div>
 
-        <!-- Method 1: CDN Script Tags -->
-        <div id="method1" class="tab-content active">
-            <h2>Method 1: CDN Script Tags (Recommended for Frontend)</h2>
-            
-            <div class="step">
-                <h3>Step 1: Add Firebase CDN Scripts to Your HTML</h3>
-                <p>Add these script tags to the <code>&lt;body&gt;</code> of your HTML pages, before your own scripts:</p>
-                <pre>&lt;!-- Firebase SDKs from CDN --&gt;
+      <div class="tab-container">
+        <button class="tab active" onclick="switchTab(event, 'method1')">
+          CDN Script Tags
+        </button>
+        <button class="tab" onclick="switchTab(event, 'method2')">
+          NPM Package
+        </button>
+        <button class="tab" onclick="switchTab(event, 'method3')">
+          Backend Firebase Admin
+        </button>
+        <button class="tab" onclick="switchTab(event, 'method4')">
+          Configuration Check
+        </button>
+      </div>
+
+      <!-- Method 1: CDN Script Tags -->
+      <div id="method1" class="tab-content active">
+        <h2>Method 1: CDN Script Tags (Recommended for Frontend)</h2>
+
+        <div class="step">
+          <h3>Step 1: Add Firebase CDN Scripts to Your HTML</h3>
+          <p>
+            Add these script tags to the <code>&lt;body&gt;</code> of your HTML
+            pages, before your own scripts:
+          </p>
+          <pre>
+&lt;!-- Firebase SDKs from CDN --&gt;
 &lt;script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"&gt;&lt;/script&gt;
 &lt;script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"&gt;&lt;/script&gt;
 &lt;script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"&gt;&lt;/script&gt;
@@ -109,25 +127,29 @@
 &lt;script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics.js"&gt;&lt;/script&gt;
 
 &lt;!-- Your Firebase configuration --&gt;
-&lt;script src="js/firebase-config.js"&gt;&lt;/script&gt;</pre>
-            </div>
+&lt;script src="js/firebase-config.js"&gt;&lt;/script&gt;</pre
+          >
+        </div>
 
-            <div class="step">
-                <h3>Step 2: Initialize Firebase in Your Pages</h3>
-                <p>Add this code after the Firebase scripts load:</p>
-                <pre>// Initialize Firebase when page loads
+        <div class="step">
+          <h3>Step 2: Initialize Firebase in Your Pages</h3>
+          <p>Add this code after the Firebase scripts load:</p>
+          <pre>
+// Initialize Firebase when page loads
 document.addEventListener('DOMContentLoaded', async () => {
   const initialized = await FirebaseHelper.init();
   if (initialized) {
     console.log('Firebase ready for use');
   }
-});</pre>
-            </div>
+});</pre
+          >
+        </div>
 
-            <div class="step">
-                <h3>Step 3: Use Firebase in Your Code</h3>
-                <p>Now you can use FirebaseHelper methods:</p>
-                <pre>// Write data
+        <div class="step">
+          <h3>Step 3: Use Firebase in Your Code</h3>
+          <p>Now you can use FirebaseHelper methods:</p>
+          <pre>
+// Write data
 await FirebaseHelper.writeData('users/user1', {
   name: 'John Doe',
   email: 'john@example.com'
@@ -144,26 +166,29 @@ await FirebaseHelper.updateData('users/user1', {
 // Listen for changes
 FirebaseHelper.onDataChange('users/user1', (data) => {
   console.log('User data changed:', data);
-});</pre>
-            </div>
-
-            <div class="success">
-                ✅ <strong>Benefits:</strong> No build process needed, works immediately, automatic fallback to localStorage
-            </div>
+});</pre
+          >
         </div>
 
-        <!-- Method 2: NPM Package -->
-        <div id="method2" class="tab-content">
-            <h2>Method 2: NPM Firebase Package (For Build Tools)</h2>
-            
-            <div class="step">
-                <h3>Step 1: Install Firebase SDK</h3>
-                <pre>npm install firebase</pre>
-            </div>
+        <div class="success">
+          ✅ <strong>Benefits:</strong> No build process needed, works
+          immediately, automatic fallback to localStorage
+        </div>
+      </div>
 
-            <div class="step">
-                <h3>Step 2: Import in Your JavaScript</h3>
-                <pre>import { initializeApp } from 'firebase/app';
+      <!-- Method 2: NPM Package -->
+      <div id="method2" class="tab-content">
+        <h2>Method 2: NPM Firebase Package (For Build Tools)</h2>
+
+        <div class="step">
+          <h3>Step 1: Install Firebase SDK</h3>
+          <pre>npm install firebase</pre>
+        </div>
+
+        <div class="step">
+          <h3>Step 2: Import in Your JavaScript</h3>
+          <pre>
+import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
 
@@ -180,12 +205,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const database = getDatabase(app);</pre>
-            </div>
+const database = getDatabase(app);</pre
+          >
+        </div>
 
-            <div class="step">
-                <h3>Step 3: Use Firebase Functions</h3>
-                <pre>import { ref, set, get } from 'firebase/database';
+        <div class="step">
+          <h3>Step 3: Use Firebase Functions</h3>
+          <pre>
+import { ref, set, get } from 'firebase/database';
 
 // Write data
 set(ref(database, 'users/user1'), {
@@ -194,27 +221,33 @@ set(ref(database, 'users/user1'), {
 
 // Read data
 const snapshot = await get(ref(database, 'users/user1'));
-console.log(snapshot.val());</pre>
-            </div>
-
-            <div class="note">
-                ⚠️ <strong>Note:</strong> Requires a build process (webpack, Vite, etc.)
-            </div>
+console.log(snapshot.val());</pre
+          >
         </div>
 
-        <!-- Method 3: Backend Firebase Admin -->
-        <div id="method3" class="tab-content">
-            <h2>Method 3: Backend Firebase Admin SDK</h2>
-            
-            <div class="step">
-                <h3>Step 1: Install Firebase Admin SDK</h3>
-                <pre>npm install firebase-admin</pre>
-                <p><strong>Status:</strong> ✅ Already installed in backend/package.json</p>
-            </div>
+        <div class="note">
+          ⚠️ <strong>Note:</strong> Requires a build process (webpack, Vite,
+          etc.)
+        </div>
+      </div>
 
-            <div class="step">
-                <h3>Step 2: Initialize in Node.js Backend</h3>
-                <pre>const admin = require('firebase-admin');
+      <!-- Method 3: Backend Firebase Admin -->
+      <div id="method3" class="tab-content">
+        <h2>Method 3: Backend Firebase Admin SDK</h2>
+
+        <div class="step">
+          <h3>Step 1: Install Firebase Admin SDK</h3>
+          <pre>npm install firebase-admin</pre>
+          <p>
+            <strong>Status:</strong> ✅ Already installed in
+            backend/package.json
+          </p>
+        </div>
+
+        <div class="step">
+          <h3>Step 2: Initialize in Node.js Backend</h3>
+          <pre>
+const admin = require('firebase-admin');
 const serviceAccount = require('./path/to/serviceAccountKey.json');
 
 admin.initializeApp({
@@ -222,12 +255,14 @@ admin.initializeApp({
   databaseURL: "https://isdn-6291c-default-rtdb.firebaseio.com"
 });
 
-const db = admin.database();</pre>
-            </div>
+const db = admin.database();</pre
+          >
+        </div>
 
-            <div class="step">
-                <h3>Step 3: Use in Your API Routes</h3>
-                <pre>// Write data
+        <div class="step">
+          <h3>Step 3: Use in Your API Routes</h3>
+          <pre>
+// Write data
 router.post('/api/users', async (req, res) => {
   const { userId, userData } = req.body;
   try {
@@ -236,26 +271,30 @@ router.post('/api/users', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-});</pre>
-            </div>
-
-            <div class="note">
-                📌 <strong>To use this method:</strong>
-                <ol>
-                    <li>Download your Firebase service account key from Firebase Console</li>
-                    <li>Save it as <code>backend/serviceAccountKey.json</code></li>
-                    <li>Add to <code>.gitignore</code> to keep it private</li>
-                </ol>
-            </div>
+});</pre
+          >
         </div>
 
-        <!-- Method 4: Configuration Check -->
-        <div id="method4" class="tab-content">
-            <h2>Configuration Check</h2>
-            
-            <div class="step">
-                <h3>Your Firebase Configuration</h3>
-                <pre>const firebaseConfig = {
+        <div class="note">
+          📌 <strong>To use this method:</strong>
+          <ol>
+            <li>
+              Download your Firebase service account key from Firebase Console
+            </li>
+            <li>Save it as <code>backend/serviceAccountKey.json</code></li>
+            <li>Add to <code>.gitignore</code> to keep it private</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Method 4: Configuration Check -->
+      <div id="method4" class="tab-content">
+        <h2>Configuration Check</h2>
+
+        <div class="step">
+          <h3>Your Firebase Configuration</h3>
+          <pre>
+const firebaseConfig = {
   apiKey: "AIzaSyBX7R9qfnkCTFAP-cDYYI611E-TUr3L4_w",
   authDomain: "isdn-6291c.firebaseapp.com",
   databaseURL: "https://isdn-6291c-default-rtdb.firebaseio.com",
@@ -264,13 +303,15 @@ router.post('/api/users', async (req, res) => {
   messagingSenderId: "962394501475",
   appId: "1:962394501475:web:7bb0230e8caf9a8adba356",
   measurementId: "G-FYND6D8QPK"
-};</pre>
-            </div>
+};</pre
+          >
+        </div>
 
-            <div class="step">
-                <h3>Test Firebase Connection</h3>
-                <p>Open your browser console and run:</p>
-                <pre>// Test 1: Check Firebase SDK
+        <div class="step">
+          <h3>Test Firebase Connection</h3>
+          <p>Open your browser console and run:</p>
+          <pre>
+// Test 1: Check Firebase SDK
 console.log('Firebase available:', typeof firebase !== 'undefined');
 
 // Test 2: Initialize
@@ -289,26 +330,28 @@ FirebaseHelper.writeData('test/connection', {
 // Test 4: Read test data
 FirebaseHelper.readData('test/connection').then(data => {
   console.log('Read test:', data);
-});</pre>
-            </div>
-
-            <div class="success">
-                ✅ <strong>Quick Integration Checklist:</strong>
-                <ul>
-                    <li>☐ Firebase SDK scripts added to HTML</li>
-                    <li>☐ firebase-config.js loaded</li>
-                    <li>☐ FirebaseHelper.init() called on page load</li>
-                    <li>☐ Test data written and read successfully</li>
-                    <li>☐ Real-time listener working</li>
-                </ul>
-            </div>
+});</pre
+          >
         </div>
 
-        <h2 style="margin-top: 40px;">⚡ Quick Start Example</h2>
-        
-        <div class="step">
-            <h3>Complete HTML Template</h3>
-            <pre>&lt;!DOCTYPE html&gt;
+        <div class="success">
+          ✅ <strong>Quick Integration Checklist:</strong>
+          <ul>
+            <li>☐ Firebase SDK scripts added to HTML</li>
+            <li>☐ firebase-config.js loaded</li>
+            <li>☐ FirebaseHelper.init() called on page load</li>
+            <li>☐ Test data written and read successfully</li>
+            <li>☐ Real-time listener working</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 class="margin-top-30">⚡ Quick Start Example</h2>
+
+      <div class="step">
+        <h3>Complete HTML Template</h3>
+        <pre>
+&lt;!DOCTYPE html&gt;
 &lt;html&gt;
 &lt;head&gt;
     &lt;title&gt;Firebase App&lt;/title&gt;
@@ -346,50 +389,82 @@ FirebaseHelper.readData('test/connection').then(data => {
         });
     &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</pre>
-        </div>
+&lt;/html&gt;</pre
+        >
+      </div>
 
-        <h2>📚 Resources</h2>
-        <ul>
-            <li><a href="https://firebase.google.com/docs/database" target="_blank" rel="noopener">Firebase Realtime Database Docs</a></li>
-            <li><a href="https://firebase.google.com/docs/auth" target="_blank" rel="noopener">Firebase Authentication Docs</a></li>
-            <li><a href="https://firebase.google.com/docs/web/setup" target="_blank" rel="noopener">Web Setup Guide</a></li>
-            <li><a href="https://firebase.google.com/docs/database/admin" target="_blank" rel="noopener">Admin SDK Docs</a></li>
-        </ul>
+      <h2>📚 Resources</h2>
+      <ul>
+        <li>
+          <a
+            href="https://firebase.google.com/docs/database"
+            target="_blank"
+            rel="noopener"
+            >Firebase Realtime Database Docs</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://firebase.google.com/docs/auth"
+            target="_blank"
+            rel="noopener"
+            >Firebase Authentication Docs</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://firebase.google.com/docs/web/setup"
+            target="_blank"
+            rel="noopener"
+            >Web Setup Guide</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://firebase.google.com/docs/database/admin"
+            target="_blank"
+            rel="noopener"
+            >Admin SDK Docs</a
+          >
+        </li>
+      </ul>
 
-        <h2>🆘 Troubleshooting</h2>
-        
-        <div class="note">
-            <strong>Issue:</strong> "Firebase is not defined"<br>
-            <strong>Solution:</strong> Make sure Firebase CDN scripts are loaded before your code tries to use them
-        </div>
+      <h2>🆘 Troubleshooting</h2>
 
-        <div class="note">
-            <strong>Issue:</strong> Real-time updates not working<br>
-            <strong>Solution:</strong> Check your Firebase Database Rules in Firebase Console - they may be set to private
-        </div>
+      <div class="note">
+        <strong>Issue:</strong> "Firebase is not defined"<br />
+        <strong>Solution:</strong> Make sure Firebase CDN scripts are loaded
+        before your code tries to use them
+      </div>
 
-        <div class="note">
-            <strong>Issue:</strong> Errors in console<br>
-            <strong>Solution:</strong> Check that your API key and database URL are correct in firebaseConfig
-        </div>
+      <div class="note">
+        <strong>Issue:</strong> Real-time updates not working<br />
+        <strong>Solution:</strong> Check your Firebase Database Rules in
+        Firebase Console - they may be set to private
+      </div>
+
+      <div class="note">
+        <strong>Issue:</strong> Errors in console<br />
+        <strong>Solution:</strong> Check that your API key and database URL are
+        correct in firebaseConfig
+      </div>
     </div>
 
     <script>
-        function switchTab(evt, tabName) {
-            const tabContents = document.getElementsByClassName('tab-content');
-            for (let i = 0; i < tabContents.length; i++) {
-                tabContents[i].classList.remove('active');
-            }
-
-            const tabs = document.getElementsByClassName('tab');
-            for (let i = 0; i < tabs.length; i++) {
-                tabs[i].classList.remove('active');
-            }
-
-            document.getElementById(tabName).classList.add('active');
-            evt.currentTarget.classList.add('active');
+      function switchTab(evt, tabName) {
+        const tabContents = document.getElementsByClassName("tab-content");
+        for (let i = 0; i < tabContents.length; i++) {
+          tabContents[i].classList.remove("active");
         }
+
+        const tabs = document.getElementsByClassName("tab");
+        for (let i = 0; i < tabs.length; i++) {
+          tabs[i].classList.remove("active");
+        }
+
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+      }
     </script>
-</body>
+  </body>
 </html>
