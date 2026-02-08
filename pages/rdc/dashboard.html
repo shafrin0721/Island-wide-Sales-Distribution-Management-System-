@@ -15,11 +15,11 @@
                 <span id="current-user"></span>
             </div>
             <div class="nav-menu">
-                <button class="nav-link active" onclick="window.location.href='dashboard.html'">Dashboard</button>
-                <button class="nav-link" onclick="window.location.href='orders.html'">Orders</button>
-                <button class="nav-link" onclick="window.location.href='inventory.html'">Inventory</button>
-                <button class="nav-link" onclick="window.location.href='delivery.html'">Deliveries</button>
-                <button class="nav-link logout" onclick="logout()">Logout</button>
+                <button class="nav-link active" data-href="window.location.href='dashboard.html'">Dashboard</button>
+                <button class="nav-link" data-href="window.location.href='orders.html'">Orders</button>
+                <button class="nav-link" data-href="window.location.href='inventory.html'">Inventory</button>
+                <button class="nav-link" data-href="window.location.href='delivery.html'">Deliveries</button>
+                <button class="nav-link logout" data-nav="logout">Logout</button>
             </div>
         </div>
     </nav>
@@ -59,15 +59,15 @@
         <div class="quick-actions">
             <h3>Quick Actions</h3>
             <div class="action-grid">
-                <button class="action-btn" onclick="goToPage('../rdc/orders.html')">
+                <button class="action-btn" data-action="go-to-page" data-page="orders.html">
                     <span class="action-icon">📋</span>
                     <span>Process Orders</span>
                 </button>
-                <button class="action-btn" onclick="goToPage('../rdc/inventory.html')">
+                <button class="action-btn" data-action="go-to-page" data-page="inventory.html">
                     <span class="action-icon">📦</span>
                     <span>Manage Inventory</span>
                 </button>
-                <button class="action-btn" onclick="goToPage('../rdc/delivery.html')">
+                <button class="action-btn" data-action="go-to-page" data-page="delivery.html">>
                     <span class="action-icon">🚚</span>
                     <span>Assign Deliveries</span>
                 </button>

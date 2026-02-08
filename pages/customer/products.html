@@ -15,11 +15,12 @@
                 <span id="current-user"></span>
             </div>
             <div class="nav-menu">
-                <button class="nav-link active" onclick="window.location.href='products.html'">Products</button>
-                <button class="nav-link" onclick="window.location.href='orders.html'">My Orders</button>
-                <button class="nav-link" onclick="window.location.href='cart.html'">Cart<span id="cart-badge" class="badge">0</span></button>
-                <button class="nav-link" onclick="window.location.href='profile.html'">Profile</button>
-                <button class="nav-link logout" onclick="logout()">Logout</button>
+                <button class="nav-link active" data-nav="products">Products</button>
+                <button class="nav-link" data-nav="orders">My Orders</button>
+                <button class="nav-link" data-nav="cart">Cart<span id="cart-badge" class="badge">0</span></button>
+                <button class="nav-link" data-nav="profile">Profile</button>
+                <button class="nav-link" data-nav="settings">Settings</button>
+                <button class="nav-link logout" data-nav="logout">Logout</button>
             </div>
         </div>
     </nav>
@@ -39,11 +40,16 @@
             <div class="filters">
                 <select id="category-filter">
                     <option value="">All Categories</option>
+                    <option value="Beverages">Beverages</option>
+                    <option value="Health & Hygiene">Health & Hygiene</option>
+                    <option value="Home Cleaning">Home Cleaning</option>
+                    <option value="Personal Care">Personal Care</option>
+                    <option value="Packaged Foods">Packaged Foods</option>
                     <option value="Electronics">Electronics</option>
                     <option value="Clothing">Clothing</option>
-                    <option value="Home">Home & Garden</option>
+                    <option value="Home & Garden">Home & Garden</option>
                     <option value="Books">Books</option>
-                    <option value="Toys">Toys & Games</option>
+                    <option value="Toys & Games">Toys & Games</option>
                 </select>
                 <select id="price-filter">
                     <option value="">All Prices</option>
@@ -70,7 +76,7 @@
     <!-- Product Details Modal -->
     <div id="product-modal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('product-modal')">&times;</span>
+            <span class="close">&times;</span>
             <div id="product-details">
                 <!-- Product details will be populated here -->
             </div>
@@ -80,58 +86,5 @@
     <script src="../../js/data.js"></script>
     <script src="../../js/auth.js"></script>
     <script src="../../js/customer.js"></script>
-    
-    <script>
-        // Add event listeners for navigation buttons as backup
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Products page fully loaded');
-            console.log('Window object available:', typeof window === 'object');
-            console.log('currentUser:', currentUser);
-            console.log('currentCart:', currentCart);
-            console.log('showProductDetails function:', typeof showProductDetails);
-            console.log('addToCart function:', typeof addToCart);
-            console.log('logout function:', typeof logout);
-            console.log('Stored token:', localStorage.getItem('token') ? 'YES' : 'NO');
-            console.log('Stored user:', localStorage.getItem('user') ? 'YES' : 'NO');
-            
-            // Setup nav button event listeners
-            const navButtons = document.querySelectorAll('.nav-link');
-            navButtons.forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    const btnText = this.textContent.trim().split('\n')[0];
-                    console.log('Nav button clicked:', btnText);
-                    
-                    if (btnText === 'Products') {
-                        window.location.href = 'products.html';
-                    } else if (btnText === 'My Orders') {
-                        window.location.href = 'orders.html';
-                    } else if (btnText.includes('Cart')) {
-                        window.location.href = 'cart.html';
-                    } else if (btnText === 'Profile') {
-                        window.location.href = 'profile.html';
-                    }
-                });
-            });
-            
-            // Setup logout button
-            const logoutBtn = document.querySelector('.nav-link.logout');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function(e) {
-                    console.log('Logout button clicked via event listener');
-                    logout();
-                });
-            }
-            
-            // Create a test button
-            const testBtn = document.createElement('button');
-            testBtn.textContent = 'TEST BUTTON';
-            testBtn.style.cssText = 'padding: 10px 20px; background: red; color: white; border: none; cursor: pointer; position: fixed; top: 100px; right: 10px; z-index: 9999;';
-            testBtn.onclick = function() {
-                alert('Test button works! onclick is functional.');
-                console.log('Test button clicked');
-            };
-            document.body.appendChild(testBtn);
-        });
-    </script>
 </body>
 </html>

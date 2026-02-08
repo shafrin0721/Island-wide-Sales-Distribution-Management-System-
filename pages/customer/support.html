@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support & Complaints - ISDN System</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">ISDN - Customer Support</span>
+                <span id="current-user"></span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-link" data-nav="products">Products</button>
+                <button class="nav-link" data-nav="orders">Orders</button>
+                <button class="nav-link" data-nav="invoices">Invoices</button>
+                <button class="nav-link active" data-nav="support">Support</button>
+                <button class="nav-link" data-nav="profile">Profile</button>
+                <button class="nav-link logout" data-nav="logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h2>💬 Customer Support</h2>
+            <p>Raise complaints, requests, and get help</p>
+        </div>
+
+        <div style="max-width: 900px; margin: 20px auto;">
+            <!-- Tabs -->
+            <div style="margin-bottom: 30px; border-bottom: 2px solid #eee;">
+                <button class="btn btn-tab active" onclick="switchTab('raise')">Raise Request</button>
+                <button class="btn btn-tab" onclick="switchTab('tickets')">My Tickets</button>
+                <button class="btn btn-tab" onclick="switchTab('faq')">FAQ</button>
+            </div>
+
+            <!-- Raise Request Tab -->
+            <div id="raise-tab" class="tab-content">
+                <div class="card" style="max-width: 600px;">
+                    <div class="card-header">
+                        <h3>📝 Raise a Support Request</h3>
+                    </div>
+                    <form id="support-form" style="padding: 20px;">
+                        <div class="form-group">
+                            <label>Request Type:</label>
+                            <select id="request-type" required>
+                                <option value="">Select type</option>
+                                <option value="complaint">Complaint</option>
+                                <option value="product">Product Issue</option>
+                                <option value="delivery">Delivery Issue</option>
+                                <option value="payment">Payment Issue</option>
+                                <option value="return">Return Request</option>
+                                <option value="general">General Inquiry</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Order ID (if applicable):</label>
+                            <input type="text" id="order-id" placeholder="ORD-xxx">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Subject:</label>
+                            <input type="text" id="subject" placeholder="Brief subject" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description:</label>
+                            <textarea id="description" placeholder="Detailed description of your issue" rows="6" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Priority:</label>
+                            <select id="priority">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Submit Request</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- My Tickets Tab -->
+            <div id="tickets-tab" class="tab-content" style="display: none;">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Type</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tickets-table">
+                            <!-- Tickets loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FAQ Tab -->
+            <div id="faq-tab" class="tab-content" style="display: none;">
+                <div style="max-width: 700px;">
+                    <div class="faq-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 4px;">
+                        <h4 style="cursor: pointer; margin: 0;" onclick="toggleFAQ(this)">❓ How long does delivery take?</h4>
+                        <p style="display: none; margin-top: 10px; color: #666;">Delivery typically takes 2-5 business days depending on your location. You can track your order in real-time using our tracking feature.</p>
+                    </div>
+
+                    <div class="faq-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 4px;">
+                        <h4 style="cursor: pointer; margin: 0;" onclick="toggleFAQ(this)">❓ What's your return policy?</h4>
+                        <p style="display: none; margin-top: 10px; color: #666;">Items can be returned within 30 days of delivery if they're unused and in original condition. Contact support to initiate a return.</p>
+                    </div>
+
+                    <div class="faq-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 4px;">
+                        <h4 style="cursor: pointer; margin: 0;" onclick="toggleFAQ(this)">❓ What payment methods do you accept?</h4>
+                        <p style="display: none; margin-top: 10px; color: #666;">We accept cash on delivery, credit/debit cards, and digital wallets. Payment details are secure and encrypted.</p>
+                    </div>
+
+                    <div class="faq-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 4px;">
+                        <h4 style="cursor: pointer; margin: 0;" onclick="toggleFAQ(this)">❓ How do I track my order?</h4>
+                        <p style="display: none; margin-top: 10px; color: #666;">Go to "Track Delivery" page and enter your Order ID. You'll see real-time GPS location and delivery status updates.</p>
+                    </div>
+
+                    <div class="faq-item" style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 4px;">
+                        <h4 style="cursor: pointer; margin: 0;" onclick="toggleFAQ(this)">❓ What if my order is damaged?</h4>
+                        <p style="display: none; margin-top: 10px; color: #666;">Report damage immediately through your Order Details. Include photos if possible. We'll arrange a replacement or refund within 24 hours.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ticket Detail Modal -->
+        <div id="ticket-modal" class="modal" style="display: none;">
+            <div class="modal-content" style="max-width: 600px;">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2 id="ticket-title">Ticket Details</h2>
+                <div id="ticket-details" style="padding: 20px;">
+                    <!-- Ticket details loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/data.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user || user.role !== 'customer') {
+                window.location.href = '../../index.html';
+                return;
+            }
+
+            document.getElementById('current-user').textContent = `Logged in as: ${user.name}`;
+            loadTickets();
+            setupNavigation();
+
+            document.getElementById('support-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitSupportRequest();
+            });
+        });
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
+            document.getElementById(tab + '-tab').style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        function submitSupportRequest() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const ticketID = 'TKT-' + Date.now();
+
+            const ticket = {
+                ticketID,
+                userID: user.id,
+                type: document.getElementById('request-type').value,
+                orderID: document.getElementById('order-id').value || null,
+                subject: document.getElementById('subject').value,
+                description: document.getElementById('description').value,
+                priority: document.getElementById('priority').value,
+                status: 'open',
+                createdAt: new Date(),
+                responses: []
+            };
+
+            systemData.tickets = systemData.tickets || [];
+            systemData.tickets.push(ticket);
+            saveData();
+
+            alert('✓ Request submitted successfully! Ticket ID: ' + ticketID);
+            document.getElementById('support-form').reset();
+        }
+
+        function loadTickets() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const tickets = (systemData.tickets || [])
+                .filter(t => t.userID === user.id)
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            const tbody = document.getElementById('tickets-table');
+            tbody.innerHTML = '';
+
+            if (tickets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No support tickets</td></tr>';
+                return;
+            }
+
+            tickets.forEach(ticket => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${ticket.ticketID}</td>
+                    <td>${ticket.type}</td>
+                    <td>${ticket.subject}</td>
+                    <td><span class="badge badge-${ticket.status}">${ticket.status}</span></td>
+                    <td>${new Date(ticket.createdAt).toLocaleDateString()}</td>
+                    <td><button class="btn btn-small btn-info" onclick="viewTicket('${ticket.ticketID}')">View</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function viewTicket(ticketID) {
+            const ticket = systemData.tickets.find(t => t.ticketID === ticketID);
+            const details = document.getElementById('ticket-details');
+            document.getElementById('ticket-title').textContent = ticket.subject;
+
+            details.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <p><strong>Ticket ID:</strong> ${ticket.ticketID}</p>
+                    <p><strong>Status:</strong> <span class="badge badge-${ticket.status}">${ticket.status}</span></p>
+                    <p><strong>Type:</strong> ${ticket.type}</p>
+                    <p><strong>Priority:</strong> ${ticket.priority}</p>
+                    <p><strong>Created:</strong> ${new Date(ticket.createdAt).toLocaleDateString()}</p>
+                </div>
+                <hr>
+                <p><strong>Description:</strong></p>
+                <p>${ticket.description}</p>
+                <hr>
+                <p><strong>Responses:</strong></p>
+                <div style="background: #f9f9f9; padding: 10px; border-radius: 4px;">
+                    ${ticket.responses?.length ? ticket.responses.map(r => 
+                        `<p><strong>${r.from}:</strong> ${r.message}</p>`
+                    ).join('') : '<p style="color: #999;">No responses yet. Our team will respond soon.</p>'}
+                </div>
+            `;
+
+            document.getElementById('ticket-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('ticket-modal').style.display = 'none';
+        }
+
+        function toggleFAQ(element) {
+            const p = element.nextElementSibling;
+            p.style.display = p.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function setupNavigation() {
+            document.addEventListener('click', function(e) {
+                const nav = e.target.getAttribute('data-nav');
+                if (nav === 'products') window.location.href = 'products.html';
+                else if (nav === 'orders') window.location.href = 'orders.html';
+                else if (nav === 'invoices') window.location.href = 'invoices.html';
+                else if (nav === 'support') window.location.href = 'support.html';
+                else if (nav === 'profile') window.location.href = 'profile.html';
+                else if (nav === 'logout') {
+                    localStorage.clear();
+                    window.location.href = '../../index.html';
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .btn-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .badge-open { background: #cce5ff; color: #004085; }
+        .badge-in-progress { background: #fff3cd; color: #856404; }
+        .badge-resolved { background: #d4edda; color: #155724; }
+        .badge-closed { background: #e2e3e5; color: #383d41; }
+    </style>
+</body>
+</html>

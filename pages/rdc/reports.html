@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regional Reports - RDC Staff</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">RDC - Regional Reports</span>
+                <span id="current-user"></span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-link" data-nav="dashboard">Dashboard</button>
+                <button class="nav-link" data-nav="orders">Orders</button>
+                <button class="nav-link" data-nav="inventory">Inventory</button>
+                <button class="nav-link" data-nav="delivery">Delivery</button>
+                <button class="nav-link active" data-nav="reports">Reports</button>
+                <button class="nav-link logout" data-nav="logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h2>📊 Regional Reports</h2>
+            <p>Sales, inventory, and performance analytics for your region</p>
+        </div>
+
+        <div style="max-width: 1000px; margin: 20px auto;">
+            <!-- Date Range Selector -->
+            <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+                <div>
+                    <label>From Date:</label>
+                    <input type="date" id="from-date" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div>
+                    <label>To Date:</label>
+                    <input type="date" id="to-date" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <button class="btn btn-primary" onclick="generateReports()" style="align-self: flex-end;">Generate Report</button>
+            </div>
+
+            <!-- Summary Cards -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                <div class="card" style="text-align: center;">
+                    <h4>Total Sales</h4>
+                    <p id="total-sales" style="font-size: 24px; font-weight: bold; color: #27ae60;">Rs. 0</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h4>Total Orders</h4>
+                    <p id="total-orders" style="font-size: 24px; font-weight: bold; color: #3498db;">0</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h4>Delivered Orders</h4>
+                    <p id="delivered-orders" style="font-size: 24px; font-weight: bold; color: #2ecc71;">0</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h4>Pending Orders</h4>
+                    <p id="pending-orders" style="font-size: 24px; font-weight: bold; color: #f39c12;">0</p>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div style="margin-bottom: 20px; border-bottom: 2px solid #eee;">
+                <button class="btn-tab active" onclick="switchTab('sales')">Sales Report</button>
+                <button class="btn-tab" onclick="switchTab('inventory')">Inventory Report</button>
+                <button class="btn-tab" onclick="switchTab('pending')">Pending Orders</button>
+            </div>
+
+            <!-- Sales Report -->
+            <div id="sales-tab" class="tab-content">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sales-table">
+                            <!-- Sales data loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Inventory Report -->
+            <div id="inventory-tab" class="tab-content" style="display: none;">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Stock Level</th>
+                                <th>Reorder Level</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table">
+                            <!-- Inventory data loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pending Orders -->
+            <div id="pending-tab" class="tab-content" style="display: none;">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Days Pending</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pending-table">
+                            <!-- Pending orders loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/data.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user || user.role !== 'rdc_staff') {
+                window.location.href = '../../index.html';
+                return;
+            }
+
+            document.getElementById('current-user').textContent = `Logged in as: ${user.name}`;
+            
+            // Set default dates (last 30 days)
+            const today = new Date();
+            const month_ago = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+            
+            document.getElementById('to-date').valueAsDate = today;
+            document.getElementById('from-date').valueAsDate = month_ago;
+
+            generateReports();
+            setupNavigation();
+        });
+
+        function generateReports() {
+            const fromDate = new Date(document.getElementById('from-date').value);
+            const toDate = new Date(document.getElementById('to-date').value);
+
+            // Filter orders in date range
+            const orders = (systemData.orders || []).filter(o => {
+                const oDate = new Date(o.orderDate);
+                return oDate >= fromDate && oDate <= toDate;
+            });
+
+            // Calculate metrics
+            const totalSales = orders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+            const deliveredOrders = orders.filter(o => o.status === 'delivered').length;
+            const pendingOrders = orders.filter(o => o.status === 'pending').length;
+
+            // Update summary cards
+            document.getElementById('total-sales').textContent = 'Rs. ' + totalSales.toFixed(2);
+            document.getElementById('total-orders').textContent = orders.length;
+            document.getElementById('delivered-orders').textContent = deliveredOrders;
+            document.getElementById('pending-orders').textContent = pendingOrders;
+
+            // Load tables
+            loadSalesReport(orders);
+            loadInventoryReport();
+            loadPendingOrders(orders);
+        }
+
+        function loadSalesReport(orders) {
+            const tbody = document.getElementById('sales-table');
+            tbody.innerHTML = '';
+
+            if (orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No orders in selected period</td></tr>';
+                return;
+            }
+
+            orders.forEach(order => {
+                const customer = systemData.users.find(u => u.id === order.customerID);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${order.orderID}</td>
+                    <td>${customer?.name || 'Unknown'}</td>
+                    <td>Rs. ${order.totalPrice?.toFixed(2)}</td>
+                    <td><span class="badge badge-${order.status?.toLowerCase()}">${order.status}</span></td>
+                    <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function loadInventoryReport() {
+            const tbody = document.getElementById('inventory-table');
+            tbody.innerHTML = '';
+
+            const inventory = (systemData.inventory || [])
+                .map(inv => ({
+                    ...inv,
+                    product: systemData.products.find(p => p.productID === inv.productID)
+                }))
+                .filter(inv => inv.product);
+
+            inventory.forEach(inv => {
+                const status = inv.quantity <= 10 ? 'low' : inv.quantity <= 50 ? 'medium' : 'good';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${inv.product.name}</td>
+                    <td>${inv.quantity}</td>
+                    <td>10</td>
+                    <td><span class="badge badge-${status}">${status.toUpperCase()}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function loadPendingOrders(allOrders) {
+            const tbody = document.getElementById('pending-table');
+            tbody.innerHTML = '';
+
+            const pending = allOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled');
+
+            if (pending.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No pending orders</td></tr>';
+                return;
+            }
+
+            pending.forEach(order => {
+                const customer = systemData.users.find(u => u.id === order.customerID);
+                const daysPending = Math.floor((new Date() - new Date(order.orderDate)) / (1000 * 60 * 60 * 24));
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${order.orderID}</td>
+                    <td>${customer?.name || 'Unknown'}</td>
+                    <td>Rs. ${order.totalPrice?.toFixed(2)}</td>
+                    <td><span class="badge badge-${order.status?.toLowerCase()}">${order.status}</span></td>
+                    <td>${daysPending} days</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
+            document.getElementById(tab + '-tab').style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        function setupNavigation() {
+            document.addEventListener('click', function(e) {
+                const nav = e.target.getAttribute('data-nav');
+                if (nav === 'dashboard') window.location.href = 'dashboard.html';
+                else if (nav === 'orders') window.location.href = 'orders.html';
+                else if (nav === 'inventory') window.location.href = 'inventory.html';
+                else if (nav === 'delivery') window.location.href = 'delivery.html';
+                else if (nav === 'reports') window.location.href = 'reports.html';
+                else if (nav === 'logout') {
+                    localStorage.clear();
+                    window.location.href = '../../index.html';
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .btn-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-right: 10px;
+        }
+
+        .btn-tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .badge-low { background: #f8d7da; color: #721c24; }
+        .badge-medium { background: #fff3cd; color: #856404; }
+        .badge-good { background: #d4edda; color: #155724; }
+    </style>
+</body>
+</html>

@@ -1,5 +1,6 @@
 // =====================================================
-// RDC BACKEND - MAIN SERVER FILE
+// ISDN - CENTRALISED DISTRIBUTION MANAGEMENT SYSTEM
+// Backend Server - Node.js + Express
 // =====================================================
 
 const express = require('express');
@@ -24,8 +25,25 @@ const io = socketIo(server, {
 });
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrcAttr: ["'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", 'data:', 'https:'],
+            connectSrc: ["'self'", 'ws:', 'wss:']
+        }
+    }
+}));
 app.use(cors());
+// Allow 'unload' permission for this site to reduce extension/Permissions-Policy warnings in console
+// Note: This relaxes a browser permissions policy and is optional. Remove if undesired.
+app.use((req, res, next) => {
+    res.setHeader('Permissions-Policy', "unload=(self)");
+    next();
+});
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
@@ -79,6 +97,34 @@ app.locals.io = io;
 // API ROUTES
 // =====================================================
 
+// Health & Status
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'healthy',
+        timestamp: new Date(),
+        uptime: process.uptime()
+    });
+});
+
+app.get('/api', (req, res) => {
+    res.json({
+        name: 'ISDN API v1',
+        status: 'running',
+        endpoints: [
+            '/api/health',
+            '/api/auth',
+            '/api/users',
+            '/api/products',
+            '/api/orders',
+            '/api/inventory',
+            '/api/delivery',
+            '/api/payments',
+            '/api/dashboard',
+            '/api/analytics'
+        ]
+    });
+});
+
 // Authentication Routes
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
@@ -91,17 +137,38 @@ app.use('/api/users', userRoutes);
 const productRoutes = require('./routes/products');
 app.use('/api/products', productRoutes);
 
-// Order Routes
-const orderRoutes = require('./routes/orders');
-app.use('/api/orders', orderRoutes);
+// Order Routes (try enhanced first, fall back to original)
+try {
+    const orderRoutesEnhanced = require('./routes/orders_enhanced');
+    app.use('/api/orders', orderRoutesEnhanced);
+    console.log('✓ Enhanced order routes loaded');
+} catch (e) {
+    const orderRoutes = require('./routes/orders');
+    app.use('/api/orders', orderRoutes);
+    console.log('⚠️  Using standard order routes');
+}
 
-// Inventory Routes
-const inventoryRoutes = require('./routes/inventory');
-app.use('/api/inventory', inventoryRoutes);
+// Inventory Routes (try enhanced first)
+try {
+    const inventoryRoutesEnhanced = require('./routes/inventory_enhanced');
+    app.use('/api/inventory', inventoryRoutesEnhanced);
+    console.log('✓ Enhanced inventory routes loaded');
+} catch (e) {
+    const inventoryRoutes = require('./routes/inventory');
+    app.use('/api/inventory', inventoryRoutes);
+    console.log('⚠️  Using standard inventory routes');
+}
 
-// Delivery Routes
-const deliveryRoutes = require('./routes/delivery');
-app.use('/api/delivery', deliveryRoutes);
+// Delivery Routes (try enhanced first)
+try {
+    const deliveryRoutesEnhanced = require('./routes/delivery_enhanced');
+    app.use('/api/delivery', deliveryRoutesEnhanced);
+    console.log('✓ Enhanced delivery routes loaded');
+} catch (e) {
+    const deliveryRoutes = require('./routes/delivery');
+    app.use('/api/delivery', deliveryRoutes);
+    console.log('⚠️  Using standard delivery routes');
+}
 
 // Payment Routes
 const paymentRoutes = require('./routes/payments');
@@ -110,6 +177,15 @@ app.use('/api/payments', paymentRoutes);
 // Analytics Routes
 const analyticsRoutes = require('./routes/analytics');
 app.use('/api/analytics', analyticsRoutes);
+
+// Dashboard Routes (NEW)
+try {
+    const dashboardRoutes = require('./routes/dashboard');
+    app.use('/api/dashboard', dashboardRoutes);
+    console.log('✓ Dashboard routes loaded');
+} catch (e) {
+    console.log('⚠️  Dashboard routes not available');
+}
 
 // Notification Routes
 const notificationRoutes = require('./routes/notifications');
@@ -432,6 +508,49 @@ app.use((req, res) => {
 // =====================================================
 
 const PORT = process.env.PORT || 5000;
+
+// =====================================================
+// ERROR HANDLING
+// =====================================================
+
+// Catch all undefined routes
+app.use((req, res) => {
+    console.warn(`❌ Route not found: ${req.method} ${req.path}`);
+    console.warn(`   Available base paths: /api/auth, /api/orders, /api/inventory, /api/delivery, /api/payments, etc.`);
+    
+    res.status(404).json({
+        success: false,
+        message: 'Route not found',
+        endpoint: `${req.method} ${req.path}`,
+        hint: 'Check that the URL is correct. Use GET /api to see available endpoints.',
+        availableEndpoints: [
+            '/api/health',
+            '/api (main API info)',
+            '/api/auth (login, register)',
+            '/api/users (user management)',
+            '/api/products (product catalog)',
+            '/api/orders (order management)',
+            '/api/inventory (stock management)',
+            '/api/delivery (delivery tracking)',
+            '/api/payments (payment processing)',
+            '/api/dashboard (analytics)',
+            '/api/analytics (reports)',
+            '/api/notifications (alerts)',
+            '/api/recommendations (product suggestions)',
+            '/api/promotions (special offers)'
+        ]
+    });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(err.status || 500).json({
+        success: false,
+        message: err.message || 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? err : {}
+    });
+});
 
 server.listen(PORT, () => {
     // Initialize demo test users for development

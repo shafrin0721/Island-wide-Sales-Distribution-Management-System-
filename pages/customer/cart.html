@@ -15,11 +15,12 @@
                 <span id="current-user"></span>
             </div>
             <div class="nav-menu">
-                <button class="nav-link" onclick="window.location.href='products.html'">Products</button>
-                <button class="nav-link" onclick="window.location.href='orders.html'">My Orders</button>
-                <button class="nav-link active" onclick="window.location.href='cart.html'">Cart<span id="cart-badge" class="badge">0</span></button>
-                <button class="nav-link" onclick="window.location.href='profile.html'">Profile</button>
-                <button class="nav-link logout" onclick="logout()">Logout</button>
+                <button class="nav-link" data-nav="products">Products</button>
+                <button class="nav-link" data-nav="orders">My Orders</button>
+                <button class="nav-link active" data-nav="cart">Cart<span id="cart-badge" class="badge">0</span></button>
+                <button class="nav-link" data-nav="profile">Profile</button>
+                <button class="nav-link" data-nav="settings">Settings</button>
+                <button class="nav-link logout" data-nav="logout">Logout</button>
             </div>
         </div>
     </nav>
@@ -52,8 +53,8 @@
                     <span>Total:</span>
                     <span id="total">$0.00</span>
                 </div>
-                <button id="checkout-btn" class="btn btn-primary btn-block" onclick="goToCheckout()">Proceed to Checkout</button>
-                <button class="btn btn-secondary btn-block" onclick="goToPage('products.html')">Continue Shopping</button>
+                <button id="checkout-btn" class="btn btn-primary btn-block" data-action="checkout">Proceed to Checkout</button>
+                <button class="btn btn-secondary btn-block" data-action="continue-shopping">Continue Shopping</button>
             </div>
         </div>
     </div>
@@ -61,42 +62,5 @@
     <script src="../../js/data.js"></script>
     <script src="../../js/auth.js"></script>
     <script src="../../js/customer.js"></script>
-    
-    <script>
-        // Setup nav buttons on cart page
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Cart page fully loaded');
-            console.log('currentUser:', currentUser);
-            console.log('currentCart:', currentCart);
-            
-            // Setup nav button event listeners
-            const navButtons = document.querySelectorAll('.nav-link');
-            navButtons.forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    const btnText = this.textContent.trim().split('\n')[0];
-                    console.log('Nav button clicked:', btnText);
-                    
-                    if (btnText === 'Products') {
-                        window.location.href = 'products.html';
-                    } else if (btnText === 'My Orders') {
-                        window.location.href = 'orders.html';
-                    } else if (btnText.includes('Cart')) {
-                        window.location.href = 'cart.html';
-                    } else if (btnText === 'Profile') {
-                        window.location.href = 'profile.html';
-                    }
-                });
-            });
-            
-            // Setup logout button
-            const logoutBtn = document.querySelector('.nav-link.logout');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function(e) {
-                    console.log('Logout button clicked');
-                    logout();
-                });
-            }
-        });
-    </script>
 </body>
 </html>

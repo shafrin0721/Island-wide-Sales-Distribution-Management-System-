@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Staff - Dashboard</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">Delivery System - Staff</span>
+                <span id="current-user"></span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-link active" data-nav="dashboard">Dashboard</button>
+                <button class="nav-link" data-nav="deliveries">My Deliveries</button>
+                <button class="nav-link" data-nav="profile">Profile</button>
+                <button class="nav-link logout" data-nav="logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-content">
+        <div class="page-header">
+            <h2>🚚 Delivery Staff Dashboard</h2>
+            <p>Manage your assigned deliveries and track routes</p>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <h3>📬 Assigned Deliveries</h3>
+                <p id="total-assigned">0</p>
+                <small>Today's deliveries</small>
+            </div>
+            <div class="stat-card">
+                <h3>✅ Completed</h3>
+                <p id="total-completed">0</p>
+                <small>Successfully delivered</small>
+            </div>
+            <div class="stat-card">
+                <h3>🚗 In Transit</h3>
+                <p id="total-in-transit">0</p>
+                <small>Currently out for delivery</small>
+            </div>
+            <div class="stat-card">
+                <h3>⚠️ Failed</h3>
+                <p id="total-failed">0</p>
+                <small>Delivery failed</small>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3>Quick Actions</h3>
+            <div class="action-grid">
+                <button class="action-btn" onclick="window.location.href='deliveries.html'">
+                    <span class="action-icon">📋</span>
+                    <span>View My Deliveries</span>
+                </button>
+                <button class="action-btn" onclick="viewAssignedDeliveries()">
+                    <span class="action-icon">📍</span>
+                    <span>View on Map</span>
+                </button>
+                <button class="action-btn" onclick="updateDeliveryStatus()">
+                    <span class="action-icon">✏️</span>
+                    <span>Update Status</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Today's Deliveries Summary -->
+        <div class="section">
+            <h3>Today's Assigned Deliveries</h3>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Delivery ID</th>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>ETA</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="delivery-staff-table">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 20px; color: #999;">
+                                Loading deliveries...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Delivery Status Legend -->
+        <div class="info-box">
+            <h4>Delivery Status Guide</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px;">
+                <div><span class="status-badge status-assigned">Assigned</span> - Delivery assigned to you</div>
+                <div><span class="status-badge status-out">Out for Delivery</span> - Currently en route</div>
+                <div><span class="status-badge status-delivered">Delivered</span> - Successfully completed</div>
+                <div><span class="status-badge status-failed">Failed</span> - Could not deliver</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="delivery-details-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('delivery-details-modal')">&times;</span>
+            <h2>Delivery Details</h2>
+            <div id="delivery-details-content" style="margin-top: 20px;">
+                <!-- Delivery details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/data.js"></script>
+    <script src="../../js/modals.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/delivery.js"></script>
+    
+    <script>
+        // Initialize dashboard on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDeliveryStats();
+            updateDeliveryStaffTable();
+
+            // Setup navigation
+            document.addEventListener('click', function(e) {
+                const nav = e.target.getAttribute('data-nav');
+                if (nav === 'deliveries') {
+                    window.location.href = 'deliveries.html';
+                } else if (nav === 'profile') {
+                    window.location.href = 'profile.html';
+                } else if (nav === 'dashboard') {
+                    window.location.href = 'dashboard.html';
+                }
+            });
+        });
+
+        // Update dashboard stats
+        function updateDeliveryStats() {
+            const assignedDeliveries = systemData.deliveries.filter(d => 
+                d.assignedStaff === currentUser?.userID
+            );
+            const completed = assignedDeliveries.filter(d => d.status === 'delivered').length;
+            const inTransit = assignedDeliveries.filter(d => d.status === 'out for delivery').length;
+            const failed = assignedDeliveries.filter(d => d.status === 'failed').length;
+
+            document.getElementById('total-assigned').textContent = assignedDeliveries.length;
+            document.getElementById('total-completed').textContent = completed;
+            document.getElementById('total-in-transit').textContent = inTransit;
+            document.getElementById('total-failed').textContent = failed;
+        }
+
+        // Show delivery map view
+        function viewAssignedDeliveries() {
+            alert('Map view feature coming soon. You can view locations in the detailed delivery page.');
+        }
+
+        // Update delivery status modal
+        function updateDeliveryStatus() {
+            alert('Quick status update feature coming soon. Use the "My Deliveries" page for detailed updates.');
+        }
+
+        // Close modal helper
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

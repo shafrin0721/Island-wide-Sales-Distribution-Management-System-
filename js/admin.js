@@ -4,6 +4,9 @@
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Setup delegated navigation handlers
+    setupAdminNavigation();
+    
     if (document.getElementById('admin-alerts')) {
         loadAdminDashboard();
     } else if (document.getElementById('users-table')) {
@@ -14,6 +17,49 @@ document.addEventListener('DOMContentLoaded', function() {
         setDefaultDates();
     }
 });
+
+// Setup delegated navigation for admin pages (CSP compliance)
+function setupAdminNavigation() {
+    document.addEventListener('click', function(e) {
+        // Handle nav link clicks with data-href (for inline onclick replacements)
+        if (e.target.classList.contains('nav-link') && e.target.hasAttribute('data-href')) {
+            e.preventDefault();
+            const href = e.target.getAttribute('data-href');
+            if (href && href.includes('window.location.href')) {
+                const match = href.match(/window\.location\.href\s*=\s*['\"]([^'\"]+)['\"]/);
+                if (match && match[1]) {
+                    window.location.href = match[1];
+                    return;
+                }
+            }
+        }
+        
+        // Handle action button clicks
+        const action = e.target.getAttribute('data-action');
+        if (action === 'add-new-user') {
+            addNewUser();
+        } else if (action === 'add-new-product') {
+            addNewProduct();
+        } else if (action === 'download-report') {
+            downloadReport();
+        } else if (action === 'backup-data') {
+            backupData();
+        } else if (action === 'export-data') {
+            exportData();
+        } else if (action === 'clear-data') {
+            confirmClearData();
+        } else if (action === 'toggle-api-visibility') {
+            toggleAPIKeyVisibility();
+        } else if (action === 'regenerate-api') {
+            regenerateAPIKey();
+        } else if (action === 'save-settings') {
+            saveSettings();
+        } else if (action === 'reset-settings') {
+            resetSettings();
+        }
+    });
+}
+
 
 // ================== DASHBOARD ==================
 

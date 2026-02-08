@@ -4,6 +4,8 @@
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    setupRDCNavigation();
+    
     if (document.getElementById('rdc-pending-orders')) {
         loadRDCDashboard();
     } else if (document.getElementById('rdc-orders-table')) {
@@ -14,6 +16,30 @@ document.addEventListener('DOMContentLoaded', function() {
         updateRDCDeliveryTable();
     }
 });
+
+// Setup delegated navigation for RDC pages (CSP compliance)
+function setupRDCNavigation() {
+    document.addEventListener('click', function(e) {
+        // Handle nav link clicks with data-href (for inline onclick replacements)
+        if (e.target.classList.contains('nav-link') && e.target.hasAttribute('data-href')) {
+            e.preventDefault();
+            const href = e.target.getAttribute('data-href');
+            if (href && href.includes('window.location.href')) {
+                const match = href.match(/window\.location\.href\s*=\s*['\"]([^'\"]+)['\"]/);
+                if (match && match[1]) {
+                    window.location.href = match[1];
+                    return;
+                }
+            }
+        }
+        
+        // Handle action buttons
+        const action = e.target.getAttribute('data-action');
+        if (action === 'add-stock') {
+            alert('Add stock feature coming soon');
+        }
+    });
+}
 
 // ================== DASHBOARD ==================
 
@@ -49,6 +75,9 @@ function updateRDCOrdersTable() {
         tr.innerHTML = `
             <td>#${order.orderID}</td>
             <td>${customer?.name || 'Unknown'}</td>
+            <td>${customer?.email || ''}</td>
+            <td>${customer?.phone || ''}</td>
+            <td>${customer?.address || ''}</td>
             <td>${order.orderDate}</td>
             <td>$${order.totalAmount.toFixed(2)}</td>
             <td><span class="order-status status-${order.status}">${order.status}</span></td>
@@ -137,6 +166,8 @@ function updateRDCDeliveryTable() {
             <td>#${delivery.deliveryID}</td>
             <td>#${delivery.orderID}</td>
             <td>${customer?.name || 'Unknown'}</td>
+            <td>${customer?.phone || ''}</td>
+            <td>${customer?.address || ''}</td>
             <td><span class="order-status status-${delivery.status}">${delivery.status}</span></td>
             <td>${staff?.name || 'Unassigned'}</td>
             <td>

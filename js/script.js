@@ -574,7 +574,23 @@ document.getElementById('checkout-form')?.addEventListener('submit', function(e)
         status: 'pending',
         route: `${document.getElementById('shipping-city').value} District`,
         estimatedTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleString(),
-        assignedStaff: null
+        estimatedMinutes: 30,
+        assignedStaff: null,
+        driverName: 'Not yet assigned',
+        driverPhone: 'N/A',
+        driverVehicle: 'N/A',
+        gpsLocation: { 
+            latitude: 6.9271, 
+            longitude: 80.6369, 
+            address: 'Mumtaz Mahal, 100/22 1st Cross St, Colombo 01100, Colombo 11' 
+        },
+        currentLocation: { latitude: 6.9271, longitude: 80.6369 },
+        smsUpdates: [
+            { timestamp: new Date().toLocaleString(), message: 'Order placed successfully. Processing in our distribution center.' }
+        ],
+        trackingHistory: [
+            { timestamp: new Date().toLocaleString(), status: 'Order Placed', location: 'Warehouse - Colombo' }
+        ]
     };
     systemData.deliveries.push(newDelivery);
 

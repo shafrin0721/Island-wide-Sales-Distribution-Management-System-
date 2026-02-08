@@ -264,13 +264,13 @@
                     
                     <div class="form-group-full">
                         <label for="password">Password *</label>
-                        <input type="password" id="password" placeholder="At least 6 characters" required>
+                        <input type="password" id="password" placeholder="At least 6 characters" autocomplete="new-password" required>
                         <small>Must be at least 6 characters long</small>
                     </div>
                     
                     <div class="form-group-full">
                         <label for="confirm_password">Confirm Password *</label>
-                        <input type="password" id="confirm_password" placeholder="Re-enter password" required>
+                        <input type="password" id="confirm_password" placeholder="Re-enter password" autocomplete="new-password" required>
                     </div>
                     
                     <div class="form-group-full terms-checkbox">
@@ -291,7 +291,19 @@
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+
     <script>
+        // Initialize Firebase as early as possible
+        (async () => {
+            window._FB_READY = await FirebaseHelper.init();
+        })();
+
         const API_URL = 'http://localhost:5000/api';
 
         function showMessage(message, type) {
@@ -299,21 +311,31 @@
             messageDiv.textContent = message;
             messageDiv.className = type; // 'success', 'error', or 'info'
             messageDiv.style.display = 'block';
+            console.log(`[${type}] ${message}`);
         }
 
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+        // Ensure form element exists before adding event listener
+        const signupForm = document.getElementById('signup-form');
+        if (!signupForm) {
+            console.error('signup-form not found in DOM');
+        }
+
+        signupForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log('✓ Form submitted');
             
             const submitBtn = document.getElementById('submit-btn');
-            const firstName = document.getElementById('first_name').value.trim();
-            const lastName = document.getElementById('last_name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const address = document.getElementById('address').value.trim();
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-            const key = document.getElementById('key').value.trim();
-            const terms = document.getElementById('terms').checked;
+            const firstName = document.getElementById('first_name')?.value.trim() || '';
+            const lastName = document.getElementById('last_name')?.value.trim() || '';
+            const email = document.getElementById('email')?.value.trim() || '';
+            const phone = document.getElementById('phone')?.value.trim() || '';
+            const address = document.getElementById('address')?.value.trim() || '';
+            const password = document.getElementById('password')?.value || '';
+            const confirmPassword = document.getElementById('confirm_password')?.value || '';
+            const key = document.getElementById('key')?.value.trim() || '';
+            const terms = document.getElementById('terms')?.checked || false;
+            
+            console.log('Form values:', { firstName, lastName, email, phone, address, password: '***', confirmPassword: '***', key, terms });
 
             // Determine user role based on key
             let role = 'customer'; // default role
@@ -322,11 +344,11 @@
             if (key) {
                 // Check if it's an RDC key (starts with RDC or contains RDC)
                 if (key.toUpperCase().includes('RDC')) {
-                    role = 'rdc';
+                    role = 'rdc_staff';
                 } 
                 // Check if it's a Delivery key (starts with DELIVERY or contains DELIVERY)
                 else if (key.toUpperCase().includes('DELIVERY')) {
-                    role = 'delivery';
+                    role = 'delivery_staff';
                 } 
                 // Any other non-empty key is invalid
                 else {
@@ -363,6 +385,7 @@
 
                 showMessage('Creating account...', 'info');
 
+                // Try to register via backend API
                 const response = await fetch(`${API_URL}/auth/register`, {
                     method: 'POST',
                     headers: {
@@ -382,9 +405,9 @@
 
                 if (response.ok && data.success) {
                     // Store token and user info
-                    localStorage.setItem('token', data.token || 'temp_token');
+                    localStorage.setItem('token', data.token || 'temp_token_' + Date.now());
                     localStorage.setItem('user', JSON.stringify({
-                        id: data.user?.id,
+                        id: data.user?.id || 'usr_' + Date.now(),
                         email: email,
                         full_name: `${firstName} ${lastName}`,
                         phone: phone,
@@ -392,12 +415,33 @@
                         role: role
                     }));
                     localStorage.setItem('currentCart', JSON.stringify([]));
-                    showMessage('Account created successfully! Redirecting to login...', 'success');
-                    
-                    // Redirect to login page after 1.5 seconds
+
+                    // Try to write user to Firebase (if available)
+                    try {
+                        if (window._FB_READY) {
+                            const userId = data.user?.id || ('usr_' + Date.now());
+                            const fbUser = {
+                                id: userId,
+                                email: email,
+                                full_name: `${firstName} ${lastName}`,
+                                phone: phone,
+                                address: address,
+                                role: role,
+                                createdAt: new Date().toISOString()
+                            };
+                            await FirebaseHelper.writeData(`users/${userId}`, fbUser);
+                            console.log('Firebase: user written:', userId);
+                        }
+                    } catch (fbErr) {
+                        console.warn('Firebase write failed:', fbErr?.message || fbErr);
+                    }
+
+                    showMessage(`Account created successfully! Redirecting to login...`, 'success');
+
+                    // Redirect to login page after 2 seconds
                     setTimeout(() => {
                         window.location.href = 'index.html';
-                    }, 1500);
+                    }, 2000);
                 } else {
                     showMessage(data.message || 'Registration failed. Please try again.', 'error');
                     submitBtn.disabled = false;
@@ -405,9 +449,56 @@
                 }
             } catch (error) {
                 console.error('Registration error:', error);
-                showMessage('Error: ' + error.message, 'error');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Create Account';
+                
+                // Fallback: Create account locally if backend is not available
+                if (error.message.includes('Failed to fetch') || error.message.includes('Network')) {
+                    console.log('Backend not available, using local storage fallback');
+                    
+                    // Save user to localStorage with a fallback method
+                    const newUser = {
+                        id: 'usr_' + Date.now(),
+                        email: email,
+                        full_name: `${firstName} ${lastName}`,
+                        phone: phone,
+                        address: address,
+                        role: role,
+                        password: password, // Note: plaintext for demo only
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    localStorage.setItem('token', 'temp_token_' + Date.now());
+                    localStorage.setItem('user', JSON.stringify(newUser));
+                    localStorage.setItem('currentCart', JSON.stringify([]));
+
+                    // Try to write user to Firebase even in fallback mode
+                    try {
+                        if (window._FB_READY) {
+                            await FirebaseHelper.writeData(`users/${newUser.id}`, {
+                                id: newUser.id,
+                                email: newUser.email,
+                                full_name: newUser.full_name,
+                                phone: newUser.phone,
+                                address: newUser.address,
+                                role: newUser.role,
+                                createdAt: newUser.createdAt
+                            });
+                            console.log('Firebase: fallback user written:', newUser.id);
+                        }
+                    } catch (fbErr) {
+                        console.warn('Firebase write failed (fallback):', fbErr?.message || fbErr);
+                    }
+
+                    showMessage(`Account created successfully (local mode)! Redirecting to login...`, 'success');
+
+                    // Redirect to login page after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    showMessage('Error: ' + error.message, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Create Account';
+                }
             }
         });
     </script>

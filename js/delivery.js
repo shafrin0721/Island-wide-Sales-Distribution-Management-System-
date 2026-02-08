@@ -5,8 +5,33 @@
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     updateDeliveryStaffTable();
-    // Auto-refresh every 30 seconds
-    setInterval(updateDeliveryStaffTable, 30000);
+    // Auto-refresh every 30 seconds but only when page is visible; avoid overlapping runs
+    (function() {
+        let deliveryTimer = null;
+        function startTimer() {
+            if (deliveryTimer) return;
+            deliveryTimer = setInterval(function() {
+                if (document.hidden) return;
+                try { updateDeliveryStaffTable(); } catch (e) { console.error(e); }
+            }, 30000);
+        }
+        function stopTimer() {
+            if (deliveryTimer) { clearInterval(deliveryTimer); deliveryTimer = null; }
+        }
+
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                // run an immediate update when tab becomes visible
+                try { updateDeliveryStaffTable(); } catch (e) { console.error(e); }
+                startTimer();
+            } else {
+                stopTimer();
+            }
+        });
+
+        // start when script runs
+        if (!document.hidden) startTimer();
+    })();
 });
 
 function updateDeliveryStaffTable() {

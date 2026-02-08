@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices - ISDN System</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">ISDN - Invoices & Billing</span>
+                <span id="current-user"></span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-link" data-nav="products">Products</button>
+                <button class="nav-link" data-nav="orders">Orders</button>
+                <button class="nav-link active" data-nav="invoices">Invoices</button>
+                <button class="nav-link" data-nav="support">Support</button>
+                <button class="nav-link" data-nav="profile">Profile</button>
+                <button class="nav-link logout" data-nav="logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h2>📄 Invoices & Billing</h2>
+            <p>View and download your invoices</p>
+        </div>
+
+        <div style="max-width: 900px; margin: 20px auto;">
+            <!-- Filter -->
+            <div style="margin-bottom: 20px;">
+                <select id="status-filter" onchange="filterInvoices()" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+                    <option value="">All Invoices</option>
+                    <option value="paid">Paid</option>
+                    <option value="pending">Pending</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+            </div>
+
+            <!-- Invoices Table -->
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoices-table">
+                        <!-- Invoices loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Invoice Detail Modal -->
+        <div id="invoice-modal" class="modal" style="display: none;">
+            <div class="modal-content" style="max-width: 700px;">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Invoice Details</h2>
+                <div id="invoice-details" style="padding: 20px;">
+                    <!-- Invoice details loaded here -->
+                </div>
+                <button class="btn btn-primary" onclick="printInvoice()" style="margin-top: 20px;">🖨️ Print</button>
+                <button class="btn btn-info" onclick="downloadInvoice()" style="margin-top: 20px; margin-left: 10px;">⬇️ Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/data.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user || user.role !== 'customer') {
+                window.location.href = '../../index.html';
+                return;
+            }
+
+            document.getElementById('current-user').textContent = `Logged in as: ${user.name}`;
+            loadInvoices();
+            setupNavigation();
+        });
+
+        function loadInvoices() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const invoices = (systemData.invoices || [])
+                .filter(inv => {
+                    const order = systemData.orders.find(o => o.orderID === inv.orderID);
+                    return order && order.customerID === user.id;
+                })
+                .sort((a, b) => new Date(b.issueDate) - new Date(a.issueDate));
+
+            const tbody = document.getElementById('invoices-table');
+            tbody.innerHTML = '';
+
+            if (invoices.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No invoices found</td></tr>';
+                return;
+            }
+
+            invoices.forEach(inv => {
+                const row = document.createElement('tr');
+                row.setAttribute('data-status', inv.status || 'pending');
+                row.innerHTML = `
+                    <td>${inv.invoiceID}</td>
+                    <td>${inv.orderID}</td>
+                    <td>${new Date(inv.issueDate).toLocaleDateString()}</td>
+                    <td>Rs. ${inv.amount?.toFixed(2) || '0.00'}</td>
+                    <td><span class="badge badge-${inv.status?.toLowerCase()}">${inv.status || 'Pending'}</span></td>
+                    <td>${new Date(inv.dueDate).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-small btn-info" onclick="viewInvoice('${inv.invoiceID}')">View</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterInvoices() {
+            const filter = document.getElementById('status-filter').value;
+            const rows = document.getElementById('invoices-table').querySelectorAll('tr');
+            rows.forEach(row => {
+                if (filter === '') {
+                    row.style.display = '';
+                } else {
+                    row.style.display = row.getAttribute('data-status') === filter ? '' : 'none';
+                }
+            });
+        }
+
+        function viewInvoice(invoiceID) {
+            const invoice = systemData.invoices.find(i => i.invoiceID === invoiceID);
+            const order = systemData.orders.find(o => o.orderID === invoice.orderID);
+            const user = systemData.users.find(u => u.id === order.customerID);
+
+            const details = document.getElementById('invoice-details');
+            details.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4>Invoice Information</h4>
+                        <p><strong>Invoice #:</strong> ${invoice.invoiceID}</p>
+                        <p><strong>Order #:</strong> ${invoice.orderID}</p>
+                        <p><strong>Issue Date:</strong> ${new Date(invoice.issueDate).toLocaleDateString()}</p>
+                        <p><strong>Due Date:</strong> ${new Date(invoice.dueDate).toLocaleDateString()}</p>
+                        <p><strong>Status:</strong> <span class="badge badge-${invoice.status?.toLowerCase()}">${invoice.status}</span></p>
+                    </div>
+                    <div>
+                        <h4>Bill To</h4>
+                        <p><strong>${user.name}</strong></p>
+                        <p>${user.email}</p>
+                        <p>${user.phone}</p>
+                        <p>${user.address}</p>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <h4>Order Items</h4>
+                    <table class="data-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${order.items.map(item => {
+                                const product = systemData.products.find(p => p.productID === item.productID);
+                                return `
+                                    <tr>
+                                        <td>${product?.name || 'Unknown'}</td>
+                                        <td>${item.quantity}</td>
+                                        <td>Rs. ${item.price?.toFixed(2)}</td>
+                                        <td>Rs. ${(item.quantity * item.price)?.toFixed(2)}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 20px; text-align: right;">
+                    <p><strong>Subtotal:</strong> Rs. ${order.subtotal?.toFixed(2) || (order.items.reduce((sum, i) => sum + (i.quantity * i.price), 0).toFixed(2))}</p>
+                    <p><strong>Tax (${order.taxRate || 0}%):</strong> Rs. ${order.tax?.toFixed(2) || '0.00'}</p>
+                    <p style="font-size: 16px; font-weight: bold;"><strong>Total:</strong> Rs. ${invoice.amount?.toFixed(2)}</p>
+                </div>
+            `;
+
+            document.getElementById('invoice-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('invoice-modal').style.display = 'none';
+        }
+
+        function printInvoice() {
+            window.print();
+        }
+
+        function downloadInvoice() {
+            alert('📥 Invoice PDF download functionality would be implemented with a PDF library');
+        }
+
+        function setupNavigation() {
+            document.addEventListener('click', function(e) {
+                const nav = e.target.getAttribute('data-nav');
+                if (nav === 'products') window.location.href = 'products.html';
+                else if (nav === 'orders') window.location.href = 'orders.html';
+                else if (nav === 'invoices') window.location.href = 'invoices.html';
+                else if (nav === 'support') window.location.href = 'support.html';
+                else if (nav === 'profile') window.location.href = 'profile.html';
+                else if (nav === 'logout') {
+                    localStorage.clear();
+                    window.location.href = '../../index.html';
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .badge-paid { background: #d4edda; color: #155724; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-overdue { background: #f8d7da; color: #721c24; }
+    </style>
+</body>
+</html>

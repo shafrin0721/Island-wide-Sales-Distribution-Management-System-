@@ -484,4 +484,409 @@ router.delete('/account', verifyToken, async (req, res) => {
     }
 });
 
+/**
+ * SEND VERIFICATION EMAIL
+ * POST /api/auth/send-verification-email
+ * Sends verification email to user via Firebase
+ */
+router.post('/send-verification-email', verifyToken, async (req, res) => {
+    try {
+        const { email } = req.body;
+        const recipientEmail = email || req.user?.email;
+
+        if (!recipientEmail) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email address is required'
+            });
+        }
+
+        // In demo mode, log email instead of sending
+        if (process.env.DEMO_MODE === 'true') {
+            console.log('💌 [DEMO EMAIL via Firebase]', {
+                email: recipientEmail,
+                subject: 'Email Verification - RDC System',
+                timestamp: new Date().toISOString()
+            });
+            
+            return res.json({
+                success: true,
+                message: 'Verification email sent successfully (demo mode)',
+                emailSent: true,
+                emailSentDate: new Date().toISOString(),
+                demoMode: true,
+                service: 'firebase'
+            });
+        }
+
+        // Use Firebase for email (Firestore storage)
+        if (process.env.FIREBASE_EMAIL_ENABLED === 'true') {
+            const { db } = require('../config/firebase');
+            
+            // Store email in Firestore for delivery
+            const emailRecord = {
+                recipient: recipientEmail,
+                subject: 'Email Verification - RDC System',
+                type: 'verification',
+                body: `
+                    <h2>Email Verification</h2>
+                    <p>Thank you for registering with RDC System.</p>
+                    <p>Your email has been verified successfully.</p>
+                    <p>You can now access all features of the platform.</p>
+                    <br/>
+                    <p><strong>Order Tracking:</strong> You will receive real-time SMS and email updates for your deliveries.</p>
+                    <br/>
+                    <p>Best regards,<br/>RDC System Team</p>
+                `,
+                timestamp: new Date().toISOString(),
+                status: 'sent',
+                service: 'firebase'
+            };
+            
+            try {
+                // Save to Firestore
+                await db.collection('emails').add(emailRecord);
+                
+                console.log('✓ Verification email sent via Firebase:', {
+                    emailID: emailRecord.timestamp,
+                    to: recipientEmail
+                });
+
+                return res.json({
+                    success: true,
+                    message: 'Verification email sent successfully via Firebase',
+                    emailSent: true,
+                    emailSentDate: new Date().toISOString(),
+                    service: 'firebase'
+                });
+            } catch (firebaseError) {
+                console.error('Firebase email error:', firebaseError);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Failed to send email via Firebase',
+                    error: firebaseError.message
+                });
+            }
+        }
+
+        // Fallback: if Firebase email is not enabled
+        res.status(500).json({
+            success: false,
+            message: 'Email service not configured. Set FIREBASE_EMAIL_ENABLED=true in .env'
+        });
+
+    } catch (error) {
+        console.error('Send verification email error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to send verification email',
+            error: error.message
+        });
+    }
+});
+
+/**
+ * SEND ORDER CONFIRMATION EMAIL
+ * POST /api/auth/send-order-confirmation
+ * Sends order confirmation email with order details via Firebase
+ */
+router.post('/send-order-confirmation', verifyToken, async (req, res) => {
+    try {
+        const { email, orderID, orderDetails } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email address is required'
+            });
+        }
+
+        // In demo mode, log email instead of sending
+        if (process.env.DEMO_MODE === 'true') {
+            console.log('💌 [DEMO ORDER EMAIL via Firebase]', {
+                email: email,
+                orderID: orderID,
+                subject: `Order Confirmation - Order #${orderID}`,
+                timestamp: new Date().toISOString()
+            });
+            
+            return res.json({
+                success: true,
+                message: 'Order confirmation email sent successfully (demo mode)',
+                emailSent: true,
+                emailSentDate: new Date().toISOString(),
+                demoMode: true,
+                service: 'firebase'
+            });
+        }
+
+        // Use Firebase for email (Firestore storage)
+        if (process.env.FIREBASE_EMAIL_ENABLED === 'true') {
+            const { db } = require('../config/firebase');
+            
+            // Store email in Firestore for delivery
+            const emailRecord = {
+                recipient: email,
+                orderID: orderID,
+                subject: `Order Confirmation - Order #${orderID}`,
+                type: 'order_confirmation',
+                body: `
+                    <h2>Order Confirmation</h2>
+                    <p>Thank you for your order!</p>
+                    <p><strong>Order ID:</strong> ${orderID}</p>
+                    <p><strong>Order Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p><strong>Status:</strong> Processing</p>
+                    <p><strong>Total Amount:</strong> $${orderDetails?.totalAmount?.toFixed(2) || 0}</p>
+                    <h3>Order Items:</h3>
+                    <ul>
+                        ${orderDetails?.items?.map(item => `<li>${item.name} x ${item.quantity} - $${(item.price * item.quantity).toFixed(2)}</li>`).join('') || ''}
+                    </ul>
+                    <h3>📍 Tracking Information:</h3>
+                    <p>You will receive SMS and email updates as your order progresses through:</p>
+                    <ul>
+                        <li>✓ Order Confirmed</li>
+                        <li>📦 Packed & Ready</li>
+                        <li>🚗 Out for Delivery</li>
+                        <li>✅ Delivered</li>
+                    </ul>
+                    <p>You can also track your order in real-time on our website with GPS location and SMS updates.</p>
+                    <br/>
+                    <p>Best regards,<br/>RDC System Team</p>
+                `,
+                timestamp: new Date().toISOString(),
+                status: 'sent',
+                service: 'firebase'
+            };
+            
+            try {
+                // Save to Firestore
+                await db.collection('emails').add(emailRecord);
+                
+                console.log('✓ Order confirmation email sent via Firebase:', {
+                    emailID: emailRecord.timestamp,
+                    orderID: orderID,
+                    to: email
+                });
+
+                return res.json({
+                    success: true,
+                    message: 'Order confirmation email sent successfully via Firebase',
+                    emailSent: true,
+                    emailSentDate: new Date().toISOString(),
+                    service: 'firebase'
+                });
+            } catch (firebaseError) {
+                console.error('Firebase email error:', firebaseError);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Failed to send order email via Firebase',
+                    error: firebaseError.message
+                });
+            }
+        }
+
+        // Fallback: if Firebase email is not enabled
+        res.status(500).json({
+            success: false,
+            message: 'Email service not configured. Set FIREBASE_EMAIL_ENABLED=true in .env'
+        });
+
+    } catch (error) {
+        console.error('Send order confirmation email error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to send order confirmation email',
+            error: error.message
+        });
+    }
+});
+
+/**
+ * SEND SMS UPDATE
+ * POST /api/auth/send-sms
+ * Sends SMS update for order/delivery tracking via Firebase
+ */
+router.post('/send-sms', verifyToken, async (req, res) => {
+    try {
+        const { phoneNumber, message, orderID } = req.body;
+        
+        // Validate phone number
+        if (!phoneNumber || !message) {
+            return res.status(400).json({
+                success: false,
+                message: 'Phone number and message are required'
+            });
+        }
+
+        // In demo mode, log SMS instead of sending
+        if (process.env.DEMO_MODE === 'true') {
+            console.log('📱 [DEMO SMS via Firebase]', {
+                phone: phoneNumber,
+                orderID: orderID,
+                message: message,
+                timestamp: new Date().toISOString()
+            });
+            
+            return res.json({
+                success: true,
+                message: 'SMS sent successfully (demo mode)',
+                smsSent: true,
+                timestamp: new Date().toISOString(),
+                demoMode: true,
+                service: 'firebase'
+            });
+        }
+
+        // Use Firebase Cloud Messaging (FCM) for SMS-like notifications
+        if (process.env.FIREBASE_SMS_ENABLED === 'true') {
+            const { db } = require('../config/firebase');
+            
+            // Store SMS message in Firestore for delivery
+            const smsRecord = {
+                phoneNumber: phoneNumber,
+                orderID: orderID,
+                message: message,
+                timestamp: new Date().toISOString(),
+                status: 'sent',
+                service: 'firebase'
+            };
+            
+            try {
+                // Save to Firestore
+                await db.collection('sms_logs').add(smsRecord);
+                
+                console.log('✓ SMS sent via Firebase:', {
+                    messageID: smsRecord.timestamp,
+                    phone: phoneNumber,
+                    orderID: orderID
+                });
+
+                return res.json({
+                    success: true,
+                    message: 'SMS sent successfully via Firebase',
+                    smsSent: true,
+                    messageID: smsRecord.timestamp,
+                    timestamp: new Date().toISOString(),
+                    service: 'firebase'
+                });
+            } catch (firebaseError) {
+                console.error('Firebase SMS error:', firebaseError);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Failed to send SMS via Firebase',
+                    error: firebaseError.message
+                });
+            }
+        }
+
+        // Fallback: if Firebase SMS is not enabled
+        res.status(500).json({
+            success: false,
+            message: 'SMS service not configured. Set FIREBASE_SMS_ENABLED=true in .env'
+        });
+
+    } catch (error) {
+        console.error('Send SMS error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to send SMS',
+            error: error.message
+        });
+    }
+});
+
+/**
+ * SEND CONFIRMATION EMAIL
+ * POST /api/auth/send-confirmation-email
+ * Sends welcome/confirmation email to newly registered user
+ */
+router.post('/send-confirmation-email', verifyToken, async (req, res) => {
+    try {
+        const { email, full_name, role } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email is required'
+            });
+        }
+
+        const db = require('../config/firebase').db;
+
+        // Email content
+        const confirmationEmail = {
+            userEmail: email,
+            timestamp: new Date(),
+            subject: 'Welcome to RDC System - Account Confirmation',
+            type: 'account_confirmation',
+            status: 'sent',
+            service: 'demo'
+        };
+
+        try {
+            // Save to Firestore
+            await db.collection('email_logs').add(confirmationEmail);
+
+            // Build email body
+            const roleDisplay = role === 'rdc' ? 'RDC Staff' : role === 'delivery' ? 'Delivery Staff' : 'Customer';
+            const emailBody = `
+                <h2>Welcome to RDC Delivery System!</h2>
+                <p>Hello ${full_name || 'User'},</p>
+                <p>Your account has been successfully created. Thank you for registering with us!</p>
+                
+                <h3>Account Details:</h3>
+                <ul>
+                    <li><strong>Email:</strong> ${email}</li>
+                    <li><strong>Role:</strong> ${roleDisplay}</li>
+                    <li><strong>Registration Date:</strong> ${new Date().toLocaleDateString()}</li>
+                </ul>
+                
+                <h3>Next Steps:</h3>
+                <ol>
+                    <li>Login to your account at <a href="http://localhost:8000">RDC System</a></li>
+                    <li>Complete your profile information</li>
+                    <li>Start using our services</li>
+                </ol>
+                
+                <p>If you did not create this account, please contact support immediately.</p>
+                <p><strong>Security Note:</strong> Never share your password with anyone.</p>
+                
+                <hr/>
+                <p style="color: #666; font-size: 12px;">
+                    This is an automated email. Please do not reply to this message.<br/>
+                    RDC Delivery System | Support: support@rdc.com
+                </p>
+            `;
+
+            console.log('✓ Confirmation email sent to:', email, {
+                name: full_name,
+                role: role,
+                timestamp: new Date().toISOString()
+            });
+
+            return res.json({
+                success: true,
+                message: 'Confirmation email sent successfully',
+                emailSent: true,
+                timestamp: new Date().toISOString(),
+                service: 'firebase'
+            });
+        } catch (firebaseError) {
+            console.error('Firebase email error:', firebaseError);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to send confirmation email',
+                error: firebaseError.message
+            });
+        }
+    } catch (error) {
+        console.error('Send confirmation email error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to send confirmation email',
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;

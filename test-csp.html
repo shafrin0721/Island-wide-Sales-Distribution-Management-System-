@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSP Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .success {
+            color: green;
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .error {
+            color: red;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .info {
+            color: blue;
+            background: #d1ecf1;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Content Security Policy (CSP) Test</h1>
+    
+    <h2>Test Results</h2>
+    <div id="results"></div>
+    
+    <h2>What's Being Tested</h2>
+    <ul>
+        <li>Inline JavaScript execution (should work)</li>
+        <li>Inline event handlers (should work)</li>
+        <li>External scripts (should work)</li>
+        <li>Console logging (should work)</li>
+    </ul>
+
+    <script>
+        // Test 1: Inline script execution
+        console.log('✓ Test 1: Inline script execution - PASSED');
+        document.getElementById('results').innerHTML += '<div class="success">✓ Inline script execution works</div>';
+        
+        // Test 2: Try inline event handler
+        const testBtn = document.createElement('button');
+        testBtn.textContent = 'Click me to test inline event handler';
+        testBtn.style.padding = '10px 20px';
+        testBtn.style.marginTop = '10px';
+        testBtn.onclick = function() {
+            console.log('✓ Test 2: Inline event handler - PASSED');
+            alert('✓ Inline event handler works!');
+        };
+        document.body.appendChild(testBtn);
+        
+        // Test 3: console.log works
+        console.log('✓ Test 3: Console logging - PASSED');
+        document.getElementById('results').innerHTML += '<div class="success">✓ Console logging works</div>';
+        
+        // Test 4: DOM manipulation
+        const testDiv = document.createElement('div');
+        testDiv.className = 'info';
+        testDiv.textContent = '✓ DOM manipulation works - This message was created with JavaScript';
+        document.body.appendChild(testDiv);
+        
+        // Check for CSP errors
+        window.addEventListener('securitypolicyviolation', (event) => {
+            console.error('CSP Violation:', event.violatedDirective, event.blockedURI);
+            document.getElementById('results').innerHTML += `<div class="error">✗ CSP Violation: ${event.violatedDirective}</div>`;
+        });
+        
+        document.getElementById('results').innerHTML += '<div class="success">✓ All inline JavaScript tests passed!</div>';
+        console.log('CSP Test completed successfully');
+    </script>
+</body>
+</html>

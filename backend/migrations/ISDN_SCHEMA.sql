@@ -1,8 +1,10 @@
-# ISDN Distribution Management System - Database Schema
+# ISDN Distribution
+Management System - Database Schema
 
 ## SQL Schema Definition
 
-### 1. Users Table (Extended)
+### 1. Users Table
+(Extended)
 ```sql
 CREATE TABLE users (
   user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -16,26 +18,40 @@ CREATE TABLE users (
   role ENUM('customer', 'rdc_staff', 'logistics', 'rdc_manager', 'ho_manager', 'admin') NOT NULL DEFAULT 'customer',
   
   -- Customer Specific
-  customer_type ENUM('retailer', 'supermarket', 'reseller', 'other') NULL,
-  business_name VARCHAR(255),
-  business_registration VARCHAR(255),
-  tax_id VARCHAR(50),
-  credit_limit DECIMAL(10, 2) DEFAULT 10000.00,
-  payment_terms VARCHAR(50) DEFAULT 'Net 30',
+  customer_type ENUM
+('retailer', 'supermarket', 'reseller', 'other') NULL,
+  business_name VARCHAR
+(255),
+  business_registration VARCHAR
+(255),
+  tax_id VARCHAR
+(50),
+  credit_limit DECIMAL
+(10, 2) DEFAULT 10000.00,
+  payment_terms VARCHAR
+(50) DEFAULT 'Net 30',
   
   -- RDC Staff Specific
-  assigned_rdc_id UUID REFERENCES rdcs(rdc_id),
-  staff_id VARCHAR(50) UNIQUE,
+  assigned_rdc_id UUID REFERENCES rdcs
+(rdc_id),
+  staff_id VARCHAR
+(50) UNIQUE,
   
   -- Address
-  street_address VARCHAR(255),
-  city VARCHAR(100),
-  postal_code VARCHAR(20),
-  province VARCHAR(100),
-  country VARCHAR(100),
+  street_address VARCHAR
+(255),
+  city VARCHAR
+(100),
+  postal_code VARCHAR
+(20),
+  province VARCHAR
+(100),
+  country VARCHAR
+(100),
   
   -- Status
-  status ENUM('active', 'inactive', 'suspended', 'pending_verification') DEFAULT 'pending_verification',
+  status ENUM
+('active', 'inactive', 'suspended', 'pending_verification') DEFAULT 'pending_verification',
   email_verified BOOLEAN DEFAULT FALSE,
   phone_verified BOOLEAN DEFAULT FALSE,
   
@@ -44,13 +60,17 @@ CREATE TABLE users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  INDEX idx_email (email),
-  INDEX idx_role (role),
-  INDEX idx_assigned_rdc (assigned_rdc_id)
+  INDEX idx_email
+(email),
+  INDEX idx_role
+(role),
+  INDEX idx_assigned_rdc
+(assigned_rdc_id)
 );
 ```
 
-### 2. Regional Distribution Centers (RDCs)
+### 2. Regional Distribution Centers
+(RDCs)
 ```sql
 CREATE TABLE rdcs (
   rdc_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -59,18 +79,26 @@ CREATE TABLE rdcs (
   region ENUM('North', 'South', 'East', 'West', 'Central') NOT NULL,
   
   -- Contact
-  phone VARCHAR(20),
-  email VARCHAR(255),
+  phone VARCHAR
+(20),
+  email VARCHAR
+(255),
   
   -- Address
-  street_address VARCHAR(255),
-  city VARCHAR(100),
-  postal_code VARCHAR(20),
-  province VARCHAR(100),
+  street_address VARCHAR
+(255),
+  city VARCHAR
+(100),
+  postal_code VARCHAR
+(20),
+  province VARCHAR
+(100),
   
   -- Management
-  manager_id UUID REFERENCES users(user_id),
-  supervisor_id UUID REFERENCES users(user_id),
+  manager_id UUID REFERENCES users
+(user_id),
+  supervisor_id UUID REFERENCES users
+(user_id),
   
   -- Capacity
   max_capacity INT DEFAULT 50000, -- units
@@ -82,13 +110,17 @@ CREATE TABLE rdcs (
   delivery_radius_km INT DEFAULT 100,
   
   -- Status
-  status ENUM('operational', 'maintenance', 'closed') DEFAULT 'operational',
+  status ENUM
+('operational', 'maintenance', 'closed') DEFAULT 'operational',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  UNIQUE(rdc_name, region),
-  INDEX idx_region (region),
-  INDEX idx_manager (manager_id)
+  UNIQUE
+(rdc_name, region),
+  INDEX idx_region
+(region),
+  INDEX idx_manager
+(manager_id)
 );
 ```
 
@@ -116,8 +148,10 @@ CREATE TABLE products (
   -- Packaging
   unit_of_measure ENUM('pieces', 'kg', 'liters', 'boxes', 'cases') DEFAULT 'pieces',
   units_per_case INT,
-  case_weight DECIMAL(10, 2), -- kg
-  case_dimensions VARCHAR(50), -- LxWxH cm
+  case_weight DECIMAL
+(10, 2), -- kg
+  case_dimensions VARCHAR
+(50), -- LxWxH cm
   
   -- Stock Management
   reorder_level INT DEFAULT 100,
@@ -129,13 +163,17 @@ CREATE TABLE products (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  INDEX idx_sku (sku),
-  INDEX idx_category (category),
-  INDEX idx_supplier (supplier_id)
+  INDEX idx_sku
+(sku),
+  INDEX idx_category
+(category),
+  INDEX idx_supplier
+(supplier_id)
 );
 ```
 
-### 4. Inventory (Real-Time Stock Levels)
+### 4. Inventory
+(Real-Time Stock Levels)
 ```sql
 CREATE TABLE inventory (
   inventory_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -145,7 +183,8 @@ CREATE TABLE inventory (
   -- Stock Levels
   quantity_on_hand INT DEFAULT 0,
   quantity_reserved INT DEFAULT 0, -- allocated to orders
-  quantity_available INT GENERATED ALWAYS AS (quantity_on_hand - quantity_reserved) STORED,
+  quantity_available INT GENERATED ALWAYS AS
+(quantity_on_hand - quantity_reserved) STORED,
   quantity_damaged INT DEFAULT 0,
   quantity_expired INT DEFAULT 0,
   
@@ -154,18 +193,25 @@ CREATE TABLE inventory (
   last_reorder_date TIMESTAMP,
   
   -- Location
-  warehouse_aisle VARCHAR(20),
-  warehouse_shelf VARCHAR(20),
-  warehouse_bin VARCHAR(20),
+  warehouse_aisle VARCHAR
+(20),
+  warehouse_shelf VARCHAR
+(20),
+  warehouse_bin VARCHAR
+(20),
   
   -- Timestamps
   last_counted_at TIMESTAMP,
   last_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  UNIQUE(rdc_id, product_id),
-  INDEX idx_rdc (rdc_id),
-  INDEX idx_product (product_id),
-  INDEX idx_quantity_available (quantity_available)
+  UNIQUE
+(rdc_id, product_id),
+  INDEX idx_rdc
+(rdc_id),
+  INDEX idx_product
+(product_id),
+  INDEX idx_quantity_available
+(quantity_available)
 );
 ```
 
@@ -189,20 +235,30 @@ CREATE TABLE orders (
   total_cases INT,
   
   -- Pricing
-  subtotal DECIMAL(12, 2),
-  tax DECIMAL(12, 2),
-  shipping DECIMAL(12, 2) DEFAULT 0,
-  discount DECIMAL(12, 2) DEFAULT 0,
-  total_amount DECIMAL(12, 2),
+  subtotal DECIMAL
+(12, 2),
+  tax DECIMAL
+(12, 2),
+  shipping DECIMAL
+(12, 2) DEFAULT 0,
+  discount DECIMAL
+(12, 2) DEFAULT 0,
+  total_amount DECIMAL
+(12, 2),
   
   -- Status
-  order_status ENUM('pending', 'confirmed', 'picking', 'packed', 'dispatched', 'delivered', 'cancelled') DEFAULT 'pending',
-  payment_status ENUM('unpaid', 'partial', 'paid') DEFAULT 'unpaid',
+  order_status ENUM
+('pending', 'confirmed', 'picking', 'packed', 'dispatched', 'delivered', 'cancelled') DEFAULT 'pending',
+  payment_status ENUM
+('unpaid', 'partial', 'paid') DEFAULT 'unpaid',
   
   -- Delivery
-  delivery_address VARCHAR(500),
-  delivery_contact_name VARCHAR(255),
-  delivery_contact_phone VARCHAR(20),
+  delivery_address VARCHAR
+(500),
+  delivery_contact_name VARCHAR
+(255),
+  delivery_contact_phone VARCHAR
+(20),
   
   -- Special Instructions
   special_instructions TEXT,
@@ -211,10 +267,14 @@ CREATE TABLE orders (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  INDEX idx_customer (customer_id),
-  INDEX idx_rdc (assigned_rdc_id),
-  INDEX idx_status (order_status),
-  INDEX idx_order_date (order_date)
+  INDEX idx_customer
+(customer_id),
+  INDEX idx_rdc
+(assigned_rdc_id),
+  INDEX idx_status
+(order_status),
+  INDEX idx_order_date
+(order_date)
 );
 ```
 
@@ -242,45 +302,51 @@ CREATE TABLE order_items (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  INDEX idx_order (order_id),
-  INDEX idx_product (product_id)
+  INDEX idx_order
+(order_id),
+  INDEX idx_product
+(product_id)
 );
 ```
 
 ### 7. Deliveries
 ```sql
-CREATE TABLE deliveries (
-  delivery_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  delivery_number VARCHAR(50) UNIQUE NOT NULL,
-  order_id UUID NOT NULL REFERENCES orders(order_id),
-  
-  -- Routing
-  rdc_id UUID NOT NULL REFERENCES rdcs(rdc_id),
-  vehicle_id UUID REFERENCES vehicles(vehicle_id),
-  driver_id UUID REFERENCES users(user_id),
-  
-  -- Schedule
-  scheduled_date DATE,
-  scheduled_start_time TIME,
-  scheduled_end_time TIME,
-  
-  -- Actual
-  actual_start_time TIMESTAMP,
-  actual_delivery_time TIMESTAMP,
-  
-  -- Location
-  delivery_latitude DECIMAL(10, 8),
-  delivery_longitude DECIMAL(10, 8),
-  gps_route GEOMETRY(LineString, 4326), -- GPS track
+CREATE TABLE deliveries
+(
+    delivery_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    delivery_number VARCHAR(50) UNIQUE NOT NULL,
+    order_id UUID NOT NULL REFERENCES orders(order_id),
+
+    -- Routing
+    rdc_id UUID NOT NULL REFERENCES rdcs(rdc_id),
+    vehicle_id UUID REFERENCES vehicles(vehicle_id),
+    driver_id UUID REFERENCES users(user_id),
+
+    -- Schedule
+    scheduled_date DATE,
+    scheduled_start_time TIME,
+    scheduled_end_time TIME,
+
+    -- Actual
+    actual_start_time TIMESTAMP,
+    actual_delivery_time TIMESTAMP,
+
+    -- Location
+    delivery_latitude DECIMAL(10, 8),
+    delivery_longitude DECIMAL(10, 8),
+    gps_route GEOMETRY(LineString,
+    4326), -- GPS track
   
   -- Status
-  delivery_status ENUM('pending', 'in_transit', 'at_location', 'delivered', 'failed', 'returned') DEFAULT 'pending',
+  delivery_status ENUM
+    ('pending', 'in_transit', 'at_location', 'delivered', 'failed', 'returned') DEFAULT 'pending',
   
   -- Proof of Delivery
   signature_image_url TEXT,
   delivery_photo_url TEXT,
   customer_signature_required BOOLEAN DEFAULT TRUE,
-  customer_name_received VARCHAR(255),
+  customer_name_received VARCHAR
+    (255),
   delivery_notes TEXT,
   
   -- Returns
@@ -291,16 +357,20 @@ CREATE TABLE deliveries (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  INDEX idx_order (order_id),
-  INDEX idx_driver (driver_id),
-  INDEX idx_status (delivery_status),
-  INDEX idx_scheduled_date (scheduled_date)
+  INDEX idx_order
+    (order_id),
+  INDEX idx_driver
+    (driver_id),
+  INDEX idx_status
+    (delivery_status),
+  INDEX idx_scheduled_date
+    (scheduled_date)
 );
 ```
 
 ### 8. Invoices
 ```sql
-CREATE TABLE invoices (
+    CREATE TABLE invoices (
   invoice_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   invoice_number VARCHAR(50) UNIQUE NOT NULL,
   order_id UUID NOT NULL REFERENCES orders(order_id),
@@ -322,12 +392,15 @@ CREATE TABLE invoices (
   -- Payment
   payment_status ENUM('unpaid', 'partial', 'paid', 'overdue', 'cancelled') DEFAULT 'unpaid',
   payment_date TIMESTAMP,
-  payment_method ENUM('cash', 'cheque', 'bank_transfer', 'credit_card', 'digital_wallet'),
-  payment_reference VARCHAR(255),
+  payment_method ENUM
+    ('cash', 'cheque', 'bank_transfer', 'credit_card', 'digital_wallet'),
+  payment_reference VARCHAR
+    (255),
   
   -- Delivery
   delivery_date TIMESTAMP,
-  delivery_id UUID REFERENCES deliveries(delivery_id),
+  delivery_id UUID REFERENCES deliveries
+    (delivery_id),
   
   -- Document
   invoice_pdf_url TEXT,
@@ -336,16 +409,20 @@ CREATE TABLE invoices (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  INDEX idx_customer (customer_id),
-  INDEX idx_order (order_id),
-  INDEX idx_payment_status (payment_status),
-  INDEX idx_due_date (due_date)
+  INDEX idx_customer
+    (customer_id),
+  INDEX idx_order
+    (order_id),
+  INDEX idx_payment_status
+    (payment_status),
+  INDEX idx_due_date
+    (due_date)
 );
 ```
 
 ### 9. Stock Transfers
 ```sql
-CREATE TABLE stock_transfers (
+    CREATE TABLE stock_transfers (
   transfer_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   transfer_number VARCHAR(50) UNIQUE NOT NULL,
   
@@ -361,8 +438,10 @@ CREATE TABLE stock_transfers (
   transfer_status ENUM('pending', 'approved', 'shipped', 'received', 'cancelled') DEFAULT 'pending',
   
   -- Approvals
-  requested_by UUID REFERENCES users(user_id),
-  approved_by UUID REFERENCES users(user_id),
+  requested_by UUID REFERENCES users
+    (user_id),
+  approved_by UUID REFERENCES users
+    (user_id),
   approved_at TIMESTAMP,
   
   -- Shipping
@@ -376,16 +455,20 @@ CREATE TABLE stock_transfers (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  INDEX idx_from_rdc (from_rdc_id),
-  INDEX idx_to_rdc (to_rdc_id),
-  INDEX idx_product (product_id),
-  INDEX idx_status (transfer_status)
+  INDEX idx_from_rdc
+    (from_rdc_id),
+  INDEX idx_to_rdc
+    (to_rdc_id),
+  INDEX idx_product
+    (product_id),
+  INDEX idx_status
+    (transfer_status)
 );
 ```
 
 ### 10. Vehicles
 ```sql
-CREATE TABLE vehicles (
+    CREATE TABLE vehicles (
   vehicle_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   registration_plate VARCHAR(50) UNIQUE NOT NULL,
   vehicle_type ENUM('van', 'truck', 'motorcycle') DEFAULT 'van',
@@ -393,13 +476,16 @@ CREATE TABLE vehicles (
   capacity_weight_kg INT,
   
   -- Assignment
-  assigned_rdc_id UUID REFERENCES rdcs(rdc_id),
+  assigned_rdc_id UUID REFERENCES rdcs
+    (rdc_id),
   
   -- GPS
-  gps_device_id VARCHAR(100),
+  gps_device_id VARCHAR
+    (100),
   
   -- Status
-  status ENUM('active', 'maintenance', 'inactive') DEFAULT 'active',
+  status ENUM
+    ('active', 'maintenance', 'inactive') DEFAULT 'active',
   
   -- Metadata
   purchase_date DATE,
@@ -408,13 +494,14 @@ CREATE TABLE vehicles (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  INDEX idx_assigned_rdc (assigned_rdc_id)
+  INDEX idx_assigned_rdc
+    (assigned_rdc_id)
 );
 ```
 
 ### 11. Suppliers
 ```sql
-CREATE TABLE suppliers (
+    CREATE TABLE suppliers (
   supplier_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   supplier_name VARCHAR(255) NOT NULL,
   contact_person VARCHAR(255),
@@ -438,34 +525,36 @@ CREATE TABLE suppliers (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  INDEX idx_supplier_name (supplier_name)
+  INDEX idx_supplier_name
+    (supplier_name)
 );
 ```
 
 ### 12. Audit Log
 ```sql
-CREATE TABLE audit_logs (
-  log_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(user_id),
-  action VARCHAR(255) NOT NULL,
-  entity_type VARCHAR(100),
-  entity_id UUID,
-  old_values JSONB,
-  new_values JSONB,
-  ip_address VARCHAR(45),
-  user_agent TEXT,
-  
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  
-  INDEX idx_user (user_id),
-  INDEX idx_created_at (created_at),
-  INDEX idx_entity (entity_type, entity_id)
-);
-```
+    CREATE TABLE audit_logs
+    (
+        log_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID REFERENCES users(user_id),
+        action VARCHAR(255) NOT NULL,
+        entity_type VARCHAR(100),
+        entity_id UUID,
+        old_values JSONB,
+        new_values JSONB,
+        ip_address VARCHAR(45),
+        user_agent TEXT,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        INDEX idx_user (user_id),
+        INDEX idx_created_at (created_at),
+        INDEX idx_entity (entity_type, entity_id)
+    );
+    ```
 
 ### 13. Notifications
 ```sql
-CREATE TABLE notifications (
+    CREATE TABLE notifications (
   notification_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES users(user_id),
   
@@ -475,8 +564,10 @@ CREATE TABLE notifications (
   notification_type ENUM('order', 'delivery', 'invoice', 'stock', 'system') DEFAULT 'system',
   
   -- Reference
-  related_order_id UUID REFERENCES orders(order_id),
-  related_delivery_id UUID REFERENCES deliveries(delivery_id),
+  related_order_id UUID REFERENCES orders
+    (order_id),
+  related_delivery_id UUID REFERENCES deliveries
+    (delivery_id),
   
   -- Status
   is_read BOOLEAN DEFAULT FALSE,
@@ -490,8 +581,10 @@ CREATE TABLE notifications (
   
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
-  INDEX idx_user (user_id),
-  INDEX idx_is_read (is_read)
+  INDEX idx_user
+    (user_id),
+  INDEX idx_is_read
+    (is_read)
 );
 ```
 
@@ -500,19 +593,22 @@ CREATE TABLE notifications (
 ## Indexes Summary
 
 ```sql
--- Performance Indexes
-CREATE INDEX idx_inventory_availability ON inventory(rdc_id, product_id, quantity_available);
-CREATE INDEX idx_orders_customer_status ON orders(customer_id, order_status);
-CREATE INDEX idx_orders_rdc_status ON orders(assigned_rdc_id, order_status);
-CREATE INDEX idx_deliveries_driver_date ON deliveries(driver_id, scheduled_date);
-CREATE INDEX idx_order_items_order ON order_items(order_id, item_status);
-CREATE INDEX idx_invoices_customer ON invoices(customer_id, payment_status);
+    -- Performance Indexes
+    CREATE INDEX idx_inventory_availability ON inventory(rdc_id, product_id, quantity_available);
+    CREATE INDEX idx_orders_customer_status ON orders(customer_id, order_status);
+    CREATE INDEX idx_orders_rdc_status ON orders(assigned_rdc_id, order_status);
+    CREATE INDEX idx_deliveries_driver_date ON deliveries(driver_id, scheduled_date);
+    CREATE INDEX idx_order_items_order ON order_items(order_id, item_status);
+    CREATE INDEX idx_invoices_customer ON invoices(customer_id, payment_status);
 
--- Search Indexes (for PostgreSQL Full Text Search)
-CREATE INDEX idx_products_search ON products USING GIN (to_tsvector('english', product_name || ' ' || description));
+    -- Search Indexes (for PostgreSQL Full Text Search)
+    CREATE INDEX idx_products_search ON products USING GIN
+    (to_tsvector
+    ('english', product_name || ' ' || description));
 
--- Geo Indexes (for distance queries)
-CREATE INDEX idx_deliveries_location ON deliveries USING GIST (gps_route);
+    -- Geo Indexes (for distance queries)
+    CREATE INDEX idx_deliveries_location ON deliveries USING GIST
+    (gps_route);
 ```
 
 ---
@@ -521,41 +617,63 @@ CREATE INDEX idx_deliveries_location ON deliveries USING GIST (gps_route);
 
 ```
 Users
-├── RDCs (assigned_rdc_id)
-├── Orders (customer_id)
-├── Deliveries (driver_id)
-└── Audit Logs (user_id)
+├── RDCs
+    (assigned_rdc_id)
+├── Orders
+    (customer_id)
+├── Deliveries
+    (driver_id)
+└── Audit Logs
+    (user_id)
 
 RDCs
-├── Inventory (rdc_id)
-├── Orders (assigned_rdc_id)
-├── Stock Transfers (from_rdc_id, to_rdc_id)
-└── Vehicles (assigned_rdc_id)
+├── Inventory
+    (rdc_id)
+├── Orders
+    (assigned_rdc_id)
+├── Stock Transfers
+    (from_rdc_id, to_rdc_id)
+└── Vehicles
+    (assigned_rdc_id)
 
 Products
-├── Inventory (product_id) - many RDCs
-├── Order Items (product_id)
-└── Stock Transfers (product_id)
+├── Inventory
+    (product_id) - many RDCs
+├── Order Items
+    (product_id)
+└── Stock Transfers
+    (product_id)
 
 Orders
-├── Order Items (order_id)
-├── Invoices (order_id)
-├── Deliveries (order_id)
-└── Notifications (related_order_id)
+├── Order Items
+    (order_id)
+├── Invoices
+    (order_id)
+├── Deliveries
+    (order_id)
+└── Notifications
+    (related_order_id)
 
 Deliveries
-├── Invoices (delivery_id)
-└── Notifications (related_delivery_id)
+├── Invoices
+    (delivery_id)
+└── Notifications
+    (related_delivery_id)
 ```
 
 ---
 
 ## Migration Strategy
 
-1. **Phase 1**: Create all tables
-2. **Phase 2**: Add indexes
-3. **Phase 3**: Populate reference data (RDCs, suppliers, sample products)
-4. **Phase 4**: Set up triggers for audit logging
+1. **Phase 1**:
+    Create all tables
+2. **Phase 2**:
+    Add indexes
+3. **Phase 3**: Populate reference data
+    (RDCs, suppliers, sample products)
+4. **Phase 4**:
+    Set up triggers
+    for audit logging
 5. **Phase 5**: Configure real-time inventory sync
 6. **Phase 6**: Performance testing & optimization
 
@@ -563,10 +681,17 @@ Deliveries
 
 ## Notes
 
-- All IDs use UUID for distributed system scalability
-- Timestamps use TIMESTAMP for timezone-aware operations
+- All IDs
+    use UUID
+    for distributed system scalability
+- Timestamps
+    use TIMESTAMP
+    for timezone-aware operations
 - JSONB for audit logs allows flexible data capture
-- Enum types for fixed status values (more efficient than strings)
-- Geometry types for GPS tracking (requires PostGIS extension)
+- Enum types for fixed status values
+    (more efficient than strings)
+- Geometry types for GPS tracking
+    (requires PostGIS extension)
 - Indexes optimized for common queries
-- Soft deletes can be added via `deleted_at` timestamp if needed
+- Soft deletes can be added via `deleted_at` timestamp
+    if needed

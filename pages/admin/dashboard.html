@@ -16,12 +16,12 @@
                 <span id="current-user"></span>
             </div>
             <div class="nav-menu">
-                <button class="nav-link active" onclick="window.location.href='dashboard.html'">Dashboard</button>
-                <button class="nav-link" onclick="window.location.href='users.html'">Users</button>
-                <button class="nav-link" onclick="window.location.href='products.html'">Products</button>
-                <button class="nav-link" onclick="window.location.href='reports.html'">Reports</button>
-                <button class="nav-link" onclick="window.location.href='settings.html'">Settings</button>
-                <button class="nav-link logout" onclick="logout()">Logout</button>
+                <button class="nav-link active" data-href="window.location.href='dashboard.html'">Dashboard</button>
+                <button class="nav-link" data-href="window.location.href='users.html'">Users</button>
+                <button class="nav-link" data-href="window.location.href='products.html'">Products</button>
+                <button class="nav-link" data-href="window.location.href='reports.html'">Reports</button>
+                <button class="nav-link" data-href="window.location.href='settings.html'">Settings</button>
+                <button class="nav-link logout" data-nav="logout">Logout</button>
             </div>
         </div>
     </nav>
@@ -89,19 +89,19 @@
         <div class="quick-actions">
             <h3>Quick Actions</h3>
             <div class="action-grid">
-                <button class="action-btn" onclick="goToPage('../admin/users.html')">
+                <button class="action-btn" data-action="go-to-page" data-page="users.html">
                     <span class="action-icon">👥</span>
                     <span>Manage Users</span>
                 </button>
-                <button class="action-btn" onclick="goToPage('../admin/products.html')">
+                <button class="action-btn" data-action="go-to-page" data-page="products.html">
                     <span class="action-icon">📦</span>
                     <span>Manage Products</span>
                 </button>
-                <button class="action-btn" onclick="goToPage('../admin/reports.html')">
+                <button class="action-btn" data-action="go-to-page" data-page="reports.html">
                     <span class="action-icon">📊</span>
                     <span>View Reports</span>
                 </button>
-                <button class="action-btn" onclick="goToPage('../admin/settings.html')">
+                <button class="action-btn" data-action="go-to-page" data-page="settings.html">>
                     <span class="action-icon">⚙️</span>
                     <span>Settings</span>
                 </button>

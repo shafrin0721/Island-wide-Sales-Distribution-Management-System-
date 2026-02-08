@@ -19,7 +19,13 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCartBadge();
     } else if (currentPage !== 'index.html' && currentPage !== 'signup.html') {
         // Redirect to login if not on login/signup page
-        window.location.href = '../../index.html';
+        // Determine the correct path based on current location
+        const pagePath = window.location.pathname;
+        if (pagePath.includes('/pages/')) {
+            window.location.href = '../../index.html';
+        } else {
+            window.location.href = 'index.html';
+        }
     }
     
     // Apply theme settings if they exist
@@ -125,7 +131,7 @@ function goToCheckout() {
         alert('Your cart is empty');
         return;
     }
-    goToPage('../customer/checkout.html');
+    window.location.href = 'pages/customer/checkout.html';
 }
 
 // Update user display
@@ -173,5 +179,29 @@ function saveSession() {
     localStorage.setItem('currentCart', JSON.stringify(currentCart));
 }
 
-// Auto-save session
-setInterval(saveSession, 10000);
+// Auto-save session (guarded and reduced frequency)
+(function() {
+    let _savingSession = false;
+    function periodicSessionSave() {
+        if (_savingSession) return;
+        _savingSession = true;
+        try {
+            saveSession();
+        } catch (e) {
+            console.error('Session save failed:', e);
+        } finally {
+            _savingSession = false;
+        }
+    }
+
+    const sessionInterval = 30000; // 30s
+    setInterval(function() {
+        if (document.hidden) return;
+        periodicSessionSave();
+    }, sessionInterval);
+
+    // Save when the page is about to be unloaded
+    window.addEventListener('beforeunload', function() {
+        try { saveSession(); } catch (e) {}
+    });
+})();

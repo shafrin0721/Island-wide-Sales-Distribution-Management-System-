@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - ISDN System</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .notification-item { padding: 15px; border-left: 4px solid #667eea; background: #f9f9f9; margin-bottom: 10px; border-radius: 4px; }
+        .notification-item.unread { background: #f0f4ff; font-weight: 500; }
+        .notification-item.success { border-left-color: #27ae60; }
+        .notification-item.warning { border-left-color: #f39c12; }
+        .notification-item.error { border-left-color: #e74c3c; }
+        .notification-time { font-size: 12px; color: #999; margin-top: 5px; }
+        .mark-read-btn { float: right; padding: 5px 10px; background: #667eea; color: white; border: none; border-radius: 3px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">ISDN - Notifications</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-link" onclick="window.history.back()">← Back</button>
+                <button class="nav-link logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h2>🔔 Notifications</h2>
+            <p>System alerts and updates</p>
+        </div>
+
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div style="margin-bottom: 20px;">
+                <button class="btn btn-small" onclick="filterNotifications('all')">All</button>
+                <button class="btn btn-small" onclick="filterNotifications('unread')">Unread</button>
+                <button class="btn btn-small" onclick="markAllRead()">Mark All Read</button>
+            </div>
+
+            <div id="notifications-list">
+                <!-- Notifications will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        let currentFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user) window.location.href = 'index.html';
+            
+            loadNotifications();
+        });
+
+        function loadNotifications() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const notifications = (systemData.notifications || [])
+                .filter(n => n.userID === user.id)
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            const filtered = currentFilter === 'unread' 
+                ? notifications.filter(n => !n.read) 
+                : notifications;
+
+            const list = document.getElementById('notifications-list');
+            list.innerHTML = '';
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #999;">No notifications</p>';
+                return;
+            }
+
+            filtered.forEach((notif, idx) => {
+                const typeClass = notif.type || 'info';
+                const div = document.createElement('div');
+                div.className = `notification-item ${typeClass} ${notif.read ? '' : 'unread'}`;
+                div.innerHTML = `
+                    <div>
+                        <strong>${notif.title || 'Notification'}</strong>
+                        <p style="margin: 8px 0; color: #666;">${notif.message}</p>
+                        <div class="notification-time">${new Date(notif.timestamp).toLocaleString()}</div>
+                    </div>
+                    <button class="mark-read-btn" onclick="markAsRead(${idx})">${notif.read ? '✓' : 'Mark Read'}</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function filterNotifications(type) {
+            currentFilter = type;
+            loadNotifications();
+        }
+
+        function markAsRead(idx) {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const notifications = (systemData.notifications || [])
+                .filter(n => n.userID === user.id)
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            notifications[idx].read = true;
+            saveData();
+            loadNotifications();
+        }
+
+        function markAllRead() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            (systemData.notifications || [])
+                .filter(n => n.userID === user.id)
+                .forEach(n => n.read = true);
+            saveData();
+            loadNotifications();
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

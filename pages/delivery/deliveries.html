@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Staff - My Deliveries</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">Delivery System - Staff</span>
+                <span id="current-user"></span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-link" data-nav="dashboard">Dashboard</button>
+                <button class="nav-link active" data-nav="deliveries">My Deliveries</button>
+                <button class="nav-link" data-nav="profile">Profile</button>
+                <button class="nav-link logout" data-nav="logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-content">
+        <div class="page-header">
+            <h2>📋 My Deliveries</h2>
+            <p>Manage and track your assigned deliveries</p>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filters" style="margin-bottom: 20px;">
+            <select id="status-filter" onchange="filterDeliveries()">
+                <option value="">All Statuses</option>
+                <option value="assigned">Assigned</option>
+                <option value="out for delivery">Out for Delivery</option>
+                <option value="delivered">Delivered</option>
+                <option value="failed">Failed</option>
+            </select>
+        </div>
+
+        <!-- Deliveries Table -->
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Delivery ID</th>
+                        <th>Order ID</th>
+                        <th>Customer Name</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Status</th>
+                        <th>ETA</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="delivery-staff-table">
+                    <!-- Deliveries will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Update Location Modal -->
+    <div id="location-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="closeModal('location-modal')">&times;</span>
+            <h2>Update Location</h2>
+            <form id="location-form" style="margin-top: 20px;">
+                <div class="form-group">
+                    <label>Latitude:</label>
+                    <input type="number" id="location-lat" step="0.0001" placeholder="e.g., 6.9271" required>
+                </div>
+                <div class="form-group">
+                    <label>Longitude:</label>
+                    <input type="number" id="location-lon" step="0.0001" placeholder="e.g., 80.6369" required>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="getCurrentLocation()">Use Current Location</button>
+                <button type="submit" class="btn btn-success" style="margin-top: 10px;">Update Location</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Complete Delivery Modal -->
+    <div id="complete-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close" onclick="closeModal('complete-modal')">&times;</span>
+            <h2>Complete Delivery</h2>
+            <form id="complete-form" style="margin-top: 20px;">
+                <div class="form-group">
+                    <label>Recipient Name:</label>
+                    <input type="text" id="recipient-name" placeholder="Name of person who received" required>
+                </div>
+                <div class="form-group">
+                    <label>Signature (optional):</label>
+                    <input type="text" id="recipient-signature" placeholder="Signature data">
+                </div>
+                <div class="form-group">
+                    <label>Notes:</label>
+                    <textarea id="delivery-notes" placeholder="Any special notes about the delivery" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 10px;">Mark as Delivered</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../js/data.js"></script>
+    <script src="../../js/modals.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/delivery.js"></script>
+
+    <script>
+        let currentDeliveryId = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDeliveryStaffTable();
+
+            // Setup navigation
+            document.addEventListener('click', function(e) {
+                const nav = e.target.getAttribute('data-nav');
+                if (nav === 'dashboard') {
+                    window.location.href = 'dashboard.html';
+                } else if (nav === 'profile') {
+                    window.location.href = 'profile.html';
+                }
+            });
+
+            // Setup form submissions
+            document.getElementById('location-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitLocationUpdate();
+            });
+
+            document.getElementById('complete-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitCompleteDelivery();
+            });
+        });
+
+        // Filter deliveries by status
+        function filterDeliveries() {
+            const statusFilter = document.getElementById('status-filter').value;
+            const tbody = document.getElementById('delivery-staff-table');
+            const rows = tbody.querySelectorAll('tr');
+
+            rows.forEach(row => {
+                if (statusFilter === '') {
+                    row.style.display = '';
+                } else {
+                    const status = row.getAttribute('data-status');
+                    row.style.display = status === statusFilter ? '' : 'none';
+                }
+            });
+        }
+
+        // Update delivery location
+        function updateLocation(deliveryId) {
+            currentDeliveryId = deliveryId;
+            const modal = document.getElementById('location-modal');
+            modal.style.display = 'block';
+            modal.classList.add('active');
+        }
+
+        // Get current location using Geolocation API
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        document.getElementById('location-lat').value = position.coords.latitude;
+                        document.getElementById('location-lon').value = position.coords.longitude;
+                        alert('✓ Location captured from device GPS');
+                    },
+                    function(error) {
+                        alert('Could not get location. Please enter manually.');
+                        console.error('Geolocation error:', error);
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by your browser');
+            }
+        }
+
+        // Submit location update
+        function submitLocationUpdate() {
+            const lat = parseFloat(document.getElementById('location-lat').value);
+            const lon = parseFloat(document.getElementById('location-lon').value);
+
+            if (!lat || !lon) {
+                alert('Please enter valid latitude and longitude');
+                return;
+            }
+
+            // Validate Sri Lanka coordinates
+            if (lat < 5 || lat > 10 || lon < 79 || lon > 82) {
+                alert('⚠️ Coordinates appear to be outside Sri Lanka. Please verify.');
+                return;
+            }
+
+            // Update delivery location in data
+            const delivery = systemData.deliveries.find(d => d.deliveryID === currentDeliveryId);
+            if (delivery) {
+                delivery.gpsLocation = {
+                    latitude: lat,
+                    longitude: lon,
+                    address: delivery.gpsLocation?.address || 'Location updated'
+                };
+                delivery.currentLocation = { latitude: lat, longitude: lon };
+                saveData();
+                updateDeliveryStaffTable();
+                closeModal('location-modal');
+                showNotification(`✓ Location updated for delivery #${currentDeliveryId}`, 'success');
+            }
+        }
+
+        // Complete delivery
+        function completeDelivery(deliveryId) {
+            currentDeliveryId = deliveryId;
+            const modal = document.getElementById('complete-modal');
+            modal.style.display = 'block';
+            modal.classList.add('active');
+        }
+
+        // Submit complete delivery
+        function submitCompleteDelivery() {
+            const recipientName = document.getElementById('recipient-name').value;
+            const notes = document.getElementById('delivery-notes').value;
+
+            if (!recipientName) {
+                alert('Please enter recipient name');
+                return;
+            }
+
+            const delivery = systemData.deliveries.find(d => d.deliveryID === currentDeliveryId);
+            const order = systemData.orders.find(o => o.orderID === delivery?.orderID);
+
+            if (delivery && order) {
+                delivery.status = 'delivered';
+                delivery.completionTime = new Date();
+                delivery.notes = notes;
+                order.status = 'delivered';
+                saveData();
+                updateDeliveryStaffTable();
+                closeModal('complete-modal');
+                showNotification(`✓ Delivery #${currentDeliveryId} marked as delivered`, 'success');
+            }
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('active');
+            }
+        }
+
+        // Show notification (simple alert alternative)
+        function showNotification(message, type) {
+            alert(message);
+        }
+    </script>
+</body>
+</html>

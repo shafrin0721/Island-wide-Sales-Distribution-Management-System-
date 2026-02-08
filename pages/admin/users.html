@@ -15,12 +15,12 @@
                 <span id="current-user"></span>
             </div>
             <div class="nav-menu">
-                <button class="nav-link" onclick="window.location.href='dashboard.html'">Dashboard</button>
-                <button class="nav-link active" onclick="window.location.href='users.html'">Users</button>
-                <button class="nav-link" onclick="window.location.href='products.html'">Products</button>
-                <button class="nav-link" onclick="window.location.href='reports.html'">Reports</button>
-                <button class="nav-link" onclick="window.location.href='settings.html'">Settings</button>
-                <button class="nav-link logout" onclick="logout()">Logout</button>
+                <button class="nav-link" data-href="window.location.href='dashboard.html'">Dashboard</button>
+                <button class="nav-link active" data-href="window.location.href='users.html'">Users</button>
+                <button class="nav-link" data-href="window.location.href='products.html'">Products</button>
+                <button class="nav-link" data-href="window.location.href='reports.html'">Reports</button>
+                <button class="nav-link" data-href="window.location.href='settings.html'">Settings</button>
+                <button class="nav-link logout" data-nav="logout">Logout</button>
             </div>
         </div>
     </nav>
@@ -32,7 +32,7 @@
             <p>View and manage system users</p>
         </div>
 
-        <button class="btn btn-primary" onclick="addNewUser()">Add New User</button>
+        <button class="btn btn-primary" data-action="add-new-user">Add New User</button>
 
         <div class="table-wrapper">
             <table class="data-table">
