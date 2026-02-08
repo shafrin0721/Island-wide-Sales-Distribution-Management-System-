@@ -2,7 +2,20 @@
 // AUTHENTICATION & NAVIGATION
 // =====================================================
 
-const API_URL = 'http://localhost:5000/api';
+// Use local backend when developing; when hosted, use relative `/api` so
+// Firebase Hosting can proxy requests to a Cloud Run service or other backend.
+const API_URL = (function() {
+    try {
+        // If running on localhost, point to local backend
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+            return 'http://localhost:5000/api';
+        }
+    } catch (e) {
+        // In some test environments, location may be undefined
+    }
+    // For hosted site, use relative path so Hosting rewrites can route to Cloud Run
+    return '/api';
+})();
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
