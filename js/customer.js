@@ -551,12 +551,30 @@ function displayFilteredProducts(products) {
 
         const card = document.createElement('div');
         card.className = 'product-card';
+        
+        // Safely parse prices
+        const wholesalePrice = parseFloat(product.wholesalePrice || 0);
+        const retailPrice = parseFloat(product.retailPrice || 0);
+        const price = parseFloat(product.price || product.basePrice || 0);
+        
+        const wholesalePriceDisplay = isNaN(wholesalePrice) ? '0.00' : wholesalePrice.toFixed(2);
+        const retailPriceDisplay = isNaN(retailPrice) ? '0.00' : retailPrice.toFixed(2);
+        const priceDisplay = isNaN(price) ? '0.00' : price.toFixed(2);
+        
         card.innerHTML = `
-            <div class="product-image">${product.emoji}</div>
+            <div class="product-image">
+                <img src="${(product.image && typeof product.image === 'string') ? product.image : getSafePlaceholder(200, 200, 'Product')}" alt="${product.name}" crossorigin="anonymous" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%23e0e0e0%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2214%22 fill=%22%23999%22%3EImage Not Found%3C/text%3E%3C/svg%3E'">
+            </div>
             <div class="product-info">
+                <div class="product-brand">${product.brand || 'Brand'}</div>
                 <div class="product-name">${product.name}</div>
-                <div class="product-category">${product.category}</div>
-                <div class="product-price">$${(parseFloat(product.price)||0).toFixed(2)}</div>
+                <div class="product-category">${product.subcategory || product.category || 'Category'}</div>
+                <div class="product-rating">⭐ ${product.rating || '4.5'} (${product.reviews || '0'} reviews)</div>
+                <div class="product-pricing">
+                    <span class="wholesale-price">Wholesale: $${wholesalePriceDisplay}</span>
+                    <span class="retail-price">Retail: $${retailPriceDisplay}</span>
+                </div>
+                <div class="product-price">Your Price: $${priceDisplay}</div>
                 <div class="product-availability ${inStock ? 'in-stock' : 'out-stock'}">
                     ${inStock ? `✓ In Stock (${inventory.stockLevel} available)` : '✗ Out of Stock'}
                 </div>
@@ -569,6 +587,13 @@ function displayFilteredProducts(products) {
             </div>
         `;
         grid.appendChild(card);
+        // Attach image error handler (avoid inline onerror, use CSP-safe placeholder)
+        const cardImg = card.querySelector('.product-image img');
+        if (cardImg) {
+            cardImg.addEventListener('error', function() {
+                this.src = getSafePlaceholder(200, 200, product.name || 'Image');
+            });
+        }
     });
 }
 
