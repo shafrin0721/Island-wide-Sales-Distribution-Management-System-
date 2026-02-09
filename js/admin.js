@@ -28,6 +28,24 @@ function initializeAdminPage() {
     // Setup delegated navigation handlers
     setupAdminNavigation();
     
+    // Add mutation observer to track stat element changes
+    const statElements = ['stat-total-orders', 'stat-total-revenue', 'stat-pending-deliveries', 'stat-low-stock'];
+    statElements.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                        console.warn(`⚠️ ${id} was modified externally to: "${el.textContent}"`);
+                        console.trace('Stack trace:');
+                    }
+                });
+            });
+            observer.observe(el, { childList: true, characterData: true, subtree: true });
+            console.log(`Mutation observer added to ${id}`);
+        }
+    });
+    
     if (document.getElementById('admin-alerts')) {
         console.log('admin-alerts found, calling loadAdminDashboard');
         loadAdminDashboard();
