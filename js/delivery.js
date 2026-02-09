@@ -5,6 +5,25 @@
 // Setup delegated navigation for Delivery pages
 function setupDeliveryNavigation() {
     document.addEventListener('click', function(e) {
+        // Handle navbar data-nav buttons
+        const navButton = e.target.closest('[data-nav]');
+        if (navButton) {
+            const nav = navButton.getAttribute('data-nav');
+            if (nav === 'dashboard') {
+                window.location.href = 'dashboard.html';
+                return;
+            } else if (nav === 'deliveries') {
+                window.location.href = 'deliveries.html';
+                return;
+            } else if (nav === 'profile') {
+                window.location.href = 'profile.html';
+                return;
+            } else if (nav === 'logout') {
+                logout();
+                return;
+            }
+        }
+        
         // Handle go-to-page quick action buttons
         if (e.target.getAttribute('data-action') === 'go-to-page') {
             const page = e.target.getAttribute('data-page');

@@ -37,6 +37,28 @@ function initializeRDCPage() {
 // Setup delegated navigation for RDC pages (CSP compliance)
 function setupRDCNavigation() {
     document.addEventListener('click', function(e) {
+        // Handle navbar data-nav buttons
+        const navButton = e.target.closest('[data-nav]');
+        if (navButton) {
+            const nav = navButton.getAttribute('data-nav');
+            if (nav === 'dashboard') {
+                window.location.href = 'dashboard.html';
+                return;
+            } else if (nav === 'orders') {
+                window.location.href = 'orders.html';
+                return;
+            } else if (nav === 'inventory') {
+                window.location.href = 'inventory.html';
+                return;
+            } else if (nav === 'delivery') {
+                window.location.href = 'delivery.html';
+                return;
+            } else if (nav === 'logout') {
+                logout();
+                return;
+            }
+        }
+        
         // Handle go-to-page quick action buttons
         if (e.target.getAttribute('data-action') === 'go-to-page') {
             const page = e.target.getAttribute('data-page');

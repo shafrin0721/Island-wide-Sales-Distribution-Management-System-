@@ -38,6 +38,31 @@ function initializeAdminPage() {
 // Setup delegated navigation for admin pages (CSP compliance)
 function setupAdminNavigation() {
     document.addEventListener('click', function(e) {
+        // Handle navbar data-nav buttons
+        const navButton = e.target.closest('[data-nav]');
+        if (navButton) {
+            const nav = navButton.getAttribute('data-nav');
+            if (nav === 'dashboard') {
+                window.location.href = 'dashboard.html';
+                return;
+            } else if (nav === 'users') {
+                window.location.href = 'users.html';
+                return;
+            } else if (nav === 'products') {
+                window.location.href = 'products.html';
+                return;
+            } else if (nav === 'reports') {
+                window.location.href = 'reports.html';
+                return;
+            } else if (nav === 'settings') {
+                window.location.href = 'settings.html';
+                return;
+            } else if (nav === 'logout') {
+                logout();
+                return;
+            }
+        }
+        
         // Handle go-to-page quick action buttons
         if (e.target.getAttribute('data-action') === 'go-to-page') {
             const page = e.target.getAttribute('data-page');
