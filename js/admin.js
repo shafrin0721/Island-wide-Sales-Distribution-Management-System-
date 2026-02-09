@@ -4,11 +4,13 @@
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('admin.js DOMContentLoaded fired');
     // Wait for systemData to be available (loaded from data.js)
     if (typeof systemData === 'undefined') {
         console.warn('systemData not yet loaded, waiting...');
         let checkInterval = setInterval(function() {
             if (typeof systemData !== 'undefined' && systemData) {
+                console.log('systemData now available, calling initializeAdminPage');
                 clearInterval(checkInterval);
                 initializeAdminPage();
             }
@@ -16,22 +18,30 @@ document.addEventListener('DOMContentLoaded', function() {
         // Timeout after 5 seconds
         setTimeout(() => { if (checkInterval) clearInterval(checkInterval); }, 5000);
     } else {
+        console.log('systemData already available, calling initializeAdminPage');
         initializeAdminPage();
     }
 });
 
 function initializeAdminPage() {
+    console.log('initializeAdminPage called');
     // Setup delegated navigation handlers
     setupAdminNavigation();
     
     if (document.getElementById('admin-alerts')) {
+        console.log('admin-alerts found, calling loadAdminDashboard');
         loadAdminDashboard();
     } else if (document.getElementById('users-table')) {
+        console.log('users-table found, calling updateUsersTable');
         updateUsersTable();
     } else if (document.getElementById('products-table')) {
+        console.log('products-table found, calling updateProductsTable');
         updateProductsTable();
     } else if (document.getElementById('report-display')) {
+        console.log('report-display found, calling setDefaultDates');
         setDefaultDates();
+    } else {
+        console.warn('No admin page elements found in initializeAdminPage');
     }
 }
 
