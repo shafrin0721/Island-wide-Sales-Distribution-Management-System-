@@ -18,6 +18,26 @@
     ],
     "rewrites": [
       {
+        "source": "!/js/**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "!/css/**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "!/components/**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "!/pages/**/*.html",
+        "destination": "/index.html"
+      },
+      {
+        "source": "!/**/*.@(css|html|js|json|ico|svg|png|jpg|jpeg|gif|woff|woff2|ttf|eot)",
+        "destination": "/index.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

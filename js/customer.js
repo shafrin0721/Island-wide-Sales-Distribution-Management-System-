@@ -837,7 +837,8 @@ async function submitCheckout(e) {
     // Try to send confirmation email via backend
     if (newOrder.shippingInfo.email) {
         try {
-            const response = await fetch('http://localhost:5000/api/auth/send-order-confirmation', {
+            const API_BASE = (window && window.__API_BASE__) ? window.__API_BASE__ : 'http://localhost:5000/api';
+            const response = await fetch(`${API_BASE}/auth/send-order-confirmation`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -861,8 +862,9 @@ async function submitCheckout(e) {
                 console.warn('Email send failed:', result.message);
             }
         } catch (error) {
-            console.error('Error sending confirmation email:', error);
-            // Email will still be marked as "sent" in frontend for UX
+            // Backend not reachable — log for debugging but continue UX flow
+            console.warn('Unable to send confirmation email (backend may be offline):', error?.message || error);
+            // Do not mark as failed to avoid blocking UX
         }
         saveData();
     }

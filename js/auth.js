@@ -63,7 +63,53 @@ if (document.getElementById('login-form')) {
 
         try {
             console.log('Attempting login with email:', email);
-            
+
+            // If Firebase Auth is explicitly requested or available and initialized, use it
+            const useFirebase = (window && window.__USE_FIREBASE_AUTH__) || ((window._FB_READY || false) && (typeof firebase !== 'undefined' && firebase && firebase.auth));
+
+            if (useFirebase) {
+                try {
+                    if (!window._FB_READY) {
+                        await FirebaseHelper.init();
+                    }
+                    const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                    const fbUser = userCredential.user;
+                    const token = await fbUser.getIdToken();
+
+                    // Try to read profile from Realtime Database (users/{uid})
+                    let profile = null;
+                    try {
+                        profile = await FirebaseHelper.readData(`users/${fbUser.uid}`);
+                    } catch (e) {
+                        console.warn('Failed to read Firebase profile:', e?.message || e);
+                    }
+
+                    if (!profile) {
+                        profile = {
+                            id: fbUser.uid,
+                            email: fbUser.email,
+                            full_name: fbUser.displayName || '',
+                            role: 'customer'
+                        };
+                    }
+
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('user', JSON.stringify(profile));
+                    localStorage.setItem('currentCart', JSON.stringify([]));
+
+                    currentUser = profile;
+                    currentCart = [];
+
+                    redirectToDashboard(profile.role);
+                    return;
+                } catch (fbErr) {
+                    console.error('Firebase login failed:', fbErr);
+                    alert(fbErr.message || 'Login failed via Firebase');
+                    return;
+                }
+            }
+
+            // Fallback: existing backend API
             const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
@@ -95,7 +141,13 @@ if (document.getElementById('login-form')) {
                 document.getElementById('password').value = '';
             }
         } catch (error) {
-            alert('Error: ' + error.message);
+            const msg = (error && error.message) ? error.message : String(error);
+            // Friendly message for network failures
+            if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || error instanceof TypeError) {
+                alert('Cannot reach the backend server. If you intended to use Firebase Auth, ensure the Firebase SDK is loaded and Email/Password sign-in is enabled. Otherwise host your API and set `window.__API_BASE__`. See console for details.');
+            } else {
+                alert('Login error: ' + msg);
+            }
             console.error('Login error:', error);
         }
     });
@@ -126,6 +178,12 @@ function redirectToDashboard(role) {
 // Logout function
 function logout() {
     if (confirm('Are you sure you want to logout?')) {
+        try {
+            if (typeof firebase !== 'undefined' && firebase && firebase.auth) {
+                firebase.auth().signOut().catch(()=>{});
+            }
+        } catch (e) {}
+
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         localStorage.removeItem('currentCart');

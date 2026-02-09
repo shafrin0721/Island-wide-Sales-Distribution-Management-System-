@@ -343,7 +343,18 @@
         window._FB_READY = await FirebaseHelper.init();
       })();
 
-      const API_URL = "http://localhost:5000/api";
+      const API_URL = (function () {
+        if (window && window.__API_BASE__) return window.__API_BASE__;
+        try {
+          if (
+            location.hostname === "localhost" ||
+            location.hostname === "127.0.0.1"
+          ) {
+            return "http://localhost:5000/api";
+          }
+        } catch (e) {}
+        return "/api";
+      })();
 
       function showMessage(message, type) {
         const messageDiv = document.getElementById("signup-message");
@@ -447,6 +458,60 @@
             '<span class="spinner"></span>Creating account...';
 
           showMessage("Creating account...", "info");
+
+          const useFirebase =
+            (window && window.__USE_FIREBASE_AUTH__) ||
+            (typeof firebase !== "undefined" && firebase && firebase.auth);
+
+          if (useFirebase) {
+            try {
+              if (!window._FB_READY) {
+                await FirebaseHelper.init();
+              }
+
+              // Create user in Firebase Auth
+              const userCredential = await firebase
+                .auth()
+                .createUserWithEmailAndPassword(email, password);
+              const fbUserObj = userCredential.user;
+              const uid = fbUserObj.uid;
+              const token = await fbUserObj.getIdToken();
+
+              const fbUser = {
+                id: uid,
+                email: email,
+                full_name: `${firstName} ${lastName}`,
+                phone: phone,
+                address: address,
+                role: role,
+                createdAt: new Date().toISOString(),
+              };
+
+              await FirebaseHelper.writeData(`users/${uid}`, fbUser);
+
+              localStorage.setItem("token", token);
+              localStorage.setItem("user", JSON.stringify(fbUser));
+              localStorage.setItem("currentCart", JSON.stringify([]));
+
+              showMessage(
+                `Account created successfully! Redirecting to login...`,
+                "success",
+              );
+              setTimeout(() => {
+                window.location.href = "index.html";
+              }, 1500);
+              return;
+            } catch (fbCreateErr) {
+              console.error("Firebase create user failed:", fbCreateErr);
+              showMessage(
+                fbCreateErr.message || "Failed to create account via Firebase",
+                "error",
+              );
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = "Create Account";
+              return;
+            }
+          }
 
           // Try to register via backend API
           const response = await fetch(`${API_URL}/auth/register`, {
@@ -586,5 +651,6 @@
         }
       });
     </script>
+    <script src="/js/footer-loader.js"></script>
   </body>
 </html>

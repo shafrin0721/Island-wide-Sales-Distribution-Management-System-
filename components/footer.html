@@ -1,0 +1,34 @@
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-col">
+      <h4>RDC</h4>
+      <p>Rapid Delivery Center — reliable deliveries, fast.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Help</h4>
+      <ul>
+        <li><a href="/pages/customer/faq.html">FAQ</a></li>
+        <li><a href="/pages/customer/contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="/pages/customer/terms.html">Terms</a></li>
+        <li><a href="/pages/customer/privacy.html">Privacy</a></li>
+      </ul>
+    </div>
+    <div class="footer-col social">
+      <h4>Follow</h4>
+      <a href="#" aria-label="Twitter">Twitter</a>
+      <a href="#" aria-label="Facebook">Facebook</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © <span id="footer-year"></span> RDC — All rights reserved.
+  </div>
+  <script>
+    document.getElementById("footer-year")?.innerText =
+      new Date().getFullYear();
+  </script>
+</footer>

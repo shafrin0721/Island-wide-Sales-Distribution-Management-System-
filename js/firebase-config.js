@@ -15,6 +15,9 @@ const firebaseConfig = {
   measurementId: "G-FYND6D8QPK"
 };
 
+// Ensure Firebase Auth usage flag is available early so pages prefer Firebase auth flows
+try { window.__USE_FIREBASE_AUTH__ = true; } catch (e) {}
+
 /**
  * Firebase Helper Functions
  * Provides utility methods for Firebase operations
@@ -46,6 +49,13 @@ const FirebaseHelper = {
       // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
       console.log('✅ Firebase initialized successfully');
+      // Enable client to use Firebase Auth flows
+      try {
+        window.__USE_FIREBASE_AUTH__ = true;
+        console.log('🔐 Firebase Auth enabled (window.__USE_FIREBASE_AUTH__ = true)');
+      } catch (e) {
+        console.warn('Could not set __USE_FIREBASE_AUTH__ flag:', e);
+      }
       console.log('Project:', firebaseConfig.projectId);
       console.log('DB URL:', firebaseConfig.databaseURL);
       return true;
