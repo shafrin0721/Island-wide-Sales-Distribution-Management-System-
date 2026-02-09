@@ -120,6 +120,7 @@ function loadAdminDashboard() {
 }
 
 function updateAdminStats() {
+    console.log('updateAdminStats called');
     const totalOrders = systemData.orders.length;
     const totalRevenue = systemData.orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
     const pendingDeliveries = systemData.deliveries.filter(d => d.status === 'pending' || d.status === 'out for delivery').length;
@@ -132,10 +133,26 @@ function updateAdminStats() {
     const deliveryEl = document.getElementById('stat-pending-deliveries');
     const stockEl = document.getElementById('stat-low-stock');
 
-    if (orderEl) orderEl.textContent = totalOrders;
-    if (revenueEl) revenueEl.textContent = '$' + totalRevenue.toFixed(2);
-    if (deliveryEl) deliveryEl.textContent = pendingDeliveries;
-    if (stockEl) stockEl.textContent = lowStockItems;
+    console.log('Elements found:', { orderEl: !!orderEl, revenueEl: !!revenueEl, deliveryEl: !!deliveryEl, stockEl: !!stockEl });
+
+    if (orderEl) {
+        console.log('Setting stat-total-orders to', totalOrders);
+        orderEl.textContent = totalOrders;
+    }
+    if (revenueEl) {
+        const formattedRevenue = '$' + totalRevenue.toFixed(2);
+        console.log('Setting stat-total-revenue to', formattedRevenue);
+        revenueEl.textContent = formattedRevenue;
+    }
+    if (deliveryEl) {
+        console.log('Setting stat-pending-deliveries to', pendingDeliveries);
+        deliveryEl.textContent = pendingDeliveries;
+    }
+    if (stockEl) {
+        console.log('Setting stat-low-stock to', lowStockItems);
+        stockEl.textContent = lowStockItems;
+    }
+}
 }
 
 function updateAdminAlerts() {
