@@ -19,7 +19,9 @@ window.addEventListener('load', function() {
                 if (document.getElementById('revenueChart')) {
                     console.log('Initializing admin dashboard charts...');
                     initializeAdminDashboardCharts();
+                    console.log('About to call updateAdminDashboard from charts.js...');
                     updateAdminDashboard();
+                    console.log('updateAdminDashboard call completed');
                 }
             }, 300);
         } else if (waitCount > 50) {
@@ -181,29 +183,42 @@ function initializeAdminDashboardCharts() {
 }
 
 function updateAdminDashboard() {
-    const data = systemData;
-    const orders = data.orders || [];
-    const products = data.products || [];
-    const inventory = data.inventory || [];
-    const deliveries = data.deliveries || [];
+    try {
+        const data = systemData;
+        if (!data) {
+            console.error('systemData is undefined in updateAdminDashboard');
+            return;
+        }
+        
+        const orders = data.orders || [];
+        const products = data.products || [];
+        const inventory = data.inventory || [];
+        const deliveries = data.deliveries || [];
 
-    // Update stat cards
-    const totalOrders = orders.length;
-    const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || order.total || 0), 0);
-    const pendingDeliveries = deliveries.filter(d => d.status !== 'delivered').length;
-    const lowStock = inventory.filter(inv => inv.stockLevel <= inv.reorderLevel).length;
+        // Update stat cards
+        const totalOrders = orders.length;
+        const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || order.total || 0), 0);
+        const pendingDeliveries = deliveries.filter(d => d.status !== 'delivered').length;
+        const lowStock = inventory.filter(inv => inv.stockLevel <= inv.reorderLevel).length;
 
-    console.log('updateAdminDashboard (charts.js):', { totalOrders, totalRevenue, pendingDeliveries, lowStock });
+        console.log('updateAdminDashboard (charts.js):', { totalOrders, totalRevenue, pendingDeliveries, lowStock });
 
-    const orderEl = document.getElementById('stat-total-orders');
-    const revenueEl = document.getElementById('stat-total-revenue');
-    const deliveryEl = document.getElementById('stat-pending-deliveries');
-    const stockEl = document.getElementById('stat-low-stock');
+        const orderEl = document.getElementById('stat-total-orders');
+        const revenueEl = document.getElementById('stat-total-revenue');
+        const deliveryEl = document.getElementById('stat-pending-deliveries');
+        const stockEl = document.getElementById('stat-low-stock');
 
-    if (orderEl) orderEl.textContent = totalOrders;
-    if (revenueEl) revenueEl.textContent = '$' + totalRevenue.toFixed(2);
-    if (deliveryEl) deliveryEl.textContent = pendingDeliveries;
-    if (stockEl) stockEl.textContent = lowStock;
+        console.log('Elements found:', { orderEl: !!orderEl, revenueEl: !!revenueEl, deliveryEl: !!deliveryEl, stockEl: !!stockEl });
+
+        if (orderEl) orderEl.textContent = totalOrders;
+        if (revenueEl) revenueEl.textContent = '$' + totalRevenue.toFixed(2);
+        if (deliveryEl) deliveryEl.textContent = pendingDeliveries;
+        if (stockEl) stockEl.textContent = lowStock;
+        
+        console.log('Stats updated in DOM');
+    } catch (error) {
+        console.error('Error in updateAdminDashboard:', error);
+    }
 
     // Update alerts
     updateAlerts(data);
