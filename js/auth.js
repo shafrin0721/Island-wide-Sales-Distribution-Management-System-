@@ -104,6 +104,37 @@ if (document.getElementById('login-form')) {
                     return;
                 } catch (fbErr) {
                     console.error('Firebase login failed:', fbErr);
+                    const code = fbErr && fbErr.code ? fbErr.code : '';
+                    // If user not found, offer to create an account with entered password
+                    if (code === 'auth/user-not-found') {
+                        const create = confirm('No account found for this email. Create an account now using the entered password?');
+                        if (create) {
+                            try {
+                                const createRes = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                                const fbUser = createRes.user;
+                                const token = await fbUser.getIdToken();
+                                const profile = { id: fbUser.uid, email: fbUser.email, full_name: fbUser.displayName || '', role: 'customer', createdAt: new Date().toISOString() };
+                                try { await FirebaseHelper.writeData(`users/${fbUser.uid}`, profile); } catch (e) { console.warn('Failed to write profile to Firebase DB', e); }
+
+                                localStorage.setItem('token', token);
+                                localStorage.setItem('user', JSON.stringify(profile));
+                                localStorage.setItem('currentCart', JSON.stringify([]));
+
+                                currentUser = profile;
+                                currentCart = [];
+                                redirectToDashboard(profile.role);
+                                return;
+                            } catch (createErr) {
+                                console.error('Firebase auto-create failed:', createErr);
+                                alert(createErr.message || 'Account creation failed');
+                                return;
+                            }
+                        } else {
+                            alert('Please sign up first or use the signup page.');
+                            return;
+                        }
+                    }
+
                     alert(fbErr.message || 'Login failed via Firebase');
                     return;
                 }
