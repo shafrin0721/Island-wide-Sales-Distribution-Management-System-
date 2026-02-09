@@ -175,6 +175,86 @@ function redirectToDashboard(role) {
     }
 }
 
+// Demo login button: auto-create or sign-in a demo user for quick testing
+(function() {
+    const demoBtn = document.getElementById('demo-login-btn');
+    if (!demoBtn) return;
+
+    demoBtn.addEventListener('click', async function() {
+        const demoEmail = 'test@example.com';
+        const demoPassword = 'Test@123456';
+
+        // Fill inputs for visibility
+        try {
+            const emailInput = document.getElementById('email');
+            const pwInput = document.getElementById('password');
+            if (emailInput) emailInput.value = demoEmail;
+            if (pwInput) pwInput.value = demoPassword;
+
+            // If Firebase is available and initialized, prefer that
+            if ((window._FB_READY || false) && typeof firebase !== 'undefined' && firebase && firebase.auth) {
+                try {
+                    // Try sign in
+                    await firebase.auth().signInWithEmailAndPassword(demoEmail, demoPassword);
+                } catch (err) {
+                    // If user not found or invalid credentials, create the demo user
+                    const code = err && err.code ? err.code : '';
+                    if (code === 'auth/user-not-found' || code === 'auth/invalid-login-credentials' || code === 'auth/wrong-password') {
+                        try {
+                            const createRes = await firebase.auth().createUserWithEmailAndPassword(demoEmail, demoPassword);
+                            const fbUser = createRes.user;
+                            const profile = { id: fbUser.uid, email: demoEmail, full_name: 'Demo User', role: 'customer', createdAt: new Date().toISOString() };
+                            try { await FirebaseHelper.writeData(`users/${fbUser.uid}`, profile); } catch (e) { console.warn('Failed to write demo profile to Firebase DB', e); }
+                        } catch (createErr) {
+                            console.error('Failed to create demo user:', createErr);
+                            alert('Demo login failed: ' + (createErr.message || createErr));
+                            return;
+                        }
+                    } else {
+                        console.error('Demo sign-in error:', err);
+                        alert('Demo login failed: ' + (err.message || err));
+                        return;
+                    }
+                }
+
+                // At this point user should be signed in
+                try {
+                    const fbUser = firebase.auth().currentUser;
+                    if (!fbUser) throw new Error('No Firebase user after sign-in');
+                    const token = await fbUser.getIdToken();
+                    let profile = null;
+                    try { profile = await FirebaseHelper.readData(`users/${fbUser.uid}`); } catch (e) { console.warn('Profile read failed', e); }
+                    if (!profile) profile = { id: fbUser.uid, email: fbUser.email, full_name: fbUser.displayName || 'Demo User', role: 'customer' };
+
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('user', JSON.stringify(profile));
+                    localStorage.setItem('currentCart', JSON.stringify([]));
+                    currentUser = profile;
+                    currentCart = [];
+                    redirectToDashboard(profile.role);
+                    return;
+                } catch (finalErr) {
+                    console.error('Demo finalization failed:', finalErr);
+                    alert('Demo login failed: ' + (finalErr.message || finalErr));
+                    return;
+                }
+            }
+
+            // Fallback: create a local demo user and proceed
+            const newUser = { id: 'demo_' + Date.now(), email: demoEmail, full_name: 'Demo User', role: 'customer' };
+            localStorage.setItem('token', 'temp_token_' + Date.now());
+            localStorage.setItem('user', JSON.stringify(newUser));
+            localStorage.setItem('currentCart', JSON.stringify([]));
+            currentUser = newUser;
+            currentCart = [];
+            redirectToDashboard(newUser.role);
+        } catch (e) {
+            console.error('Demo login unexpected error:', e);
+            alert('Demo login failed: ' + (e.message || e));
+        }
+    });
+})();
+
 // Logout function
 function logout() {
     if (confirm('Are you sure you want to logout?')) {
