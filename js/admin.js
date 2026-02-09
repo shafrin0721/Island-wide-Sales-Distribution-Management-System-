@@ -4,6 +4,23 @@
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Wait for systemData to be available (loaded from data.js)
+    if (typeof systemData === 'undefined') {
+        console.warn('systemData not yet loaded, waiting...');
+        let checkInterval = setInterval(function() {
+            if (typeof systemData !== 'undefined' && systemData) {
+                clearInterval(checkInterval);
+                initializeAdminPage();
+            }
+        }, 100);
+        // Timeout after 5 seconds
+        setTimeout(() => { if (checkInterval) clearInterval(checkInterval); }, 5000);
+    } else {
+        initializeAdminPage();
+    }
+});
+
+function initializeAdminPage() {
     // Setup delegated navigation handlers
     setupAdminNavigation();
     
@@ -16,11 +33,20 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (document.getElementById('report-display')) {
         setDefaultDates();
     }
-});
+}
 
 // Setup delegated navigation for admin pages (CSP compliance)
 function setupAdminNavigation() {
     document.addEventListener('click', function(e) {
+        // Handle go-to-page quick action buttons
+        if (e.target.getAttribute('data-action') === 'go-to-page') {
+            const page = e.target.getAttribute('data-page');
+            if (page) {
+                window.location.href = page;
+                return;
+            }
+        }
+        
         // Handle nav link clicks with data-href (for inline onclick replacements)
         if (e.target.classList.contains('nav-link') && e.target.hasAttribute('data-href')) {
             e.preventDefault();

@@ -2,8 +2,39 @@
 // DELIVERY STAFF FUNCTIONS
 // =====================================================
 
+// Setup delegated navigation for Delivery pages
+function setupDeliveryNavigation() {
+    document.addEventListener('click', function(e) {
+        // Handle go-to-page quick action buttons
+        if (e.target.getAttribute('data-action') === 'go-to-page') {
+            const page = e.target.getAttribute('data-page');
+            if (page) {
+                window.location.href = page;
+                return;
+            }
+        }
+    });
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Wait for systemData to be available (loaded from data.js)
+    if (typeof systemData === 'undefined') {
+        console.warn('systemData not yet loaded, waiting...');
+        let checkInterval = setInterval(function() {
+            if (typeof systemData !== 'undefined' && systemData) {
+                clearInterval(checkInterval);
+                initializeDeliveryPage();
+            }
+        }, 100);
+        // Timeout after 5 seconds
+        setTimeout(() => { if (checkInterval) clearInterval(checkInterval); }, 5000);
+    } else {
+        initializeDeliveryPage();
+    }
+});
+
+function initializeDeliveryPage() {
     updateDeliveryStaffTable();
     // Auto-refresh every 30 seconds but only when page is visible; avoid overlapping runs
     (function() {
@@ -32,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // start when script runs
         if (!document.hidden) startTimer();
     })();
-});
+}
 
 function updateDeliveryStaffTable() {
     const tbody = document.getElementById('delivery-staff-table');
