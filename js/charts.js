@@ -190,13 +190,13 @@ function updateAdminDashboard() {
     // Update stat cards
     document.getElementById('stat-total-orders').textContent = orders.length;
     
-    const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);
+    const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || order.total || 0), 0);
     document.getElementById('stat-total-revenue').textContent = '$' + totalRevenue.toFixed(2);
     
-    const pendingDeliveries = deliveries.filter(d => d.status !== 'Delivered').length;
+    const pendingDeliveries = deliveries.filter(d => d.status !== 'delivered').length;
     document.getElementById('stat-pending-deliveries').textContent = pendingDeliveries;
     
-    const lowStock = inventory.filter(i => i.quantity < 10).length;
+    const lowStock = inventory.filter(inv => inv.stockLevel <= inv.reorderLevel).length;
     document.getElementById('stat-low-stock').textContent = lowStock;
 
     // Update alerts
@@ -210,7 +210,7 @@ function updateAlerts(data) {
     const alerts = [];
 
     // Check for low stock
-    const lowStock = data.inventory.filter(i => i.quantity < 10);
+    const lowStock = data.inventory.filter(inv => inv.stockLevel <= inv.reorderLevel);
     if (lowStock.length > 0) {
         alerts.push({
             type: 'warning',
@@ -219,7 +219,7 @@ function updateAlerts(data) {
     }
 
     // Check for pending orders
-    const pendingOrders = data.orders.filter(o => o.status === 'Pending');
+    const pendingOrders = data.orders.filter(o => o.status === 'processing' || o.status === 'pending');
     if (pendingOrders.length > 0) {
         alerts.push({
             type: 'info',
@@ -228,7 +228,7 @@ function updateAlerts(data) {
     }
 
     // Check for pending deliveries
-    const pendingDeliveries = data.deliveries.filter(d => d.status !== 'Delivered');
+    const pendingDeliveries = data.deliveries.filter(d => d.status !== 'delivered');
     if (pendingDeliveries.length > 0) {
         alerts.push({
             type: 'info',
