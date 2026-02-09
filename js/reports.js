@@ -70,9 +70,9 @@ function generateInventorySummary() {
     const inventory = data.inventory || [];
     
     const totalItems = inventory.length;
-    const totalQuantity = inventory.reduce((sum, i) => sum + i.quantity, 0);
-    const lowStockItems = inventory.filter(i => i.quantity > 0 && i.quantity < 10).length;
-    const outOfStockItems = inventory.filter(i => i.quantity === 0).length;
+    const totalQuantity = inventory.reduce((sum, i) => sum + (i.stockLevel || 0), 0);
+    const lowStockItems = inventory.filter(i => i.stockLevel > 0 && i.stockLevel <= i.reorderLevel).length;
+    const outOfStockItems = inventory.filter(i => i.stockLevel === 0).length;
     
     const content = `
         <div class="summary-grid">
