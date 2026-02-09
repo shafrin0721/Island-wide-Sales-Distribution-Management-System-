@@ -188,7 +188,6 @@ function updateAdminStats() {
     
     console.log('updateAdminStats complete');
 }
-}
 
 function updateAdminAlerts() {
     const alertsDiv = document.getElementById('admin-alerts');
