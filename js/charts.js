@@ -327,10 +327,14 @@ function getTopProductsByRevenue(orders, products, limit) {
     
     orders.forEach(order => {
         (order.items || []).forEach(item => {
+            const product = products.find(p => p.productID === item.productID);
+            const price = product?.price || 0;
+            const itemRevenue = (item.quantity || 1) * price;
+            
             if (!productRevenue[item.productID]) {
                 productRevenue[item.productID] = 0;
             }
-            productRevenue[item.productID] += item.subtotal || 0;
+            productRevenue[item.productID] += itemRevenue;
         });
     });
     
@@ -348,8 +352,8 @@ function getTopProductsByRevenue(orders, products, limit) {
 }
 
 function getInventoryStatus(inventory) {
-    const inStock = inventory.filter(i => i.stockLevel > 10).length;
-    const lowStock = inventory.filter(i => i.stockLevel > 0 && i.stockLevel <= 10).length;
+    const inStock = inventory.filter(i => i.stockLevel > i.reorderLevel).length;
+    const lowStock = inventory.filter(i => i.stockLevel <= i.reorderLevel && i.stockLevel > 0).length;
     const outOfStock = inventory.filter(i => i.stockLevel === 0).length;
     
     return [inStock, lowStock, outOfStock];
