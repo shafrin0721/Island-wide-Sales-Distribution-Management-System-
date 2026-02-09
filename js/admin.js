@@ -3,8 +3,8 @@
 // =====================================================
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('admin.js DOMContentLoaded fired');
+window.addEventListener('load', function() {
+    console.log('admin.js window load event fired');
     // Wait for systemData to be available (loaded from data.js)
     if (typeof systemData === 'undefined') {
         console.warn('systemData not yet loaded, waiting...');
