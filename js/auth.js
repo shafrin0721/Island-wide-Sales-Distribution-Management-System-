@@ -239,7 +239,17 @@ function redirectToDashboard(role) {
                                 const createRes = await firebase.auth().createUserWithEmailAndPassword(demoEmail, demoPassword);
                                 const fbUser = createRes.user;
                                 const profile = { id: fbUser.uid, email: demoEmail, full_name: config.name, role: config.role, createdAt: new Date().toISOString() };
-                                try { await FirebaseHelper.writeData(`users/${fbUser.uid}`, profile); } catch (e) { console.warn('Failed to write demo profile', e); }
+                                try {
+                                    await FirebaseHelper.writeData(`users/${fbUser.uid}`, profile);
+                                    // Verify written profile
+                                    const written = await FirebaseHelper.readData(`users/${fbUser.uid}`);
+                                    if (written && written.role !== config.role) {
+                                        console.warn('Demo profile role mismatch, correcting role to', config.role);
+                                        await FirebaseHelper.updateData(`users/${fbUser.uid}`, { role: config.role });
+                                    }
+                                } catch (e) {
+                                    console.warn('Failed to write/verify demo profile', e);
+                                }
                             } catch (createErr) {
                                 console.error('Failed to create demo user:', createErr);
                                 alert('Demo login failed: ' + (createErr.message || createErr));
@@ -260,11 +270,29 @@ function redirectToDashboard(role) {
                         try { profile = await FirebaseHelper.readData(`users/${fbUser.uid}`); } catch (e) { console.warn('Profile read failed', e); }
                         if (!profile) profile = { id: fbUser.uid, email: fbUser.email, full_name: fbUser.displayName || config.name, role: config.role };
 
+                        // Final verification: ensure RTDB has correct role
+                        try {
+                            const verify = await FirebaseHelper.readData(`users/${fbUser.uid}`);
+                            if (verify) {
+                                console.log('Demo profile read from RTDB:', verify);
+                                if (verify.role !== config.role) {
+                                    console.warn('RTDB role differs; updating to', config.role);
+                                    await FirebaseHelper.updateData(`users/${fbUser.uid}`, { role: config.role });
+                                    profile.role = config.role;
+                                } else {
+                                    profile = verify;
+                                }
+                            }
+                        } catch (e) {
+                            console.warn('RTDB verification failed:', e);
+                        }
+
                         localStorage.setItem('token', token);
                         localStorage.setItem('user', JSON.stringify(profile));
                         localStorage.setItem('currentCart', JSON.stringify([]));
                         currentUser = profile;
                         currentCart = [];
+                        console.log('Demo login successful for role:', profile.role);
                         redirectToDashboard(profile.role);
                         return;
                     } catch (finalErr) {
