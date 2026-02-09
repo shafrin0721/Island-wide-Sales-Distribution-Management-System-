@@ -1,0 +1,151 @@
+<!-- Debug Test for Profile Save -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Profile Save</title>
+    <style>
+        body { font-family: Arial; margin: 20px; background: #f5f5f5; }
+        .box { background: white; padding: 20px; margin: 10px 0; border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        input { padding: 8px; margin: 5px 0; width: 200px; }
+        .output { background: #f0f0f0; padding: 10px; border-left: 4px solid #007bff; margin: 10px 0; font-family: monospace; max-height: 300px; overflow-y: auto; }
+        .green { color: #28a745; }
+        .red { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Debug Profile Save</h1>
+
+    <div class="box">
+        <h2>Step 1: Check Buttons Exist</h2>
+        <button onclick="testButtonExists()">Test Button Detection</button>
+        <div id="out1" class="output"></div>
+    </div>
+
+    <div class="box">
+        <h2>Step 2: Simulate Button Click</h2>
+        <input type="text" id="name" placeholder="Full name" value="Test Name">
+        <input type="text" id="phone" placeholder="Phone" value="555-1234">
+        <input type="text" id="address" placeholder="Address" value="123 Test St">
+        <button onclick="testDirectSave()">Test Direct Save Function</button>
+        <div id="out2" class="output"></div>
+    </div>
+
+    <div class="box">
+        <h2>Step 3: Check localStorage</h2>
+        <button onclick="checkStorage()">Check localStorage</button>
+        <div id="out3" class="output"></div>
+    </div>
+
+    <div class="box">
+        <h2>Step 4: Go to Real Profile Page</h2>
+        <button onclick="window.location.href='pages/customer/profile.html'">Go to Profile</button>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script>
+        function log(id, msg, type = 'info') {
+            const el = document.getElementById(id);
+            const pre = type === 'good' ? '✓' : type === 'bad' ? '✗' : 'ℹ';
+            const color = type === 'good' ? 'green' : type === 'bad' ? 'red' : 'black';
+            el.innerHTML += `<div style="color: ${color}">${pre} ${msg}</div>`;
+        }
+
+        function testButtonExists() {
+            document.getElementById('out1').innerHTML = '';
+            
+            // Check if we can find the save button by data-action
+            const buttons = document.querySelectorAll('[data-action="save-profile"]');
+            log('out1', `Found ${buttons.length} save-profile buttons`, buttons.length > 0 ? 'good' : 'bad');
+            
+            // Check if function exists
+            if (typeof saveProfileChanges === 'function') {
+                log('out1', 'saveProfileChanges function exists', 'good');
+            } else {
+                log('out1', 'saveProfileChanges function NOT found', 'bad');
+            }
+            
+            // Check if inputs exist
+            if (document.getElementById('edit-name')) {
+                log('out1', 'Input #edit-name found on this page', 'good');
+            } else {
+                log('out1', 'Input #edit-name NOT on this page (that\'s OK, we\'re not on profile page)', 'info');
+            }
+        }
+
+        function testDirectSave() {
+            document.getElementById('out2').innerHTML = '';
+            
+            // Simulate what the function should do
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            
+            log('out2', `Input values: Name="${name}", Phone="${phone}", Address="${address}"`, 'info');
+            
+            try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                
+                if (!user.email && !user.id) {
+                    log('out2', 'No user found. Creating test user...', 'info');
+                    const testUser = {
+                        id: 1,
+                        email: 'test@example.com',
+                        full_name: 'Original Name',
+                        phone: '000-0000',
+                        address: '000 Test'
+                    };
+                    localStorage.setItem('user', JSON.stringify(testUser));
+                    log('out2', 'Test user created', 'good');
+                }
+                
+                // Now update
+                const updatedUser = JSON.parse(localStorage.getItem('user'));
+                updatedUser.full_name = name;
+                updatedUser.phone = phone;
+                updatedUser.address = address;
+                
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+                log('out2', 'Data saved to localStorage', 'good');
+                
+                // Verify
+                const check = JSON.parse(localStorage.getItem('user'));
+                if (check.full_name === name && check.phone === phone) {
+                    log('out2', 'Verification: Data saved correctly ✓', 'good');
+                } else {
+                    log('out2', 'Verification: Data mismatch ✗', 'bad');
+                }
+            } catch (e) {
+                log('out2', `Error: ${e.message}`, 'bad');
+            }
+        }
+
+        function checkStorage() {
+            document.getElementById('out3').innerHTML = '';
+            
+            const user = localStorage.getItem('user');
+            if (!user) {
+                log('out3', 'No user in localStorage', 'bad');
+                return;
+            }
+            
+            try {
+                const parsed = JSON.parse(user);
+                log('out3', 'User data found:', 'good');
+                log('out3', `  Name: ${parsed.full_name}`, 'info');
+                log('out3', `  Phone: ${parsed.phone}`, 'info');
+                log('out3', `  Address: ${parsed.address}`, 'info');
+                log('out3', `  Email: ${parsed.email}`, 'info');
+            } catch (e) {
+                log('out3', `Error parsing: ${e.message}`, 'bad');
+            }
+        }
+
+        window.addEventListener('load', () => {
+            log('out1', 'Page loaded. Click buttons above to test.', 'info');
+        });
+    </script>
+</body>
+</html>

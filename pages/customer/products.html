@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RDC - Products</title>
+    <link rel="stylesheet" href="../../css/styles.css" />
+    <link rel="stylesheet" href="../../css/footer.css" />
+    <link rel="stylesheet" href="../../css/images.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span class="logo-text">RDC System</span>
+          <span id="current-user"></span>
+        </div>
+        <div class="nav-menu">
+          <button class="nav-link active" data-nav="products">Products</button>
+          <button class="nav-link" data-nav="orders">My Orders</button>
+          <button class="nav-link" data-nav="cart">
+            Cart<span id="cart-badge" class="badge">0</span>
+          </button>
+          <button class="nav-link" data-nav="profile">Profile</button>
+          <button class="nav-link" data-nav="settings">Settings</button>
+          <button class="nav-link logout" data-nav="logout">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-content">
+      <div class="page-header">
+        <h2>Products Catalog</h2>
+        <p>Browse and shop our products</p>
+      </div>
+
+      <!-- Search & Filter Controls -->
+      <div class="products-controls">
+        <div class="search-box">
+          <input
+            type="text"
+            id="search-input"
+            aria-label="Search products"
+            placeholder="Search products..."
+          />
+        </div>
+        <div class="filters">
+          <select id="category-filter" aria-label="Filter by Category">
+            <option value="">All Categories</option>
+            <option value="Beverages">Beverages</option>
+            <option value="Health & Hygiene">Health & Hygiene</option>
+            <option value="Home Cleaning">Home Cleaning</option>
+            <option value="Personal Care">Personal Care</option>
+            <option value="Packaged Foods">Packaged Foods</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Home & Garden">Home & Garden</option>
+            <option value="Books">Books</option>
+            <option value="Toys & Games">Toys & Games</option>
+          </select>
+          <select id="price-filter" aria-label="Filter by Price">
+            <option value="">All Prices</option>
+            <option value="0-50">$0 - $50</option>
+            <option value="50-100">$50 - $100</option>
+            <option value="100-500">$100 - $500</option>
+            <option value="500+">$500+</option>
+          </select>
+          <select id="sort-filter" aria-label="Sort Products">
+            <option value="name">Sort by Name</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="popularity">Most Popular</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div id="products-grid" class="products-grid">
+        <!-- Products will be populated here -->
+      </div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div id="product-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="product-details">
+          <!-- Product details will be populated here -->
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/data.js?v=20260209-005"></script>
+    <script src="../../js/auth.js?v=20260209-002"></script>
+    <script src="../../js/customer.js?v=20260209-004"></script>
+    <script src="../../js/footer-loader.js"></script>
+  </body>
+</html>

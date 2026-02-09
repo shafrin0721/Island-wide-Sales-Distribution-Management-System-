@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDC - Admin Dashboard</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/footer.css" />
+    <link rel="stylesheet" href="../../css/images.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">RDC System - Admin</span>
+                <span id="current-user"></span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-link active" data-nav="dashboard">Dashboard</button>
+                <button class="nav-link" data-nav="users">Users</button>
+                <button class="nav-link" data-nav="products">Products</button>
+                <button class="nav-link" data-nav="reports">Reports</button>
+                <button class="nav-link" data-nav="settings">Settings</button>
+                <button class="nav-link logout" data-nav="logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-content">
+        <div class="page-header">
+            <h2>Admin Dashboard</h2>
+            <p>System Overview & Key Metrics</p>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <h3>Total Orders</h3>
+                <p id="stat-total-orders">0</p>
+                <small>All-time orders</small>
+            </div>
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <p id="stat-total-revenue">$0</p>
+                <small>All-time revenue</small>
+            </div>
+            <div class="stat-card">
+                <h3>Pending Deliveries</h3>
+                <p id="stat-pending-deliveries">0</p>
+                <small>Awaiting delivery</small>
+            </div>
+            <div class="stat-card">
+                <h3>Low Stock Items</h3>
+                <p id="stat-low-stock">0</p>
+                <small>Items below reorder level</small>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-container">
+                <h3>Revenue Trend</h3>
+                <canvas id="revenueChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Order Status Distribution</h3>
+                <canvas id="statusChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Top Products by Revenue</h3>
+                <canvas id="productsChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Inventory Status</h3>
+                <canvas id="inventoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div class="alerts-section">
+            <h3>System Alerts</h3>
+            <div id="admin-alerts">
+                <!-- Alerts will be populated here -->
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3>Quick Actions</h3>
+            <div class="action-grid">
+                <button class="action-btn" data-action="go-to-page" data-page="users.html">
+                    <span class="action-icon">ðŸ‘¥</span>
+                    <span>Manage Users</span>
+                </button>
+                <button class="action-btn" data-action="go-to-page" data-page="products.html">
+                    <span class="action-icon">ðŸ“¦</span>
+                    <span>Manage Products</span>
+                </button>
+                <button class="action-btn" data-action="go-to-page" data-page="reports.html">
+                    <span class="action-icon">ðŸ“Š</span>
+                    <span>View Reports</span>
+                </button>
+                <button class="action-btn" data-action="go-to-page" data-page="settings.html">>
+                    <span class="action-icon">âš™ï¸</span>
+                    <span>Settings</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/data.js"></script>
+    <script src="../../js/modals.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/admin.js"></script>
+    <script src="../../js/charts.js"></script>
+    <script src="../../js/footer-loader.js"></script>
+  </body>
+</html>
+
+

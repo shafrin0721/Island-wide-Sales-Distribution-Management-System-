@@ -1,0 +1,11 @@
+{
+  "name": "blackbox-tests",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node test_runner.js"
+  },
+  "dependencies": {
+    "axios": "^1.5.0"
+  }
+}

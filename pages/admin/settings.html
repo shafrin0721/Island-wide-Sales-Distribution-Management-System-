@@ -1,0 +1,339 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RDC - Admin Settings</title>
+    <link rel="stylesheet" href="../../css/styles.css" />
+    <link rel="stylesheet" href="../../css/footer.css" />
+    <link rel="stylesheet" href="../../css/images.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span class="logo-text">RDC System - Admin</span>
+          <span id="current-user"></span>
+        </div>
+        <div class="nav-menu">
+          <button class="nav-link" data-nav="dashboard">Dashboard</button>
+          <button class="nav-link" data-nav="users">Users</button>
+          <button class="nav-link" data-nav="products">Products</button>
+          <button class="nav-link" data-nav="reports">Reports</button>
+          <button class="nav-link active" data-nav="settings">Settings</button>
+          <button class="nav-link logout" data-nav="logout">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-content">
+      <div class="page-header">
+        <h2>Admin Settings</h2>
+        <p>Configure system preferences and application settings</p>
+      </div>
+
+      <!-- Settings Sections -->
+      <div class="settings-container">
+        <!-- General Settings -->
+        <div class="settings-section">
+          <h3>General Settings</h3>
+          <div class="form-group">
+            <label for="system-name">System Name:</label>
+            <input
+              type="text"
+              id="system-name"
+              placeholder="Enter system name"
+              value="RDC System"
+            />
+          </div>
+          <div class="form-group">
+            <label for="company-name">Company Name:</label>
+            <input
+              type="text"
+              id="company-name"
+              placeholder="Enter company name"
+              value="Rapid Delivery Center"
+            />
+          </div>
+          <div class="form-group">
+            <label for="system-email">System Email:</label>
+            <input
+              type="email"
+              id="system-email"
+              placeholder="system@example.com"
+              value="admin@rdc.com"
+            />
+          </div>
+          <div class="form-group">
+            <label for="phone">Contact Phone:</label>
+            <input
+              type="tel"
+              id="phone"
+              placeholder="(123) 456-7890"
+              value="+1 (555) 123-4567"
+            />
+          </div>
+        </div>
+
+        <!-- Notification Settings -->
+        <div class="settings-section">
+          <h3>Notification Preferences</h3>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="email-notifications" checked /> Enable
+              Email Notifications
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="order-alerts" checked /> Order Status
+              Alerts
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="inventory-alerts" checked /> Low Stock
+              Alerts
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="delivery-alerts" checked /> Delivery
+              Status Alerts
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="user-alerts" checked /> New User
+              Registration Alerts
+            </label>
+          </div>
+        </div>
+
+        <!-- Business Rules -->
+        <div class="settings-section">
+          <h3>Business Rules & Policies</h3>
+          <div class="form-group">
+            <label for="min-order-value">Minimum Order Value ($):</label>
+            <input
+              type="number"
+              id="min-order-value"
+              placeholder="0"
+              value="10"
+              min="0"
+              step="0.01"
+            />
+          </div>
+          <div class="form-group">
+            <label for="max-order-value">Maximum Order Value ($):</label>
+            <input
+              type="number"
+              id="max-order-value"
+              placeholder="Unlimited"
+              value="5000"
+              min="0"
+              step="0.01"
+            />
+          </div>
+          <div class="form-group">
+            <label for="reorder-level">Default Reorder Level (units):</label>
+            <input
+              type="number"
+              id="reorder-level"
+              placeholder="10"
+              value="10"
+              min="1"
+            />
+          </div>
+          <div class="form-group">
+            <label for="delivery-fee">Standard Delivery Fee ($):</label>
+            <input
+              type="number"
+              id="delivery-fee"
+              placeholder="0"
+              value="5.00"
+              min="0"
+              step="0.01"
+            />
+          </div>
+          <div class="form-group">
+            <label for="tax-rate">Tax Rate (%):</label>
+            <input
+              type="number"
+              id="tax-rate"
+              placeholder="0"
+              value="8.5"
+              min="0"
+              max="100"
+              step="0.1"
+            />
+          </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="settings-section">
+          <h3>Security Settings</h3>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="two-factor-auth" /> Enable Two-Factor
+              Authentication
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="session-timeout">Session Timeout (minutes):</label>
+            <input
+              type="number"
+              id="session-timeout"
+              placeholder="30"
+              value="30"
+              min="5"
+              max="480"
+            />
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="require-password-reset" /> Force
+              Password Reset Every 90 Days
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="password-length">Minimum Password Length:</label>
+            <input
+              type="number"
+              id="password-length"
+              placeholder="8"
+              value="8"
+              min="6"
+              max="20"
+            />
+          </div>
+        </div>
+
+        <!-- Display Settings -->
+        <div class="settings-section">
+          <h3>Display & Theme</h3>
+          <div class="form-group">
+            <label for="items-per-page">Items Per Page:</label>
+            <select id="items-per-page">
+              <option value="10">10 items</option>
+              <option value="25" selected>25 items</option>
+              <option value="50">50 items</option>
+              <option value="100">100 items</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="dark-mode" /> Enable Dark Mode
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="compact-view" /> Use Compact View
+            </label>
+          </div>
+        </div>
+
+        <!-- Data & Backup -->
+        <div class="settings-section">
+          <h3>Data Management</h3>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="auto-backup" checked /> Enable Auto
+              Backup
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="backup-frequency">Backup Frequency:</label>
+            <select id="backup-frequency">
+              <option value="daily" selected>Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+          <div class="button-group">
+            <button class="btn btn-secondary" data-action="backup-data">
+              Backup Data Now
+            </button>
+            <button class="btn btn-secondary" data-action="export-data">
+              Export All Data
+            </button>
+            <button class="btn btn-danger" data-action="clear-data">
+              Clear All Data
+            </button>
+          </div>
+        </div>
+
+        <!-- API & Integration -->
+        <div class="settings-section">
+          <h3>API & Integrations</h3>
+          <div class="form-group">
+            <label for="api-key">API Key:</label>
+            <div class="api-key-container">
+              <input
+                type="password"
+                id="api-key"
+                placeholder="Your API key"
+                readonly
+                value="sk-rdc-demo-key-123456"
+              />
+              <button class="btn btn-small" data-action="toggle-api-visibility">
+                Show
+              </button>
+              <button class="btn btn-small" data-action="regenerate-api">
+                Regenerate
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="settings-section">
+          <h3>About RDC System</h3>
+          <div class="info-display">
+            <p><strong>Version:</strong> 1.0.0</p>
+            <p><strong>Build:</strong> 2024</p>
+            <p>
+              <strong>Last Updated:</strong> <span id="last-updated"></span>
+            </p>
+            <p><strong>Database:</strong> Local Storage (Browser-based)</p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="settings-actions">
+          <button class="btn btn-primary" data-action="save-settings">
+            Save Settings
+          </button>
+          <button class="btn btn-secondary" data-action="reset-settings">
+            Reset to Defaults
+          </button>
+          <button
+            class="btn btn-secondary"
+            data-action="go-to-page"
+            data-page="dashboard.html"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals for confirmations -->
+    <div
+      id="modal-overlay"
+      class="modal-overlay display-none"
+      data-action="close-modal"
+    ></div>
+
+    <script src="../../js/data.js"></script>
+    <script src="../../js/modals.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/settings.js"></script>
+    <script src="../../js/footer-loader.js"></script>
+  </body>
+</html>
+
+

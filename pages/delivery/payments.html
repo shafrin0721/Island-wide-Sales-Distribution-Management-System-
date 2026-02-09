@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment & Collections - Delivery Staff</title>
+    <link rel="stylesheet" href="../../css/styles.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span class="logo-text">Delivery - Payment Collections</span>
+          <span id="current-user"></span>
+        </div>
+        <div class="nav-menu">
+          <button class="nav-link" data-nav="dashboard">Dashboard</button>
+          <button class="nav-link" data-nav="deliveries">Deliveries</button>
+          <button class="nav-link active" data-nav="payments">Payments</button>
+          <button class="nav-link" data-nav="profile">Profile</button>
+          <button class="nav-link logout" data-nav="logout">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="page-content">
+      <div class="page-header">
+        <h2>💳 Payment Collections</h2>
+        <p>Confirm and process cash/cheque collections from customers</p>
+      </div>
+
+      <div class="max-width-900 margin-20-auto">
+        <!-- Filter -->
+        <div class="margin-bottom-20">
+          <select
+            id="payment-filter"
+            aria-label="Filter payments by status"
+            onchange="filterPayments()"
+            class="padding-8 border-radius-5 border-1-ddd"
+          >
+            <option value="">All Payments</option>
+            <option value="pending">Pending Collection</option>
+            <option value="cash">Cash Received</option>
+            <option value="cheque">Cheque Received</option>
+            <option value="failed">Failed Collection</option>
+          </select>
+        </div>
+
+        <!-- Payments Table -->
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Delivery ID</th>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="payments-table">
+              <!-- Payments loaded here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Confirmation Modal -->
+    <div id="payment-modal" class="modal display-none">
+      <div class="modal-content max-width-500">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Confirm Payment</h2>
+        <form id="payment-form" class="padding-20">
+          <div
+            class="info-section background-f9f9f9 padding-15 border-radius-5 margin-bottom-20"
+          >
+            <p><strong>Order ID:</strong> <span id="modal-order-id"></span></p>
+            <p><strong>Customer:</strong> <span id="modal-customer"></span></p>
+            <p><strong>Amount Due:</strong> <span id="modal-amount"></span></p>
+          </div>
+
+          <div class="form-group">
+            <label>Payment Method:</label>
+            <select
+              id="payment-method"
+              aria-label="Payment Method"
+              required
+              onchange="updatePaymentFields()"
+            >
+              <option value="">Select method</option>
+              <option value="cash">Cash</option>
+              <option value="cheque">Cheque</option>
+              <option value="digital">Digital/Mobile Wallet</option>
+            </select>
+          </div>
+
+          <!-- Cash Fields -->
+          <div id="cash-fields" class="display-none">
+            <div class="form-group">
+              <label>Amount Received (Rs):</label>
+              <input
+                type="number"
+                id="cash-amount"
+                aria-label="Cash Amount Received"
+                step="0.01"
+                placeholder="Enter amount"
+              />
+            </div>
+          </div>
+
+          <!-- Cheque Fields -->
+          <div id="cheque-fields" class="display-none">
+            <div class="form-group">
+              <label>Cheque Number:</label>
+              <input
+                type="text"
+                id="cheque-number"
+                aria-label="Cheque Number"
+                placeholder="e.g., CHQ-123456"
+              />
+            </div>
+            <div class="form-group">
+              <label>Cheque Date:</label>
+              <input type="date" id="cheque-date" aria-label="Cheque Date" />
+            </div>
+            <div class="form-group">
+              <label>Bank Name:</label>
+              <input
+                type="text"
+                id="bank-name"
+                aria-label="Bank Name"
+                placeholder="e.g., Bank of Ceylon"
+              />
+            </div>
+            <div class="form-group">
+              <label>Cheque Amount (Rs):</label>
+              <input
+                type="number"
+                id="cheque-amount"
+                aria-label="Cheque Amount"
+                step="0.01"
+                placeholder="Enter amount"
+              />
+            </div>
+          </div>
+
+          <!-- Digital Payment Fields -->
+          <div id="digital-fields" class="display-none">
+            <div class="form-group">
+              <label>Transaction ID:</label>
+              <input
+                type="text"
+                id="transaction-id"
+                aria-label="Transaction ID"
+                placeholder="e.g., TXN-123456"
+              />
+            </div>
+            <div class="form-group">
+              <label>Amount Received (Rs):</label>
+              <input
+                type="number"
+                id="digital-amount"
+                aria-label="Digital Amount Received"
+                step="0.01"
+                placeholder="Enter amount"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Remarks:</label>
+            <textarea
+              id="payment-remarks"
+              placeholder="Any additional notes"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-success width-100 margin-top-20">
+            Confirm Collection
+          </button>
+          <button
+            type="button"
+            class="btn btn-warning width-100 margin-top-10"
+            onclick="recordFailedCollection()"
+          >
+            Unable to Collect
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Cheque Verification Modal -->
+    <div id="cheque-verification-modal" class="modal display-none">
+      <div class="modal-content max-width-500">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Cheque Verification Status</h2>
+        <div class="padding-20 text-center">
+          <div
+            class="background-d1ecf1 padding-20 border-radius-5 margin-bottom-20 color-0c5460"
+          >
+            <p class="margin-0 font-weight-bold">
+              ⏳ Cheque received and submitted for clearance
+            </p>
+            <p class="margin-top-10 font-size-12">
+              Clearance typically takes 2-3 business days
+            </p>
+          </div>
+          <p>
+            <strong>Cheque #:</strong> <span id="verify-cheque-number"></span>
+          </p>
+          <p><strong>Bank:</strong> <span id="verify-bank-name"></span></p>
+          <p>
+            <strong>Amount:</strong> <span id="verify-cheque-amount"></span>
+          </p>
+          <button
+            class="btn btn-primary width-100 margin-top-20"
+            onclick="closeModal()"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/data.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script>
+      let currentPayment = null;
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const user = JSON.parse(localStorage.getItem("currentUser"));
+        if (!user || user.role !== "delivery_staff") {
+          window.location.href = "../../index.html";
+          return;
+        }
+
+        document.getElementById("current-user").textContent =
+          `Logged in as: ${user.name}`;
+        loadPayments();
+        setupNavigation();
+
+        document
+          .getElementById("payment-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            processPayment();
+          });
+      });
+
+      function loadPayments() {
+        const user = JSON.parse(localStorage.getItem("currentUser"));
+        const deliveries = (systemData.deliveries || []).filter(
+          (d) => d.assignedTo === user.id && d.status === "delivered",
+        );
+
+        const tbody = document.getElementById("payments-table");
+        tbody.innerHTML = "";
+
+        if (deliveries.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="7" style="text-align: center;">No pending collections</td></tr>';
+          return;
+        }
+
+        deliveries.forEach((delivery) => {
+          const order = systemData.orders.find(
+            (o) => o.orderID === delivery.orderID,
+          );
+          const customer = systemData.users.find(
+            (u) => u.id === order.customerID,
+          );
+          const payment = systemData.payments?.find(
+            (p) => p.orderID === order.orderID,
+          );
+
+          const row = document.createElement("tr");
+          row.setAttribute("data-status", payment?.status || "pending");
+          row.innerHTML = `
+                    <td>${delivery.deliveryID}</td>
+                    <td>${order.orderID}</td>
+                    <td>${customer?.name || "Unknown"}</td>
+                    <td>Rs. ${order.totalPrice?.toFixed(2)}</td>
+                    <td>${order.paymentMethod || "Cash"}</td>
+                    <td><span class="badge badge-${payment?.status?.toLowerCase() || "pending"}">${payment?.status || "Pending"}</span></td>
+                    <td>
+                        ${
+                          !payment || payment.status === "pending"
+                            ? `<button class="btn btn-small btn-info" onclick="collectPayment('${delivery.deliveryID}', '${order.orderID}')">Collect</button>`
+                            : '<span style="color: #666;">✓ Collected</span>'
+                        }
+                    </td>
+                `;
+          tbody.appendChild(row);
+        });
+      }
+
+      function filterPayments() {
+        const filter = document.getElementById("payment-filter").value;
+        const rows = document
+          .getElementById("payments-table")
+          .querySelectorAll("tr");
+        rows.forEach((row) => {
+          if (filter === "") {
+            row.style.display = "";
+          } else {
+            row.style.display =
+              row.getAttribute("data-status") === filter ? "" : "none";
+          }
+        });
+      }
+
+      function collectPayment(deliveryID, orderID) {
+        const order = systemData.orders.find((o) => o.orderID === orderID);
+        const customer = systemData.users.find(
+          (u) => u.id === order.customerID,
+        );
+
+        currentPayment = {
+          deliveryID,
+          orderID,
+          amount: order.totalPrice,
+        };
+
+        document.getElementById("modal-order-id").textContent = orderID;
+        document.getElementById("modal-customer").textContent = customer?.name;
+        document.getElementById("modal-amount").textContent =
+          "Rs. " + order.totalPrice?.toFixed(2);
+        document.getElementById("payment-modal").style.display = "block";
+      }
+
+      function updatePaymentFields() {
+        const method = document.getElementById("payment-method").value;
+        document.getElementById("cash-fields").style.display =
+          method === "cash" ? "block" : "none";
+        document.getElementById("cheque-fields").style.display =
+          method === "cheque" ? "block" : "none";
+        document.getElementById("digital-fields").style.display =
+          method === "digital" ? "block" : "none";
+      }
+
+      function processPayment() {
+        const method = document.getElementById("payment-method").value;
+        if (!method) {
+          alert("Please select payment method");
+          return;
+        }
+
+        let amount = 0;
+        let paymentDetails = { method };
+
+        if (method === "cash") {
+          amount = parseFloat(document.getElementById("cash-amount").value);
+          if (!amount) {
+            alert("Please enter amount");
+            return;
+          }
+        } else if (method === "cheque") {
+          const chequeNum = document.getElementById("cheque-number").value;
+          const bankName = document.getElementById("bank-name").value;
+          amount = parseFloat(document.getElementById("cheque-amount").value);
+
+          if (!chequeNum || !bankName || !amount) {
+            alert("Please fill all cheque details");
+            return;
+          }
+
+          paymentDetails = {
+            method: "cheque",
+            chequeNumber: chequeNum,
+            chequeDate: document.getElementById("cheque-date").value,
+            bankName,
+            amount,
+          };
+        } else if (method === "digital") {
+          const txnId = document.getElementById("transaction-id").value;
+          amount = parseFloat(document.getElementById("digital-amount").value);
+
+          if (!txnId || !amount) {
+            alert("Please enter transaction ID and amount");
+            return;
+          }
+
+          paymentDetails = {
+            method: "digital",
+            transactionID: txnId,
+            amount,
+          };
+        }
+
+        // Record payment
+        systemData.payments = systemData.payments || [];
+        const payment = {
+          paymentID: "PAY-" + Date.now(),
+          orderID: currentPayment.orderID,
+          method,
+          amount,
+          status: method === "cheque" ? "cheque-submitted" : "collected",
+          timestamp: new Date(),
+          collectedBy: JSON.parse(localStorage.getItem("currentUser")).id,
+          remarks: document.getElementById("payment-remarks").value,
+          ...paymentDetails,
+        };
+
+        systemData.payments.push(payment);
+
+        // Update order payment status
+        const order = systemData.orders.find(
+          (o) => o.orderID === currentPayment.orderID,
+        );
+        order.paymentStatus = "collected";
+
+        saveData();
+
+        // Show appropriate success message
+        if (method === "cheque") {
+          document.getElementById("verify-cheque-number").textContent =
+            paymentDetails.chequeNumber;
+          document.getElementById("verify-bank-name").textContent =
+            paymentDetails.bankName;
+          document.getElementById("verify-cheque-amount").textContent =
+            "Rs. " + amount.toFixed(2);
+          document.getElementById("cheque-verification-modal").style.display =
+            "block";
+        } else {
+          alert("✓ Payment collected successfully!");
+          closeModal();
+          loadPayments();
+        }
+      }
+
+      function recordFailedCollection() {
+        if (confirm("Record this delivery as failed collection?")) {
+          const payment = {
+            paymentID: "PAY-" + Date.now(),
+            orderID: currentPayment.orderID,
+            method: "failed",
+            status: "failed",
+            reason: "Customer not available / Unable to collect",
+            timestamp: new Date(),
+            remarks: document.getElementById("payment-remarks").value,
+          };
+
+          systemData.payments = systemData.payments || [];
+          systemData.payments.push(payment);
+
+          const order = systemData.orders.find(
+            (o) => o.orderID === currentPayment.orderID,
+          );
+          order.paymentStatus = "failed";
+
+          saveData();
+          alert("⚠️ Collection failure recorded");
+          closeModal();
+          loadPayments();
+        }
+      }
+
+      function closeModal() {
+        document.getElementById("payment-modal").style.display = "none";
+        document.getElementById("cheque-verification-modal").style.display =
+          "none";
+        document.getElementById("payment-form").reset();
+        currentPayment = null;
+      }
+
+      function setupNavigation() {
+        document.addEventListener("click", function (e) {
+          const nav = e.target.getAttribute("data-nav");
+          if (nav === "dashboard") window.location.href = "dashboard.html";
+          else if (nav === "deliveries")
+            window.location.href = "deliveries.html";
+          else if (nav === "payments") window.location.href = "payments.html";
+          else if (nav === "profile") window.location.href = "profile.html";
+          else if (nav === "logout") {
+            localStorage.clear();
+            window.location.href = "../../index.html";
+          }
+        });
+      }
+    </script>
+
+    <style>
+      .badge-pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+      .badge-cash {
+        background: #d4edda;
+        color: #155724;
+      }
+      .badge-cheque {
+        background: #cce5ff;
+        color: #004085;
+      }
+      .badge-cheque-submitted {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+      .badge-digital {
+        background: #e7d4f5;
+        color: #5a1e7a;
+      }
+      .badge-failed {
+        background: #f8d7da;
+        color: #721c24;
+      }
+    </style>
+  </body>
+</html>
