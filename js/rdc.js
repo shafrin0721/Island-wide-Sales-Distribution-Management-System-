@@ -84,7 +84,7 @@ function setupRDCNavigation() {
         // Handle action buttons
         const action = e.target.getAttribute('data-action');
         if (action === 'add-stock') {
-            alert('Add stock feature coming soon');
+            showAddStockModal();
         }
     });
 }
@@ -352,6 +352,91 @@ function deleteInventory(productID) {
                 showNotification('Inventory deleted successfully', 'success');
             }
         }
+    });
+}
+
+// ================== ADD STOCK MODAL ==================
+
+function showAddStockModal() {
+    return new Promise((resolve) => {
+        const modalOverlay = document.createElement('div');
+        modalOverlay.className = 'modal-overlay active';
+        
+        // Build product options
+        const productOptions = systemData.inventory
+            .map(inv => {
+                const product = systemData.products.find(p => p.productID === inv.productID);
+                return `<option value="${inv.productID}">${product?.name || `Product ${inv.productID}`} (Current: ${inv.stockLevel})</option>`;
+            })
+            .join('');
+        
+        modalOverlay.innerHTML = `
+            <div class="modal-dialog info">
+                <div class="modal-header">
+                    <h3>Add Stock</h3>
+                    <button class="modal-close" onclick="window._addStockResolve(false)">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="add-stock-product">Select Product:</label>
+                        <select id="add-stock-product" class="form-control">
+                            <option value="">Choose a product...</option>
+                            ${productOptions}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-stock-quantity">Quantity to Add:</label>
+                        <input type="number" id="add-stock-quantity" class="form-control" placeholder="Enter quantity" min="1" />
+                    </div>
+                    <div class="form-group">
+                        <label for="add-stock-notes">Notes (optional):</label>
+                        <textarea id="add-stock-notes" class="form-control" placeholder="Enter notes..." rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="window._addStockResolve(false)">Cancel</button>
+                    <button class="btn btn-primary" onclick="window._addStockResolve(true)">Add Stock</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modalOverlay);
+        
+        window._addStockResolve = (confirmed) => {
+            if (confirmed) {
+                const productID = parseInt(document.getElementById('add-stock-product').value);
+                const quantity = parseInt(document.getElementById('add-stock-quantity').value);
+                const notes = document.getElementById('add-stock-notes').value;
+                
+                if (!productID || isNaN(quantity) || quantity <= 0) {
+                    showAlert('Please select a product and enter a valid quantity.', 'Error');
+                    return;
+                }
+                
+                // Update inventory
+                const inventory = systemData.inventory.find(inv => inv.productID === productID);
+                const product = systemData.products.find(p => p.productID === productID);
+                const oldStock = inventory.stockLevel;
+                inventory.stockLevel += quantity;
+                
+                saveData();
+                modalOverlay.remove();
+                showNotification(`Stock added: ${product?.name} (${oldStock} → ${inventory.stockLevel})`, 'success');
+                updateRDCInventoryTable();
+                updateRDCStats();
+                resolve(true);
+            } else {
+                modalOverlay.remove();
+                resolve(false);
+            }
+        };
+        
+        // Click outside to close
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                window._addStockResolve(false);
+            }
+        });
     });
 }
 
