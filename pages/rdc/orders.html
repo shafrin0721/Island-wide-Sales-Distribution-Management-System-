@@ -1,58 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RDC - Orders Management</title>
-    <link rel="stylesheet" href="../../css/styles.css">
-    <link rel="stylesheet" href="../../css/footer.css">
-    <link rel="stylesheet" href="../../css/images.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../../css/styles.css" />
+    <link rel="stylesheet" href="../../css/footer.css" />
+    <link rel="stylesheet" href="../../css/images.css" />
+  </head>
+  <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <span class="logo-text">RDC System - Staff</span>
-                <span id="current-user"></span>
-            </div>
-            <div class="nav-menu">
-                <button class="nav-link" data-nav="dashboard">Dashboard</button>
-                <button class="nav-link active" data-nav="orders">Orders</button>
-                <button class="nav-link" data-nav="inventory">Inventory</button>
-                <button class="nav-link" data-nav="delivery">Deliveries</button>
-                <button class="nav-link logout" data-nav="logout">Logout</button>
-            </div>
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span class="logo-text">RDC System - Staff</span>
+          <span id="current-user"></span>
         </div>
+        <div class="nav-menu">
+          <button class="nav-link" data-nav="dashboard">Dashboard</button>
+          <button class="nav-link active" data-nav="orders">Orders</button>
+          <button class="nav-link" data-nav="inventory">Inventory</button>
+          <button class="nav-link" data-nav="delivery">Deliveries</button>
+          <button class="nav-link logout" data-nav="logout">Logout</button>
+        </div>
+      </div>
     </nav>
 
     <!-- Main Content -->
     <div class="page-content">
-        <div class="page-header">
-            <h2>Order Management</h2>
-            <p>Process and track customer orders</p>
-        </div>
+      <div class="page-header">
+        <h2>Order Management</h2>
+        <p>Process and track customer orders</p>
+      </div>
 
-        <div class="table-wrapper">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Address</th>
-                        <th>Date</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="rdc-orders-table">
-                    <!-- Orders will be populated here -->
-                </tbody>
-            </table>
-        </div>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rdc-orders-table">
+            <!-- Orders will be populated here -->
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <script src="../../js/data.js"></script>
@@ -68,9 +68,11 @@
     <script src="../../js/firebase-config.js"></script>
 
     <script>
-        (async () => { window._FB_READY = await FirebaseHelper.init(); })();
+      (async () => {
+        window._FB_READY = await FirebaseHelper.init();
+      })();
     </script>
 
     <script src="/js/footer-loader.js"></script>
-</body>
+  </body>
 </html>

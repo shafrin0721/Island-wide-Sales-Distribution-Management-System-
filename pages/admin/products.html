@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RDC - Manage Products</title>
+    <link rel="stylesheet" href="../../css/styles.css" />
+    <link rel="stylesheet" href="../../css/footer.css" />
+    <link rel="stylesheet" href="../../css/images.css" />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span class="logo-text">RDC System - Admin</span>
+          <span id="current-user"></span>
+        </div>
+        <div class="nav-menu">
+          <button class="nav-link" data-nav="dashboard">Dashboard</button>
+          <button class="nav-link" data-nav="users">Users</button>
+          <button class="nav-link active" data-nav="products">Products</button>
+          <button class="nav-link" data-nav="reports">Reports</button>
+          <button class="nav-link" data-nav="settings">Settings</button>
+          <button class="nav-link logout" data-nav="logout">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-content">
+      <div class="page-header">
+        <h2>Manage Products</h2>
+        <p>Add, edit, or remove products from catalog</p>
+      </div>
+
+      <button class="btn btn-primary" data-action="add-new-product">
+        Add New Product
+      </button>
+
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Category</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="products-table">
+            <!-- Products will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script src="../../js/data.js"></script>
+    <script src="../../js/modals.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/admin.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+
+    <!-- Firebase Config & Initialization -->
+    <script src="../../js/firebase-config.js"></script>
+    <script>
+      (async () => {
+        window._FB_READY = await FirebaseHelper.init();
+      })();
+    </script>
+
+    <!-- Footer Loader -->
+    <script src="/js/footer-loader.js"></script>
+  </body>
+</html>

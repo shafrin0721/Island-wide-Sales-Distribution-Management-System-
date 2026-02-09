@@ -1,80 +1,95 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RDC - RDC Staff Dashboard</title>
-    <link rel="stylesheet" href="../../css/styles.css">
-    <link rel="stylesheet" href="../../css/footer.css">
-    <link rel="stylesheet" href="../../css/images.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../../css/styles.css" />
+    <link rel="stylesheet" href="../../css/footer.css" />
+    <link rel="stylesheet" href="../../css/images.css" />
+  </head>
+  <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <span class="logo-text">RDC System - Staff</span>
-                <span id="current-user"></span>
-            </div>
-            <div class="nav-menu">
-                <button class="nav-link active" data-nav="dashboard">Dashboard</button>
-                <button class="nav-link" data-nav="orders">Orders</button>
-                <button class="nav-link" data-nav="inventory">Inventory</button>
-                <button class="nav-link" data-nav="delivery">Deliveries</button>
-                <button class="nav-link logout" data-nav="logout">Logout</button>
-            </div>
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span class="logo-text">RDC System - Staff</span>
+          <span id="current-user"></span>
         </div>
+        <div class="nav-menu">
+          <button class="nav-link active" data-nav="dashboard">
+            Dashboard
+          </button>
+          <button class="nav-link" data-nav="orders">Orders</button>
+          <button class="nav-link" data-nav="inventory">Inventory</button>
+          <button class="nav-link" data-nav="delivery">Deliveries</button>
+          <button class="nav-link logout" data-nav="logout">Logout</button>
+        </div>
+      </div>
     </nav>
 
     <!-- Main Content -->
     <div class="page-content">
-        <div class="page-header">
-            <h2>RDC Staff Dashboard</h2>
-            <p>Order processing and inventory management</p>
-        </div>
+      <div class="page-header">
+        <h2>RDC Staff Dashboard</h2>
+        <p>Order processing and inventory management</p>
+      </div>
 
-        <!-- Dashboard Stats -->
-        <div class="dashboard-stats">
-            <div class="stat-card">
-                <h3>Pending Orders</h3>
-                <p id="rdc-pending-orders">0</p>
-                <small>Awaiting processing</small>
-            </div>
-            <div class="stat-card">
-                <h3>Ready for Delivery</h3>
-                <p id="rdc-ready-delivery">0</p>
-                <small>Ready to ship</small>
-            </div>
-            <div class="stat-card">
-                <h3>Low Stock Items</h3>
-                <p id="rdc-low-stock">0</p>
-                <small>Requires restock</small>
-            </div>
-            <div class="stat-card">
-                <h3>Unassigned Deliveries</h3>
-                <p id="rdc-unassigned">0</p>
-                <small>Need staff assignment</small>
-            </div>
+      <!-- Dashboard Stats -->
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <h3>Pending Orders</h3>
+          <p id="rdc-pending-orders">0</p>
+          <small>Awaiting processing</small>
         </div>
+        <div class="stat-card">
+          <h3>Ready for Delivery</h3>
+          <p id="rdc-ready-delivery">0</p>
+          <small>Ready to ship</small>
+        </div>
+        <div class="stat-card">
+          <h3>Low Stock Items</h3>
+          <p id="rdc-low-stock">0</p>
+          <small>Requires restock</small>
+        </div>
+        <div class="stat-card">
+          <h3>Unassigned Deliveries</h3>
+          <p id="rdc-unassigned">0</p>
+          <small>Need staff assignment</small>
+        </div>
+      </div>
 
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-            <h3>Quick Actions</h3>
-            <div class="action-grid">
-                <button class="action-btn" data-action="go-to-page" data-page="orders.html">
-                    <span class="action-icon">📋</span>
-                    <span>Process Orders</span>
-                </button>
-                <button class="action-btn" data-action="go-to-page" data-page="inventory.html">
-                    <span class="action-icon">📦</span>
-                    <span>Manage Inventory</span>
-                </button>
-                <button class="action-btn" data-action="go-to-page" data-page="delivery.html">>
-                    <span class="action-icon">🚚</span>
-                    <span>Assign Deliveries</span>
-                </button>
-            </div>
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h3>Quick Actions</h3>
+        <div class="action-grid">
+          <button
+            class="action-btn"
+            data-action="go-to-page"
+            data-page="orders.html"
+          >
+            <span class="action-icon">📋</span>
+            <span>Process Orders</span>
+          </button>
+          <button
+            class="action-btn"
+            data-action="go-to-page"
+            data-page="inventory.html"
+          >
+            <span class="action-icon">📦</span>
+            <span>Manage Inventory</span>
+          </button>
+          <button
+            class="action-btn"
+            data-action="go-to-page"
+            data-page="delivery.html"
+          >
+            >
+            <span class="action-icon">🚚</span>
+            <span>Assign Deliveries</span>
+          </button>
         </div>
+      </div>
     </div>
 
     <script src="../../js/data.js"></script>
@@ -90,9 +105,11 @@
     <script src="../../js/firebase-config.js"></script>
 
     <script>
-        (async () => { window._FB_READY = await FirebaseHelper.init(); })();
+      (async () => {
+        window._FB_READY = await FirebaseHelper.init();
+      })();
     </script>
 
     <script src="/js/footer-loader.js"></script>
-</body>
+  </body>
 </html>

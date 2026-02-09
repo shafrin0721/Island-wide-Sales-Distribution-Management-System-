@@ -2,8 +2,6 @@
 // ADMIN DASHBOARD FUNCTIONS
 // =====================================================
 
-let updateAdminStatsCallCount = 0;
-
 // Initialize on page load
 window.addEventListener('load', function() {
     console.log('admin.js window load event fired');
@@ -132,47 +130,20 @@ function loadAdminDashboard() {
 }
 
 function updateAdminStats() {
-    updateAdminStatsCallCount++;
-    console.log(`\n=== updateAdminStats CALL #${updateAdminStatsCallCount} ===`);
-    console.log('updateAdminStats called');
     const totalOrders = systemData.orders.length;
     const totalRevenue = systemData.orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
     const pendingDeliveries = systemData.deliveries.filter(d => d.status === 'pending' || d.status === 'out for delivery').length;
     const lowStockItems = systemData.inventory.filter(inv => inv.stockLevel <= inv.reorderLevel).length;
-
-    console.log('updateAdminStats calculations:', { totalOrders, totalRevenue, pendingDeliveries, lowStockItems });
-    console.log('systemData state:', { ordersCount: systemData.orders.length, inventoryCount: systemData.inventory.length });
 
     const orderEl = document.getElementById('stat-total-orders');
     const revenueEl = document.getElementById('stat-total-revenue');
     const deliveryEl = document.getElementById('stat-pending-deliveries');
     const stockEl = document.getElementById('stat-low-stock');
 
-    console.log('Elements found:', { orderEl: !!orderEl, revenueEl: !!revenueEl, deliveryEl: !!deliveryEl, stockEl: !!stockEl });
-
-    if (orderEl) {
-        const oldValue = orderEl.textContent;
-        orderEl.textContent = totalOrders;
-        console.log(`stat-total-orders: ${oldValue} → ${totalOrders}`);
-    }
-    if (revenueEl) {
-        const oldValue = revenueEl.textContent;
-        const newValue = '$' + totalRevenue.toFixed(2);
-        revenueEl.textContent = newValue;
-        console.log(`stat-total-revenue: ${oldValue} → ${newValue}`);
-    }
-    if (deliveryEl) {
-        const oldValue = deliveryEl.textContent;
-        deliveryEl.textContent = pendingDeliveries;
-        console.log(`stat-pending-deliveries: ${oldValue} → ${pendingDeliveries}`);
-    }
-    if (stockEl) {
-        const oldValue = stockEl.textContent;
-        stockEl.textContent = lowStockItems;
-        console.log(`stat-low-stock: ${oldValue} → ${lowStockItems}`);
-    }
-    
-    console.log('updateAdminStats complete\n');
+    if (orderEl) orderEl.textContent = totalOrders;
+    if (revenueEl) revenueEl.textContent = '$' + totalRevenue.toFixed(2);
+    if (deliveryEl) deliveryEl.textContent = pendingDeliveries;
+    if (stockEl) stockEl.textContent = lowStockItems;
 }
 
 function updateAdminAlerts() {
