@@ -225,7 +225,7 @@ function loadProducts() {
             <div class="product-info">
                 <div class="product-name">${product.name}</div>
                 <div class="product-category">${product.category}</div>
-                <div class="product-price">$${(parseFloat(product.price)||0).toFixed(2)}</div>
+                <div class="product-price">₨${(parseFloat(product.price)||0).toFixed(2)}</div>
                 <div class="product-availability ${inStock ? 'in-stock' : 'out-stock'}">
                     ${inStock ? `✓ In Stock (${inventory.stockLevel} available)` : '✗ Out of Stock'}
                 </div>
@@ -262,7 +262,7 @@ function showProductDetails(productID) {
             <div class="product-details-info">
                 <h2>${product.name}</h2>
                 <div class="product-details-category">${product.category}</div>
-                <div class="product-details-price">$${(parseFloat(product.price)||0).toFixed(2)}</div>
+                <div class="product-details-price">₨${(parseFloat(product.price)||0).toFixed(2)}</div>
                 <div class="product-details-availability ${inStock ? 'in-stock' : 'out-stock'}">
                     ${inStock ? `✓ In Stock (${inventory.stockLevel} available)` : '✗ Out of Stock'}
                 </div>
@@ -419,7 +419,7 @@ function displayFilteredProducts(products) {
             <div class="product-info">
                 <div class="product-name">${product.name}</div>
                 <div class="product-category">${product.category}</div>
-                <div class="product-price">$${product.price.toFixed(2)}</div>
+                <div class="product-price">₨${product.price.toFixed(2)}</div>
                 <div class="product-availability ${inStock ? 'in-stock' : 'out-stock'}">
                     ${inStock ? `✓ In Stock (${inventory.stockLevel} available)` : '✗ Out of Stock'}
                 </div>
@@ -455,7 +455,7 @@ function updateCartDisplay() {
             <div class="cart-item-image">📦</div>
             <div class="cart-item-details">
                 <div class="cart-item-name">${item.name}</div>
-                <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                <div class="cart-item-price">₨${item.price.toFixed(2)}</div>
                 <div class="cart-item-quantity">
                     <button onclick="updateQuantity(${index}, -1)">−</button>
                     <input type="number" value="${item.quantity}" min="1" onchange="updateQuantityDirect(${index}, this.value)">
@@ -501,9 +501,9 @@ function updateOrderSummary() {
     const shipping = 5;
     const total = subtotal + tax + shipping;
 
-    document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
-    document.getElementById('tax').textContent = '$' + tax.toFixed(2);
-    document.getElementById('total').textContent = '$' + total.toFixed(2);
+    document.getElementById('subtotal').textContent = '₨' + subtotal.toFixed(2);
+    document.getElementById('tax').textContent = '₨' + tax.toFixed(2);
+    document.getElementById('total').textContent = '₨' + total.toFixed(2);
 
     // Update checkout page totals too
     document.getElementById('checkout-subtotal').textContent = '$' + subtotal.toFixed(2);
@@ -627,7 +627,7 @@ document.getElementById('checkout-form')?.addEventListener('submit', function(e)
         }
     });
 
-    alert(`Order #${orderID} placed successfully!\n\nOrder Confirmation Details:\n- Subtotal: $${subtotal.toFixed(2)}\n- Tax (10%): $${tax.toFixed(2)}\n- Shipping: $${shipping.toFixed(2)}\n- Total: $${totalAmount.toFixed(2)}\n\nEstimated Delivery: ${newDelivery.estimatedTime}\n\nEmail confirmation sent to ${newOrder.shippingInfo.email}`);
+    alert(`Order #${orderID} placed successfully!\n\nOrder Confirmation Details:\n- Subtotal: ₨${subtotal.toFixed(2)}\n- Tax (10%): ₨${tax.toFixed(2)}\n- Shipping: ₨${shipping.toFixed(2)}\n- Total: ₨${totalAmount.toFixed(2)}\n\nEstimated Delivery: ${newDelivery.estimatedTime}\n\nEmail confirmation sent to ${newOrder.shippingInfo.email}`);
 
     currentCart = [];
     updateCartBadge();
@@ -664,7 +664,7 @@ function loadCustomerOrders() {
             </div>
             <div class="order-info">
                 <div class="order-info-label">Total</div>
-                <div class="order-info-value">$${order.totalAmount.toFixed(2)}</div>
+                <div class="order-info-value">₨${order.totalAmount.toFixed(2)}</div>
             </div>
             <div class="order-info">
                 <div class="order-info-label">Status</div>
@@ -694,7 +694,7 @@ function showOrderDetails(orderID) {
     order.items.forEach(item => {
         const product = systemData.products.find(p => p.productID === item.productID);
         const itemTotal = product.price * item.quantity;
-        itemsHTML += `<tr><td>${product.name}</td><td>$${product.price.toFixed(2)}</td><td>${item.quantity}</td><td>$${itemTotal.toFixed(2)}</td></tr>`;
+        itemsHTML += `<tr><td>${product.name}</td><td>₨${product.price.toFixed(2)}</td><td>${item.quantity}</td><td>₨${itemTotal.toFixed(2)}</td></tr>`;
     });
     itemsHTML += '</table>';
 
@@ -741,11 +741,11 @@ function showOrderDetails(orderID) {
         <h4 style="margin-top: 20px;">Order Summary</h4>
         <div class="summary-row">
             <span>Subtotal:</span>
-            <span>$${(order.totalAmount / 1.15).toFixed(2)}</span>
+            <span>₨${(order.totalAmount / 1.15).toFixed(2)}</span>
         </div>
         <div class="summary-row">
             <span>Tax (10%):</span>
-            <span>$${(order.totalAmount / 1.15 * 0.10).toFixed(2)}</span>
+            <span>₨${(order.totalAmount / 1.15 * 0.10).toFixed(2)}</span>
         </div>
         <div class="summary-row">
             <span>Shipping:</span>
@@ -753,7 +753,7 @@ function showOrderDetails(orderID) {
         </div>
         <div class="summary-row total">
             <span>Total:</span>
-            <span>$${order.totalAmount.toFixed(2)}</span>
+            <span>₨${order.totalAmount.toFixed(2)}</span>
         </div>
     `;
 
@@ -791,7 +791,7 @@ function updateAdminStats() {
     const lowStockItems = systemData.inventory.filter(inv => inv.stockLevel <= inv.reorderLevel).length;
 
     document.getElementById('stat-total-orders').textContent = totalOrders;
-    document.getElementById('stat-total-revenue').textContent = '$' + totalRevenue.toFixed(2);
+    document.getElementById('stat-total-revenue').textContent = '₨' + totalRevenue.toFixed(2);
     document.getElementById('stat-pending-deliveries').textContent = pendingDeliveries;
     document.getElementById('stat-low-stock').textContent = lowStockItems;
 }
@@ -823,7 +823,7 @@ function updateAdminAlerts() {
     // High revenue days
     const alert = document.createElement('div');
     alert.className = 'alert alert-success';
-    alert.innerHTML = `<span>✓</span><span>Total Revenue: $${systemData.orders.reduce((sum, order) => sum + order.totalAmount, 0).toFixed(2)}</span>`;
+    alert.innerHTML = `<span>✓</span><span>Total Revenue: ₨${systemData.orders.reduce((sum, order) => sum + order.totalAmount, 0).toFixed(2)}</span>`;
     alertsDiv.appendChild(alert);
 }
 
@@ -860,7 +860,7 @@ function updateProductsTable() {
         tr.innerHTML = `
             <td>${product.productID}</td>
             <td>${product.name}</td>
-            <td>$${product.price.toFixed(2)}</td>
+            <td>₨${product.price.toFixed(2)}</td>
             <td>${inventory?.stockLevel || 0}</td>
             <td>${product.category}</td>
             <td>
@@ -885,7 +885,7 @@ function editProduct(productID) {
             <div class="product-card-image"><img src="${imgSrc}" alt="${product.name}" loading="lazy" onerror="this.onerror=null;this.src=getSafePlaceholder(200,160,'${product.name.replace(/'/g, "\'")}')"></div>
             <div class="product-card-body">
                 <h3>${product.name}</h3>
-                <div class="product-card-price">$${(parseFloat(product.price)||0).toFixed(2)}</div>
+                <div class="product-card-price">₨${(parseFloat(product.price)||0).toFixed(2)}</div>
                 <div class="product-card-actions">
                     <button class="btn btn-small" onclick="showProductDetails(${product.productID})">Details</button>
                     <button class="btn btn-primary" onclick="addToCart(${product.productID})" ${!inStock ? 'disabled' : ''}>Add</button>
@@ -923,8 +923,8 @@ function generateReport(reportType, startDate, endDate) {
             <table class="report-table">
                 <tr><th>Metric</th><th>Value</th></tr>
                 <tr><td>Total Orders</td><td>${totalOrders}</td></tr>
-                <tr><td>Total Sales</td><td>$${totalSales.toFixed(2)}</td></tr>
-                <tr><td>Average Order Value</td><td>$${avgOrderValue.toFixed(2)}</td></tr>
+                <tr><td>Total Sales</td><td>₨${totalSales.toFixed(2)}</td></tr>
+                <tr><td>Average Order Value</td><td>₨${avgOrderValue.toFixed(2)}</td></tr>
             </table>
             <h4 style="margin-top: 20px;">Order Details</h4>
             <table class="report-table">
@@ -932,7 +932,7 @@ function generateReport(reportType, startDate, endDate) {
         `;
         filteredOrders.forEach(order => {
             const customer = systemData.users.find(u => u.userID === order.userID);
-            reportHTML += `<tr><td>#${order.orderID}</td><td>${order.orderDate}</td><td>${customer?.name || 'Unknown'}</td><td>$${order.totalAmount.toFixed(2)}</td><td>${order.status}</td></tr>`;
+            reportHTML += `<tr><td>#${order.orderID}</td><td>${order.orderDate}</td><td>${customer?.name || 'Unknown'}</td><td>₨${order.totalAmount.toFixed(2)}</td><td>${order.status}</td></tr>`;
         });
         reportHTML += '</table>';
     } else if (reportType === 'inventory') {
@@ -991,7 +991,7 @@ function updateRDCOrdersTable() {
             <td>#${order.orderID}</td>
             <td>${customer?.name || 'Unknown'}</td>
             <td>${order.orderDate}</td>
-            <td>$${order.totalAmount.toFixed(2)}</td>
+            <td>₨${order.totalAmount.toFixed(2)}</td>
             <td><span class="order-status status-${order.status}">${order.status}</span></td>
             <td>
                 <button class="btn btn-secondary" onclick="processRDCOrder(${order.orderID})">Process</button>

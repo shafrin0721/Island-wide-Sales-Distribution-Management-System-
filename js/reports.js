@@ -46,7 +46,7 @@ function generateSalesSummary() {
         <div class="summary-grid">
             <div class="summary-item">
                 <label>Total Sales (This Month)</label>
-                <strong>$${monthlyRevenue.toFixed(2)}</strong>
+                <strong>₨${monthlyRevenue.toFixed(2)}</strong>
             </div>
             <div class="summary-item">
                 <label>Number of Orders</label>
@@ -54,7 +54,7 @@ function generateSalesSummary() {
             </div>
             <div class="summary-item">
                 <label>Average Order Value</label>
-                <strong>$${avgOrderValue.toFixed(2)}</strong>
+                <strong>₨${avgOrderValue.toFixed(2)}</strong>
             </div>
             <div class="summary-item">
                 <label>Total Customers</label>
@@ -157,7 +157,7 @@ function generateCustomerSummary() {
             </div>
             <div class="summary-item">
                 <label>Total Revenue from Customers</label>
-                <strong>$${totalSpent.toFixed(2)}</strong>
+                <strong>₨${totalSpent.toFixed(2)}</strong>
             </div>
         </div>
     `;

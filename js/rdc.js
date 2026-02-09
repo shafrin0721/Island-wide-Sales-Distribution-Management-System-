@@ -127,7 +127,7 @@ function updateRDCOrdersTable() {
             <td>${customer?.phone || ''}</td>
             <td>${customer?.address || ''}</td>
             <td>${order.orderDate}</td>
-            <td>$${order.totalAmount.toFixed(2)}</td>
+            <td>₨${order.totalAmount.toFixed(2)}</td>
             <td><span class="order-status status-${order.status}">${order.status}</span></td>
             <td>
                 <button class="btn btn-primary" onclick="processRDCOrder(${order.orderID})">Process</button>

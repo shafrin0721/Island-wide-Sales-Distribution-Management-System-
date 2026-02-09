@@ -932,7 +932,7 @@ function loadCustomerOrders() {
             </div>
             <div class="order-info">
                 <div class="order-info-label">Total</div>
-                <div class="order-info-value">$${order.totalAmount.toFixed(2)}</div>
+                <div class="order-info-value">₨${order.totalAmount.toFixed(2)}</div>
             </div>
             <div class="order-info">
                 <div class="order-info-label">Status</div>
@@ -986,9 +986,9 @@ function showOrderDetails(orderID) {
         itemsHTML += `<tr>
             <td>${product.name}</td>
             <td><img class="order-item-image" src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"></td>
-            <td>$${(parseFloat(product.price)||0).toFixed(2)}</td>
+            <td>₨${(parseFloat(product.price)||0).toFixed(2)}</td>
             <td>${item.quantity}</td>
-            <td>$${(itemTotal||0).toFixed(2)}</td>
+            <td>₨${(itemTotal||0).toFixed(2)}</td>
         </tr>`;
     });
     itemsHTML += '</table>';
@@ -1036,11 +1036,11 @@ function showOrderDetails(orderID) {
         <h4 style="margin-top: 20px;">Order Summary</h4>
         <div class="summary-row">
             <span>Subtotal:</span>
-            <span>$${(order.totalAmount / 1.15).toFixed(2)}</span>
+            <span>₨${(order.totalAmount / 1.15).toFixed(2)}</span>
         </div>
         <div class="summary-row">
             <span>Tax (10%):</span>
-            <span>$${(order.totalAmount / 1.15 * 0.10).toFixed(2)}</span>
+            <span>₨${(order.totalAmount / 1.15 * 0.10).toFixed(2)}</span>
         </div>
         <div class="summary-row">
             <span>Shipping:</span>
@@ -1048,7 +1048,7 @@ function showOrderDetails(orderID) {
         </div>
         <div class="summary-row total">
             <span>Total:</span>
-            <span>$${order.totalAmount.toFixed(2)}</span>
+            <span>₨${order.totalAmount.toFixed(2)}</span>
         </div>
     `;
 
