@@ -181,7 +181,8 @@ function redirectToDashboard(role) {
     if (!demoBtn) return;
 
     demoBtn.addEventListener('click', async function() {
-        const demoEmail = 'test@example.com';
+        // Use a unique demo email so creation won't conflict with existing users
+        const demoEmail = `demo+${Date.now()}@example.com`;
         const demoPassword = 'Test@123456';
 
         // Fill inputs for visibility
