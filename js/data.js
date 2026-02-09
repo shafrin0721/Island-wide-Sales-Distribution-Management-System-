@@ -112,7 +112,11 @@ if (typeof window.systemData !== 'undefined' && window.systemData) {
     ],
     orders: [
         { orderID: 1001, userID: 1, orderDate: '2024-01-10', status: 'delivered', totalAmount: 1356, paymentStatus: 'paid', items: [{productID: 1, quantity: 1}, {productID: 2, quantity: 1}] },
-        { orderID: 1002, userID: 1, orderDate: '2024-01-12', status: 'shipped', totalAmount: 165, paymentStatus: 'paid', items: [{productID: 4, quantity: 1}] }
+        { orderID: 1002, userID: 1, orderDate: '2024-01-12', status: 'shipped', totalAmount: 165, paymentStatus: 'paid', items: [{productID: 4, quantity: 1}] },
+        { orderID: 1003, userID: 1, orderDate: '2024-02-05', status: 'processing', totalAmount: 2850, paymentStatus: 'paid', items: [{productID: 5, quantity: 2}] },
+        { orderID: 1004, userID: 1, orderDate: '2024-02-06', status: 'processing', totalAmount: 4500, paymentStatus: 'paid', items: [{productID: 8, quantity: 3}] },
+        { orderID: 1005, userID: 1, orderDate: '2024-02-07', status: 'ready for delivery', totalAmount: 3300, paymentStatus: 'paid', items: [{productID: 12, quantity: 2}] },
+        { orderID: 1006, userID: 1, orderDate: '2024-02-08', status: 'ready for delivery', totalAmount: 1950, paymentStatus: 'paid', items: [{productID: 15, quantity: 1}] }
     ],
     inventory: [
         { inventoryID: 1, productID: 1, stockLevel: 15, reorderLevel: 5 },
@@ -121,11 +125,11 @@ if (typeof window.systemData !== 'undefined' && window.systemData) {
         { inventoryID: 4, productID: 4, stockLevel: 25, reorderLevel: 8 },
         { inventoryID: 5, productID: 5, stockLevel: 40, reorderLevel: 10 },
         { inventoryID: 6, productID: 6, stockLevel: 20, reorderLevel: 5 },
-        { inventoryID: 7, productID: 7, stockLevel: 18, reorderLevel: 5 },
+        { inventoryID: 7, productID: 7, stockLevel: 3, reorderLevel: 5 },
         { inventoryID: 8, productID: 8, stockLevel: 35, reorderLevel: 8 },
         { inventoryID: 9, productID: 9, stockLevel: 22, reorderLevel: 5 },
         { inventoryID: 10, productID: 10, stockLevel: 28, reorderLevel: 6 },
-        { inventoryID: 11, productID: 11, stockLevel: 12, reorderLevel: 3 },
+        { inventoryID: 11, productID: 11, stockLevel: 2, reorderLevel: 3 },
         { inventoryID: 12, productID: 12, stockLevel: 45, reorderLevel: 10 },
         { inventoryID: 13, productID: 13, stockLevel: 8, reorderLevel: 2 },
         { inventoryID: 14, productID: 14, stockLevel: 25, reorderLevel: 8 },
@@ -188,6 +192,24 @@ if (typeof window.systemData !== 'undefined' && window.systemData) {
             assignedStaff: 4,
             driverName: 'Chaminda Perera',
             vehicleID: 'VAN-001'
+        },
+        { 
+            deliveryID: 2, 
+            orderID: 1003, 
+            userID: 1, 
+            status: 'pending', 
+            route: 'Galle District', 
+            estimatedTime: '2026-02-10 2:00 PM', 
+            assignedStaff: null
+        },
+        { 
+            deliveryID: 3, 
+            orderID: 1004, 
+            userID: 1, 
+            status: 'pending', 
+            route: 'Kandy District', 
+            estimatedTime: '2026-02-10 3:30 PM', 
+            assignedStaff: null
         }
     ]
 };
