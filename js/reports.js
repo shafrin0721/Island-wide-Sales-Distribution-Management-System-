@@ -15,8 +15,7 @@ window.addEventListener('load', function() {
 // Fallback for DOMContentLoaded if needed
 document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('reportChartsContainer')) {
-        // Initialize data
-        loadData();
+        // systemData is already available from data.js
     }
 });
 
@@ -34,7 +33,7 @@ function handleReportChange() {
 }
 
 function generateSalesSummary() {
-    const data = loadData();
+    const data = systemData;
     const orders = data.orders || [];
     const today = new Date();
     const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -67,7 +66,7 @@ function generateSalesSummary() {
 }
 
 function generateInventorySummary() {
-    const data = loadData();
+    const data = systemData;
     const inventory = data.inventory || [];
     
     const totalItems = inventory.length;
@@ -99,7 +98,7 @@ function generateInventorySummary() {
 }
 
 function generateDeliverySummary() {
-    const data = loadData();
+    const data = systemData;
     const deliveries = data.deliveries || [];
     
     const totalDeliveries = deliveries.length;
@@ -133,7 +132,7 @@ function generateDeliverySummary() {
 }
 
 function generateCustomerSummary() {
-    const data = loadData();
+    const data = systemData;
     const customers = data.users.filter(u => u.role === 'customer');
     const orders = data.orders || [];
     
@@ -169,7 +168,7 @@ function downloadReport() {
     console.log('downloadReport called');
     const reportType = document.getElementById('report-type').value;
     console.log('Report type:', reportType);
-    const data = loadData();
+    const data = systemData;
     console.log('Data loaded:', data);
     let csvContent = '';
     let fileName = `${reportType}-report.csv`;
@@ -230,7 +229,7 @@ function downloadCSV(csvContent, fileName) {
 
 function initializeReportCharts() {
     try {
-        const data = loadData();
+        const data = systemData;
         console.log('Report charts initializing, data:', data);
         
         // Sales trend chart
