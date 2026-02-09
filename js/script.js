@@ -81,7 +81,8 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
         
         // Hide login, show navbar and appropriate page
         hidePage('login-page');
-        document.getElementById('navbar').classList.add('visible');
+        // Ensure navbar is shown by removing the utility 'display-none' class
+        document.getElementById('navbar').classList.remove('display-none');
         showUserDashboard();
         
         // Update navbar
@@ -113,7 +114,8 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
 document.getElementById('logout-btn').addEventListener('click', function() {
     currentUser = null;
     currentCart = [];
-    document.getElementById('navbar').classList.remove('visible');
+    // Hide navbar by adding the utility 'display-none' class
+    document.getElementById('navbar').classList.add('display-none');
     showPage('login-page');
     document.getElementById('login-form').reset();
 });
