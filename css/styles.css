@@ -2202,7 +2202,7 @@ body.light-mode .table-wrapper {
 /* Responsive adjustments for charts */
 @media (max-width: 1024px) {
     .charts-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .charts-section {
@@ -2217,6 +2217,10 @@ body.light-mode .table-wrapper {
 
     .summary-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
     }
 
     .settings-actions {
