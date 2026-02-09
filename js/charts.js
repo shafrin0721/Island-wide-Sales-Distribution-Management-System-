@@ -6,18 +6,28 @@ let revenueChart, statusChart, productsChart, inventoryChart;
 window.addEventListener('load', function() {
     console.log('Charts initializing on window load...');
     
-    // Ensure data is loaded
-    loadData();
-    
-    // Small delay to ensure all DOM elements are ready
-    setTimeout(function() {
-        // Check if we're on admin dashboard
-        if (document.getElementById('revenueChart')) {
-            console.log('Initializing admin dashboard charts...');
-            initializeAdminDashboardCharts();
-            updateAdminDashboard();
+    // Wait for systemData to be available
+    let waitCount = 0;
+    const waitForData = setInterval(() => {
+        if (typeof systemData !== 'undefined' && systemData.orders) {
+            clearInterval(waitForData);
+            console.log('systemData available, initializing charts...');
+            
+            // Small delay to ensure all DOM elements are ready
+            setTimeout(function() {
+                // Check if we're on admin dashboard
+                if (document.getElementById('revenueChart')) {
+                    console.log('Initializing admin dashboard charts...');
+                    initializeAdminDashboardCharts();
+                    updateAdminDashboard();
+                }
+            }, 300);
+        } else if (waitCount > 50) {
+            clearInterval(waitForData);
+            console.warn('Timeout waiting for systemData');
         }
-    }, 300);
+        waitCount++;
+    }, 100);
 });
 
 // Also initialize on DOMContentLoaded as backup
@@ -29,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeAdminDashboardCharts() {
     try {
-        const data = loadData();
+        const data = systemData;
         console.log('Data loaded:', data);
         
         // Revenue Trend Chart (Last 7 days)
@@ -171,7 +181,7 @@ function initializeAdminDashboardCharts() {
 }
 
 function updateAdminDashboard() {
-    const data = loadData();
+    const data = systemData;
     const orders = data.orders || [];
     const products = data.products || [];
     const inventory = data.inventory || [];
