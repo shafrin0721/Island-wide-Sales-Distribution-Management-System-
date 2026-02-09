@@ -141,7 +141,7 @@ function updateAdminStats() {
     const stockEl = document.getElementById('stat-low-stock');
 
     if (orderEl) orderEl.textContent = totalOrders;
-    if (revenueEl) revenueEl.textContent = '$' + totalRevenue.toFixed(2);
+    if (revenueEl) revenueEl.textContent = '₨' + totalRevenue.toFixed(2);
     if (deliveryEl) deliveryEl.textContent = pendingDeliveries;
     if (stockEl) stockEl.textContent = lowStockItems;
 }
@@ -171,7 +171,7 @@ function updateAdminAlerts() {
 
     const alert = document.createElement('div');
     alert.className = 'alert alert-success';
-    alert.innerHTML = `<span>✓</span><span>Total Revenue: $${systemData.orders.reduce((sum, order) => sum + order.totalAmount, 0).toFixed(2)}</span>`;
+    alert.innerHTML = `<span>✓</span><span>Total Revenue: ₨${systemData.orders.reduce((sum, order) => sum + order.totalAmount, 0).toFixed(2)}</span>`;
     alertsDiv.appendChild(alert);
 }
 
@@ -220,7 +220,7 @@ function updateProductsTable() {
         tr.innerHTML = `
             <td>${product.productID}</td>
             <td>${product.name}</td>
-            <td>$${product.price.toFixed(2)}</td>
+            <td>₨${product.price.toFixed(2)}</td>
             <td>${inventory?.stockLevel || 0}</td>
             <td>${product.category}</td>
             <td>
@@ -349,8 +349,8 @@ function generateReport() {
             <table class="report-table">
                 <tr><th>Metric</th><th>Value</th></tr>
                 <tr><td>Total Orders</td><td>${totalOrders}</td></tr>
-                <tr><td>Total Sales</td><td>$${totalSales.toFixed(2)}</td></tr>
-                <tr><td>Average Order Value</td><td>$${avgOrderValue.toFixed(2)}</td></tr>
+                <tr><td>Total Sales</td><td>₨${totalSales.toFixed(2)}</td></tr>
+                <tr><td>Average Order Value</td><td>₨${avgOrderValue.toFixed(2)}</td></tr>
             </table>
             <h4 style="margin-top: 20px;">Order Details</h4>
             <table class="report-table">
@@ -358,7 +358,7 @@ function generateReport() {
         `;
         filteredOrders.forEach(order => {
             const customer = systemData.users.find(u => u.userID === order.userID);
-            reportHTML += `<tr><td>#${order.orderID}</td><td>${order.orderDate}</td><td>${customer?.name || 'Unknown'}</td><td>$${order.totalAmount.toFixed(2)}</td><td>${order.status}</td></tr>`;
+            reportHTML += `<tr><td>#${order.orderID}</td><td>${order.orderDate}</td><td>${customer?.name || 'Unknown'}</td><td>₨${order.totalAmount.toFixed(2)}</td><td>${order.status}</td></tr>`;
         });
         reportHTML += '</table>';
     } else if (reportType === 'inventory') {

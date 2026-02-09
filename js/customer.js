@@ -642,12 +642,12 @@ function updateCartDisplay() {
                 <div class="cart-item-brand">${product?.brand || 'Brand'}</div>
                 <div class="cart-item-name">${item.name}</div>
                 <div class="cart-item-sku" style="font-size: 0.85em; color: #666;">SKU: ${product?.sku || 'N/A'}</div>
-                <div class="cart-item-price" style="font-weight: bold; color: #007bff; margin-top: 5px;">$${(item.price || 0).toFixed(2)} each</div>
+                <div class="cart-item-price" style="font-weight: bold; color: #007bff; margin-top: 5px;">₨${(item.price || 0).toFixed(2)} each</div>
                 <div class="cart-item-quantity" style="margin-top: 10px;">
                     <button data-action="qty-change" data-index="${index}" data-delta="-1" style="padding: 5px 10px;">−</button>
                     <input type="number" value="${item.quantity}" min="1" data-action="qty-set" data-index="${index}" style="width: 60px; text-align: center; padding: 5px;">
                     <button data-action="qty-change" data-index="${index}" data-delta="1" style="padding: 5px 10px;">+</button>
-                    <span style="margin-left: 10px; color: #666;">Subtotal: $${((item.price || 0) * item.quantity).toFixed(2)}</span>
+                    <span style="margin-left: 10px; color: #666;">Subtotal: ₨${((item.price || 0) * item.quantity).toFixed(2)}</span>
                 </div>
             </div>
             <button class="remove-btn" data-action="remove-from-cart" data-index="${index}" style="padding: 10px 20px;">Remove</button>
@@ -698,16 +698,16 @@ function updateOrderSummary() {
     const total = subtotal + tax + shipping;
 
     if (document.getElementById('subtotal')) {
-        document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
-        document.getElementById('tax').textContent = '$' + tax.toFixed(2);
-        document.getElementById('total').textContent = '$' + total.toFixed(2);
+        document.getElementById('subtotal').textContent = '₨' + subtotal.toFixed(2);
+        document.getElementById('tax').textContent = '₨' + tax.toFixed(2);
+        document.getElementById('total').textContent = '₨' + total.toFixed(2);
     }
 
     if (document.getElementById('checkout-subtotal')) {
-        document.getElementById('checkout-subtotal').textContent = '$' + subtotal.toFixed(2);
-        document.getElementById('checkout-tax').textContent = '$' + tax.toFixed(2);
-        document.getElementById('checkout-shipping').textContent = '$5.00';
-        document.getElementById('checkout-total').textContent = '$' + total.toFixed(2);
+        document.getElementById('checkout-subtotal').textContent = '₨' + subtotal.toFixed(2);
+        document.getElementById('checkout-tax').textContent = '₨' + tax.toFixed(2);
+        document.getElementById('checkout-shipping').textContent = '₨5.00';
+        document.getElementById('checkout-total').textContent = '₨' + total.toFixed(2);
     }
 }
 
@@ -875,7 +875,7 @@ async function submitCheckout(e) {
 Items:
 ${currentCart.map(item => `• ${item.name} x${item.quantity}`).join('\n')}
 
-Total: $${totalAmount.toFixed(2)}
+Total: ₨${totalAmount.toFixed(2)}
 
 Confirmation email sent to: ${newOrder.shippingInfo.email}
 
