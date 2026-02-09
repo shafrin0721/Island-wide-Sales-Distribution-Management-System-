@@ -136,7 +136,8 @@ function updateAdminStats() {
     const pendingDeliveries = systemData.deliveries.filter(d => d.status === 'pending' || d.status === 'out for delivery').length;
     const lowStockItems = systemData.inventory.filter(inv => inv.stockLevel <= inv.reorderLevel).length;
 
-    console.log('updateAdminStats:', { totalOrders, totalRevenue, pendingDeliveries, lowStockItems });
+    console.log('updateAdminStats calculations:', { totalOrders, totalRevenue, pendingDeliveries, lowStockItems });
+    console.log('systemData state:', { ordersCount: systemData.orders.length, inventoryCount: systemData.inventory.length });
 
     const orderEl = document.getElementById('stat-total-orders');
     const revenueEl = document.getElementById('stat-total-revenue');
@@ -146,22 +147,28 @@ function updateAdminStats() {
     console.log('Elements found:', { orderEl: !!orderEl, revenueEl: !!revenueEl, deliveryEl: !!deliveryEl, stockEl: !!stockEl });
 
     if (orderEl) {
-        console.log('Setting stat-total-orders to', totalOrders);
+        const oldValue = orderEl.textContent;
         orderEl.textContent = totalOrders;
+        console.log(`stat-total-orders: ${oldValue} → ${totalOrders}`);
     }
     if (revenueEl) {
-        const formattedRevenue = '$' + totalRevenue.toFixed(2);
-        console.log('Setting stat-total-revenue to', formattedRevenue);
-        revenueEl.textContent = formattedRevenue;
+        const oldValue = revenueEl.textContent;
+        const newValue = '$' + totalRevenue.toFixed(2);
+        revenueEl.textContent = newValue;
+        console.log(`stat-total-revenue: ${oldValue} → ${newValue}`);
     }
     if (deliveryEl) {
-        console.log('Setting stat-pending-deliveries to', pendingDeliveries);
+        const oldValue = deliveryEl.textContent;
         deliveryEl.textContent = pendingDeliveries;
+        console.log(`stat-pending-deliveries: ${oldValue} → ${pendingDeliveries}`);
     }
     if (stockEl) {
-        console.log('Setting stat-low-stock to', lowStockItems);
+        const oldValue = stockEl.textContent;
         stockEl.textContent = lowStockItems;
+        console.log(`stat-low-stock: ${oldValue} → ${lowStockItems}`);
     }
+    
+    console.log('updateAdminStats complete');
 }
 }
 

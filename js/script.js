@@ -771,7 +771,11 @@ function trackDelivery(orderID) {
 }
 
 // ================== ADMIN DASHBOARD ==================
+// Note: Admin dashboard initialization is now handled by admin.js
+// These functions are kept for reference only and should not be called
 
+// DEPRECATED - Use admin.js functions instead
+/*
 function loadAdminDashboard() {
     updateAdminStats();
     updateAdminAlerts();
@@ -791,6 +795,7 @@ function updateAdminStats() {
     document.getElementById('stat-pending-deliveries').textContent = pendingDeliveries;
     document.getElementById('stat-low-stock').textContent = lowStockItems;
 }
+*/
 
 function updateAdminAlerts() {
     const alertsDiv = document.getElementById('admin-alerts');
