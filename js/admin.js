@@ -2,6 +2,8 @@
 // ADMIN DASHBOARD FUNCTIONS
 // =====================================================
 
+let updateAdminStatsCallCount = 0;
+
 // Initialize on page load
 window.addEventListener('load', function() {
     console.log('admin.js window load event fired');
@@ -27,24 +29,6 @@ function initializeAdminPage() {
     console.log('initializeAdminPage called');
     // Setup delegated navigation handlers
     setupAdminNavigation();
-    
-    // Add mutation observer to track stat element changes
-    const statElements = ['stat-total-orders', 'stat-total-revenue', 'stat-pending-deliveries', 'stat-low-stock'];
-    statElements.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach(mutation => {
-                    if (mutation.type === 'childList' || mutation.type === 'characterData') {
-                        console.warn(`⚠️ ${id} was modified externally to: "${el.textContent}"`);
-                        console.trace('Stack trace:');
-                    }
-                });
-            });
-            observer.observe(el, { childList: true, characterData: true, subtree: true });
-            console.log(`Mutation observer added to ${id}`);
-        }
-    });
     
     if (document.getElementById('admin-alerts')) {
         console.log('admin-alerts found, calling loadAdminDashboard');
@@ -148,6 +132,8 @@ function loadAdminDashboard() {
 }
 
 function updateAdminStats() {
+    updateAdminStatsCallCount++;
+    console.log(`\n=== updateAdminStats CALL #${updateAdminStatsCallCount} ===`);
     console.log('updateAdminStats called');
     const totalOrders = systemData.orders.length;
     const totalRevenue = systemData.orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
@@ -186,7 +172,7 @@ function updateAdminStats() {
         console.log(`stat-low-stock: ${oldValue} → ${lowStockItems}`);
     }
     
-    console.log('updateAdminStats complete');
+    console.log('updateAdminStats complete\n');
 }
 
 function updateAdminAlerts() {
