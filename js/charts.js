@@ -188,16 +188,22 @@ function updateAdminDashboard() {
     const deliveries = data.deliveries || [];
 
     // Update stat cards
-    document.getElementById('stat-total-orders').textContent = orders.length;
-    
+    const totalOrders = orders.length;
     const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || order.total || 0), 0);
-    document.getElementById('stat-total-revenue').textContent = '$' + totalRevenue.toFixed(2);
-    
     const pendingDeliveries = deliveries.filter(d => d.status !== 'delivered').length;
-    document.getElementById('stat-pending-deliveries').textContent = pendingDeliveries;
-    
     const lowStock = inventory.filter(inv => inv.stockLevel <= inv.reorderLevel).length;
-    document.getElementById('stat-low-stock').textContent = lowStock;
+
+    console.log('updateAdminDashboard (charts.js):', { totalOrders, totalRevenue, pendingDeliveries, lowStock });
+
+    const orderEl = document.getElementById('stat-total-orders');
+    const revenueEl = document.getElementById('stat-total-revenue');
+    const deliveryEl = document.getElementById('stat-pending-deliveries');
+    const stockEl = document.getElementById('stat-low-stock');
+
+    if (orderEl) orderEl.textContent = totalOrders;
+    if (revenueEl) revenueEl.textContent = '$' + totalRevenue.toFixed(2);
+    if (deliveryEl) deliveryEl.textContent = pendingDeliveries;
+    if (stockEl) stockEl.textContent = lowStock;
 
     // Update alerts
     updateAlerts(data);

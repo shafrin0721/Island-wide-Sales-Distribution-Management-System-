@@ -111,12 +111,12 @@ if (typeof window.systemData !== 'undefined' && window.systemData) {
         { productID: 60, name: 'Dice Set - Role Playing Game', brand: 'DiceRoll', price: 4287, retailPrice: 7257, wholesalePrice: 3135, quantity: 350, category: 'Toys & Games', subcategory: 'RPG Accessories', description: '7-piece polyhedral dice set for RPG gaming. Vibrant colors.', image: '/Assets/Dice Set - Role Playing Game.jpg', rating: 4.6, reviews: 1123, sku: 'DICE-RPG-7PC', supplier: 'DiceRoll', packaging: 'Dice bag', expiryDate: '2030-12-31', minOrder: 12, discount: 40 }
     ],
     orders: [
-        { orderID: 1001, userID: 1, orderDate: '2024-01-10', status: 'delivered', totalAmount: 1356, paymentStatus: 'paid', items: [{productID: 1, quantity: 1}, {productID: 2, quantity: 1}] },
-        { orderID: 1002, userID: 1, orderDate: '2024-01-12', status: 'shipped', totalAmount: 165, paymentStatus: 'paid', items: [{productID: 4, quantity: 1}] },
-        { orderID: 1003, userID: 1, orderDate: '2024-02-05', status: 'processing', totalAmount: 2850, paymentStatus: 'paid', items: [{productID: 5, quantity: 2}] },
-        { orderID: 1004, userID: 1, orderDate: '2024-02-06', status: 'processing', totalAmount: 4500, paymentStatus: 'paid', items: [{productID: 8, quantity: 3}] },
-        { orderID: 1005, userID: 1, orderDate: '2024-02-07', status: 'ready for delivery', totalAmount: 3300, paymentStatus: 'paid', items: [{productID: 12, quantity: 2}] },
-        { orderID: 1006, userID: 1, orderDate: '2024-02-08', status: 'ready for delivery', totalAmount: 1950, paymentStatus: 'paid', items: [{productID: 15, quantity: 1}] }
+        { orderID: 1001, userID: 1, orderDate: '2026-02-04', status: 'delivered', totalAmount: 1356, paymentStatus: 'paid', items: [{productID: 1, quantity: 1}, {productID: 2, quantity: 1}] },
+        { orderID: 1002, userID: 1, orderDate: '2026-02-05', status: 'shipped', totalAmount: 165, paymentStatus: 'paid', items: [{productID: 4, quantity: 1}] },
+        { orderID: 1003, userID: 1, orderDate: '2026-02-06', status: 'processing', totalAmount: 2850, paymentStatus: 'paid', items: [{productID: 5, quantity: 2}] },
+        { orderID: 1004, userID: 1, orderDate: '2026-02-07', status: 'processing', totalAmount: 4500, paymentStatus: 'paid', items: [{productID: 8, quantity: 3}] },
+        { orderID: 1005, userID: 1, orderDate: '2026-02-08', status: 'ready for delivery', totalAmount: 3300, paymentStatus: 'paid', items: [{productID: 12, quantity: 2}] },
+        { orderID: 1006, userID: 1, orderDate: '2026-02-09', status: 'ready for delivery', totalAmount: 1950, paymentStatus: 'paid', items: [{productID: 15, quantity: 1}] }
     ],
     inventory: [
         { inventoryID: 1, productID: 1, stockLevel: 15, reorderLevel: 5 },

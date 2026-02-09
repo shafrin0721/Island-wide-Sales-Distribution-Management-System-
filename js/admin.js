@@ -121,16 +121,21 @@ function loadAdminDashboard() {
 
 function updateAdminStats() {
     const totalOrders = systemData.orders.length;
-    const totalRevenue = systemData.orders.reduce((sum, order) => sum + order.totalAmount, 0);
+    const totalRevenue = systemData.orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
     const pendingDeliveries = systemData.deliveries.filter(d => d.status === 'pending' || d.status === 'out for delivery').length;
     const lowStockItems = systemData.inventory.filter(inv => inv.stockLevel <= inv.reorderLevel).length;
 
-    if (document.getElementById('stat-total-orders')) {
-        document.getElementById('stat-total-orders').textContent = totalOrders;
-        document.getElementById('stat-total-revenue').textContent = '$' + totalRevenue.toFixed(2);
-        document.getElementById('stat-pending-deliveries').textContent = pendingDeliveries;
-        document.getElementById('stat-low-stock').textContent = lowStockItems;
-    }
+    console.log('updateAdminStats:', { totalOrders, totalRevenue, pendingDeliveries, lowStockItems });
+
+    const orderEl = document.getElementById('stat-total-orders');
+    const revenueEl = document.getElementById('stat-total-revenue');
+    const deliveryEl = document.getElementById('stat-pending-deliveries');
+    const stockEl = document.getElementById('stat-low-stock');
+
+    if (orderEl) orderEl.textContent = totalOrders;
+    if (revenueEl) revenueEl.textContent = '$' + totalRevenue.toFixed(2);
+    if (deliveryEl) deliveryEl.textContent = pendingDeliveries;
+    if (stockEl) stockEl.textContent = lowStockItems;
 }
 
 function updateAdminAlerts() {
