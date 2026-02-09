@@ -2,9 +2,15 @@
 // AUTHENTICATION & NAVIGATION
 // =====================================================
 
-// Use local backend when developing; when hosted, use relative `/api` so
-// Firebase Hosting can proxy requests to a Cloud Run service or other backend.
+// Use local backend when developing; when hosted, use relative `/api`.
+// Allow runtime override via `window.__API_BASE__` so production or staging
+// can point the client to an external API without editing source files.
 const API_URL = (function() {
+    // Highest priority: explicit runtime override (set this in a <script> before other scripts)
+    if (window && window.__API_BASE__) {
+        return window.__API_BASE__;
+    }
+
     try {
         // If running on localhost, point to local backend
         if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
@@ -13,7 +19,8 @@ const API_URL = (function() {
     } catch (e) {
         // In some test environments, location may be undefined
     }
-    // For hosted site, use relative path so Hosting rewrites can route to Cloud Run
+
+    // Default for hosted site: use relative path so Hosting rewrites or Functions can handle `/api`
     return '/api';
 })();
 
