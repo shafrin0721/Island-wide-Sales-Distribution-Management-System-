@@ -199,3 +199,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     console.info('✓ API initialized (browser-safe, JWT auth enabled)');
 });
+// api.js
+async function fetchLanguages() {
+  try {
+    const response = await fetch('https://your-api-endpoint.com/languages'); // replace with actual API
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.warn('[Suppressed] Error fetching languages:', error);
+    return []; // Return empty array instead of crashing
+  }
+}
+
+// Example usage:
+(async () => {
+  const languages = await fetchLanguages();
+  console.log('Languages loaded:', languages);
+})();
