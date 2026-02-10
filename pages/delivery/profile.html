@@ -255,54 +255,55 @@
     <script src="../../js/api.js"></script>
 
     <script>
-      // Initialize on page load
-      document.addEventListener("DOMContentLoaded", function () {
-        loadProfileData();
-        loadPerformanceStats();
-        setupNavigation();
-        setupFormSubmissions();
-      });
-
-      // Load profile data from localStorage
-      function loadProfileData() {
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        if (!currentUser) {
+      document.addEventListener("DOMContentLoaded", async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
           window.location.href = "../../index.html";
           return;
         }
 
+        let currentUser = JSON.parse(localStorage.getItem("currentUser")) || {};
+
+        // Fetch profile from API
+        try {
+          const profile = await fetchDeliveryProfile();
+          currentUser = { ...currentUser, ...profile };
+          localStorage.setItem("currentUser", JSON.stringify(currentUser));
+          populateProfileForm(currentUser);
+          loadPerformanceStats(profile);
+        } catch (err) {
+          console.error("Error fetching profile:", err);
+        }
+
+        setupNavigation();
+        setupFormSubmissions();
+      });
+
+      // Populate profile form
+      function populateProfileForm(user) {
         document.getElementById("current-user").textContent =
-          `Logged in as: ${currentUser.name}`;
-        document.getElementById("profile-name").value = currentUser.name || "";
-        document.getElementById("profile-email").value =
-          currentUser.email || "";
-        document.getElementById("profile-phone").value =
-          currentUser.phone || "";
-        document.getElementById("profile-address").value =
-          currentUser.address || "";
-        document.getElementById("profile-vehicle").value =
-          currentUser.vehicle || "";
+          `Logged in as: ${user.name || ""}`;
+        document.getElementById("profile-name").value = user.name || "";
+        document.getElementById("profile-email").value = user.email || "";
+        document.getElementById("profile-phone").value = user.phone || "";
+        document.getElementById("profile-address").value = user.address || "";
+        document.getElementById("profile-vehicle").value = user.vehicle || "";
         document.getElementById("profile-plate").value =
-          currentUser.licensePlate || "";
+          user.licensePlate || "";
         document.getElementById("availability-status").value =
-          currentUser.status || "available";
+          user.status || "available";
         document.getElementById("location-sharing").checked =
-          currentUser.locationSharing !== false;
+          user.locationSharing !== false;
       }
 
-      // Load performance statistics
-      function loadPerformanceStats() {
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        if (!currentUser) return;
-
-        const myDeliveries = (systemData.deliveries || []).filter(
-          (d) => d.assignedTo === currentUser.id,
-        );
-        const completed = myDeliveries.filter(
+      // Load performance stats
+      function loadPerformanceStats(user) {
+        const deliveries = user.deliveries || [];
+        const completed = deliveries.filter(
           (d) => d.status === "delivered",
         ).length;
-        const failed = myDeliveries.filter((d) => d.status === "failed").length;
-        const total = myDeliveries.length;
+        const failed = deliveries.filter((d) => d.status === "failed").length;
+        const total = deliveries.length;
         const successRate =
           total > 0 ? ((completed / total) * 100).toFixed(1) : 0;
 
@@ -311,138 +312,112 @@
         document.getElementById("stat-failed").textContent = failed;
         document.getElementById("stat-rate").textContent = successRate + "%";
         document.getElementById("stat-rating").textContent =
-          "★ " + (currentUser.rating || 0).toFixed(1);
+          "★ " + (user.rating || 0).toFixed(1);
       }
 
-      // Setup navigation
+      // Navigation setup
       function setupNavigation() {
         document.addEventListener("click", function (e) {
           const nav = e.target.getAttribute("data-nav");
-          if (nav === "dashboard") {
-            window.location.href = "dashboard.html";
-          } else if (nav === "deliveries") {
+          if (nav === "dashboard") window.location.href = "dashboard.html";
+          else if (nav === "deliveries")
             window.location.href = "deliveries.html";
-          } else if (nav === "logout") {
-            localStorage.removeItem("currentUser");
-            localStorage.removeItem("authToken");
+          else if (nav === "logout") {
+            clearAuth();
             window.location.href = "../../index.html";
           }
         });
       }
 
-      // Setup form submissions
+      // Form submissions
       function setupFormSubmissions() {
         document
           .getElementById("profile-form")
-          .addEventListener("submit", function (e) {
+          .addEventListener("submit", async (e) => {
             e.preventDefault();
-            saveProfileData();
+            await saveProfileData();
           });
 
         document
           .getElementById("password-form")
-          .addEventListener("submit", function (e) {
+          .addEventListener("submit", async (e) => {
             e.preventDefault();
-            changePassword();
+            await changePassword();
           });
       }
 
-      // Save profile data
-      function saveProfileData() {
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        if (!currentUser) return;
+      // Save profile data via API
+      async function saveProfileData() {
+        const profileData = {
+          name: document.getElementById("profile-name").value,
+          email: document.getElementById("profile-email").value,
+          phone: document.getElementById("profile-phone").value,
+          address: document.getElementById("profile-address").value,
+          vehicle: document.getElementById("profile-vehicle").value,
+          licensePlate: document.getElementById("profile-plate").value,
+          status: document.getElementById("availability-status").value,
+          locationSharing: document.getElementById("location-sharing").checked,
+        };
 
-        currentUser.name = document.getElementById("profile-name").value;
-        currentUser.email = document.getElementById("profile-email").value;
-        currentUser.phone = document.getElementById("profile-phone").value;
-        currentUser.address = document.getElementById("profile-address").value;
-        currentUser.vehicle = document.getElementById("profile-vehicle").value;
-        currentUser.licensePlate =
-          document.getElementById("profile-plate").value;
-
-        // Update in system data
-        const userIndex = systemData.users.findIndex(
-          (u) => u.id === currentUser.id,
-        );
-        if (userIndex !== -1) {
-          systemData.users[userIndex] = {
-            ...systemData.users[userIndex],
-            ...currentUser,
-          };
+        try {
+          const updated = await updateDeliveryProfile(profileData);
+          localStorage.setItem("currentUser", JSON.stringify(updated));
+          populateProfileForm(updated);
+          alert("✓ Profile updated successfully!");
+        } catch (err) {
+          console.error("Profile update error:", err);
+          alert("⚠️ Failed to update profile.");
         }
-
-        localStorage.setItem("currentUser", JSON.stringify(currentUser));
-        // saveData() would cause Firebase fetch; skipping for demo
-        alert("✓ Profile updated successfully!");
       }
 
-      // Change password
-      function changePassword() {
+      // Change password (if API supports)
+      async function changePassword() {
         const currentPassword =
           document.getElementById("current-password").value;
         const newPassword = document.getElementById("new-password").value;
         const confirmPassword =
           document.getElementById("confirm-password").value;
 
-        // Populate hidden username field for accessibility/autofill
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        if (currentUser) {
-          document.getElementById("username").value =
-            currentUser.email || currentUser.name || "";
-        }
-
         if (newPassword !== confirmPassword) {
           alert("⚠️ New passwords do not match");
           return;
         }
-
         if (newPassword.length < 6) {
-          alert("⚠️ Password must be at least 6 characters long");
+          alert("⚠️ Password must be at least 6 characters");
           return;
         }
 
-        // In a real app, verify current password first
-        if (!currentUser) return;
-
-        currentUser.password = newPassword;
-        const userIndex = systemData.users.findIndex(
-          (u) => u.id === currentUser.id,
-        );
-        if (userIndex !== -1) {
-          systemData.users[userIndex].password = newPassword;
+        try {
+          // Call API endpoint for password update if available
+          await apiRequest("/delivery/profile/password", {
+            method: "PUT",
+            body: JSON.stringify({ currentPassword, newPassword }),
+          });
+          alert("✓ Password changed successfully!");
+          document.getElementById("password-form").reset();
+        } catch (err) {
+          console.error("Password change error:", err);
+          alert("⚠️ Failed to change password. Check current password.");
         }
-
-        localStorage.setItem("currentUser", JSON.stringify(currentUser));
-        // saveData() would cause Firebase fetch; skipping for demo
-        document.getElementById("password-form").reset();
-        alert("✓ Password changed successfully!");
       }
 
-      // Update availability
-      function updateAvailability() {
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        if (!currentUser) return;
-
-        currentUser.status = document.getElementById(
-          "availability-status",
-        ).value;
-        currentUser.locationSharing =
+      // Update availability (live)
+      async function updateAvailability() {
+        const status = document.getElementById("availability-status").value;
+        const locationSharing =
           document.getElementById("location-sharing").checked;
 
-        localStorage.setItem("currentUser", JSON.stringify(currentUser));
-
-        const userIndex = systemData.users.findIndex(
-          (u) => u.id === currentUser.id,
-        );
-        if (userIndex !== -1) {
-          systemData.users[userIndex] = {
-            ...systemData.users[userIndex],
-            ...currentUser,
-          };
+        try {
+          const updated = await updateDeliveryProfile({
+            status,
+            locationSharing,
+          });
+          localStorage.setItem("currentUser", JSON.stringify(updated));
+          alert("✓ Availability updated!");
+        } catch (err) {
+          console.error("Availability update error:", err);
+          alert("⚠️ Failed to update availability.");
         }
-
-        // saveData() would cause Firebase fetch; skipping for demo
-        alert("✓ Availability settings saved!");
       }
     </script>
 

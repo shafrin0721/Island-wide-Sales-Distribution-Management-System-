@@ -1,143 +1,203 @@
-// js/auth.js
-console.log("🔐 auth.js loaded");
+// =====================================================
+// AUTHENTICATION & NAVIGATION
+// =====================================================
 
-(async function () {
-  // Wait for Firebase to be ready
-  const waitForFirebase = async () => {
-    while (!window._FB_READY || !firebase || !firebase.auth) {
-      await new Promise((r) => setTimeout(r, 100));
-    }
-  };
-
-  await waitForFirebase();
-
-  // DOM elements
-  const loginForm = document.getElementById("login-form");
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const logoutBtn = document.getElementById("logout-btn");
-  const currentUserSpan = document.getElementById("current-user");
-  const pages = document.querySelectorAll(".page");
-  const navbar = document.getElementById("navbar");
-
-  // Demo users
-  const demoUsers = {
-    customer: { email: "customer@test.com", password: "123456" },
-    rdc: { email: "rdc@test.com", password: "123456" },
-    delivery: { email: "delivery@test.com", password: "123456" },
-    admin: { email: "admin@test.com", password: "123456" },
-  };
-
-  // Utility functions
-  const showPage = (pageId) => {
-    pages.forEach((p) => p.classList.remove("active"));
-    const page = document.getElementById(pageId);
-    if (page) page.classList.add("active");
-  };
-
-  const showNavbar = (show) => {
-    navbar.classList.toggle("display-none", !show);
-  };
-
-  const loadUserRole = async (uid) => {
+// Safe API URL detection for localhost vs hosted site
+const API_URL = (function() {
     try {
-      const snap = await firebase.database().ref(`users/${uid}`).once("value");
-      if (!snap.exists()) {
-        console.warn("⚠️ User profile missing, defaulting to customer");
-        return "customer";
-      }
-      return snap.val().role || "customer";
-    } catch (err) {
-      console.error("❌ Error loading user role", err);
-      return "customer";
+        if (typeof location !== 'undefined') {
+            if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+                return 'http://localhost:5000/api';
+            }
+        }
+    } catch (e) {
+        console.warn('Location not defined, defaulting to hosted API:', e);
     }
-  };
+    return '/api';
+})();
 
-  const redirectByRole = (role) => {
-    showNavbar(true);
+// =====================================================
+// GLOBAL STATE
+// =====================================================
+let currentUser = null;
+let currentCart = [];
 
-    document.querySelectorAll(".nav-link").forEach((b) => b.classList.add("display-none"));
+// =====================================================
+// INITIALIZE ON PAGE LOAD
+// =====================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
-    switch (role) {
-      case "admin":
-        document.getElementById("nav-admin")?.classList.remove("display-none");
-        showPage("admin-page");
-        break;
-      case "rdc":
-        document.getElementById("nav-rdc")?.classList.remove("display-none");
-        showPage("rdc-page");
-        break;
-      case "delivery":
-        document.getElementById("nav-delivery")?.classList.remove("display-none");
-        showPage("delivery-page");
-        break;
-      default:
-        document.getElementById("nav-products")?.classList.remove("display-none");
-        document.getElementById("nav-orders")?.classList.remove("display-none");
-        document.getElementById("nav-cart")?.classList.remove("display-none");
-        showPage("products-page");
-    }
-  };
+    // Load session
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
 
-  const handleLogin = async (email, password) => {
-    try {
-      // Disable login button to prevent multiple clicks
-      const submitBtn = loginForm.querySelector("button[type='submit']");
-      if (submitBtn) submitBtn.disabled = true;
-
-      const cred = await firebase.auth().signInWithEmailAndPassword(email, password);
-      const user = cred.user;
-
-      currentUserSpan.textContent = user.email;
-      const role = await loadUserRole(user.uid);
-      redirectByRole(role);
-    } catch (err) {
-      console.error("❌ Login failed:", err.code, err.message);
-
-      alert(
-        err.code === "auth/wrong-password"
-          ? "Invalid password"
-          : err.code === "auth/user-not-found"
-          ? "User not found"
-          : "Login failed"
-      );
-    } finally {
-      const submitBtn = loginForm.querySelector("button[type='submit']");
-      if (submitBtn) submitBtn.disabled = false;
-    }
-  };
-
-  // Firebase auth state listener
-  firebase.auth().onAuthStateChanged(async (user) => {
-    if (!user) {
-      showNavbar(false);
-      showPage("login-page");
-      return;
+    if (storedToken && storedUser) {
+        currentUser = JSON.parse(storedUser);
+        currentCart = JSON.parse(localStorage.getItem('currentCart') || '[]');
+        updateUserDisplay();
+        updateCartBadge();
+    } else if (!['index.html', 'signup.html'].includes(currentPage)) {
+        // Redirect to login if not logged in
+        const pagePath = window.location.pathname;
+        window.location.href = pagePath.includes('/pages/') ? '../../index.html' : 'index.html';
     }
 
-    currentUserSpan.textContent = user.email;
-    const role = await loadUserRole(user.uid);
-    redirectByRole(role);
-  });
+    // Apply theme if exists
+    if (typeof applyThemeSettings === 'function') applyThemeSettings();
+});
 
-  // Form submission
-  loginForm?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    handleLogin(emailInput.value.trim(), passwordInput.value);
-  });
+// =====================================================
+// LOGIN FORM HANDLER
+// =====================================================
+const loginForm = document.getElementById('login-form');
+if (loginForm) {
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
 
-  // Demo login buttons
-  Object.keys(demoUsers).forEach((key) => {
-    const btn = document.getElementById(`demo-login-${key}`);
-    btn?.addEventListener("click", () =>
-      handleLogin(demoUsers[key].email, demoUsers[key].password)
-    );
-  });
+        try {
+            const response = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
 
-  // Logout
-  logoutBtn?.addEventListener("click", async () => {
-    await firebase.auth().signOut();
-    showNavbar(false);
-    showPage("login-page");
-  });
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                // Save session
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem('currentCart', JSON.stringify([]));
+
+                currentUser = data.user;
+                currentCart = [];
+
+                // Redirect based on role
+                redirectToDashboard(data.user.role);
+            } else {
+                alert(data.message || 'Invalid credentials. Please try again.');
+                loginForm.reset();
+            }
+        } catch (err) {
+            alert('Error: ' + err.message);
+            console.error('Login error:', err);
+        }
+    });
+}
+
+// =====================================================
+// DASHBOARD REDIRECTION
+// =====================================================
+function redirectToDashboard(role) {
+    const paths = {
+        'customer': 'pages/customer/products.html',
+        'admin': 'pages/admin/dashboard.html',
+        'rdc': 'pages/rdc/dashboard.html',
+        'rdc_staff': 'pages/rdc/dashboard.html',
+        'delivery': 'pages/delivery/dashboard.html',
+        'delivery_staff': 'pages/delivery/dashboard.html'
+    };
+    window.location.href = paths[role] || 'index.html';
+}
+
+// =====================================================
+// LOGOUT
+// =====================================================
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('currentCart');
+        currentUser = null;
+        currentCart = [];
+        window.location.href = '../../index.html';
+    }
+}
+
+// =====================================================
+// NAVIGATION HELPERS
+// =====================================================
+function goToPage(pageName) {
+    if (!currentUser && !localStorage.getItem('token')) {
+        alert('Please login first');
+        window.location.href = '../../index.html';
+        return;
+    }
+    window.location.href = pageName;
+}
+
+function goToCheckout() {
+    if (currentCart.length === 0) {
+        alert('Your cart is empty');
+        return;
+    }
+    window.location.href = 'pages/customer/checkout.html';
+}
+
+// =====================================================
+// UI UPDATES
+// =====================================================
+function updateUserDisplay() {
+    const userDisplay = document.getElementById('current-user');
+    if (userDisplay && currentUser) {
+        const roleMap = {
+            'customer': 'Customer',
+            'admin': 'Administrator',
+            'rdc': 'RDC Staff',
+            'rdc_staff': 'RDC Staff',
+            'delivery': 'Delivery Staff',
+            'delivery_staff': 'Delivery Staff'
+        };
+        const roleDisplay = roleMap[currentUser.role] || currentUser.role;
+        userDisplay.textContent = `Welcome, ${currentUser.full_name || currentUser.name || 'User'} (${roleDisplay})`;
+    }
+}
+
+function updateCartBadge() {
+    const badge = document.getElementById('cart-badge');
+    if (badge) {
+        const total = (currentCart || []).reduce((sum, item) => sum + (item.quantity || 0), 0);
+        badge.textContent = total;
+    }
+}
+
+// =====================================================
+// MODAL HELPERS
+// =====================================================
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.remove('active');
+}
+
+window.addEventListener('click', function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.classList.remove('active');
+    }
+});
+
+// =====================================================
+// SESSION AUTO-SAVE
+// =====================================================
+function saveSession() {
+    localStorage.setItem('currentCart', JSON.stringify(currentCart));
+}
+
+(function() {
+    let savingSession = false;
+    const interval = 30000; // 30s
+
+    setInterval(function() {
+        if (document.hidden) return;
+        if (savingSession) return;
+        savingSession = true;
+        try { saveSession(); } catch(e) { console.error(e); }
+        savingSession = false;
+    }, interval);
+
+    window.addEventListener('beforeunload', function() {
+        try { saveSession(); } catch(e) {}
+    });
 })();
