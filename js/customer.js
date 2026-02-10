@@ -1458,6 +1458,30 @@ function saveDeliveryPreferences() {
     showMessage('delivery-prefs-message', 'Delivery preferences saved successfully', 'success');
 }
 
+function saveLanguagePreference() {
+    const languageSelect = document.getElementById('language-pref');
+    if (!languageSelect) return;
+
+    const language = languageSelect.value;
+    const settings = JSON.parse(localStorage.getItem('user_settings') || '{}');
+    settings.language_pref = language;
+    localStorage.setItem('user_settings', JSON.stringify(settings));
+    
+    showMessage('settings-message', `Language preference saved: ${language.toUpperCase()}`, 'success');
+}
+
+function saveCurrencyPreference() {
+    const currencySelect = document.getElementById('currency-pref');
+    if (!currencySelect) return;
+
+    const currency = currencySelect.value;
+    const settings = JSON.parse(localStorage.getItem('user_settings') || '{}');
+    settings.currency_pref = currency;
+    localStorage.setItem('user_settings', JSON.stringify(settings));
+    
+    showMessage('settings-message', `Currency preference saved: ${currency.toUpperCase()}`, 'success');
+}
+
 function showMessage(elementId, message, type) {
     const messageDiv = document.getElementById(elementId);
     if (messageDiv) {
