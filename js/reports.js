@@ -277,7 +277,7 @@ function initializeReportCharts() {
                 data: {
                     labels: topProducts.names,
                     datasets: [{
-                        label: 'Revenue ($)',
+                        label: 'Revenue (₨)',
                         data: topProducts.revenues,
                         backgroundColor: '#2196F3'
                     }]
@@ -287,7 +287,7 @@ function initializeReportCharts() {
                     maintainAspectRatio: false,
                     indexAxis: 'y',
                     scales: {
-                        x: { ticks: { callback: (v) => '$' + v } }
+                        x: { ticks: { callback: (v) => '₨' + v } }
                     }
                 }
             });
@@ -320,6 +320,31 @@ function initializeReportCharts() {
         generateInventorySummary();
     }
     
+    // Top products by quantity (inventory)
+    if (document.getElementById('topProductsInventoryChart')) {
+        const topInvCanvas = document.getElementById('topProductsInventoryChart');
+        topInvCanvas.width = topInvCanvas.offsetWidth;
+        topInvCanvas.height = topInvCanvas.offsetHeight || 300;
+        const topInv = getTopProductsByQuantity(data.inventory, data.products, 8);
+        const topInvCtx = topInvCanvas.getContext('2d');
+        new Chart(topInvCtx, {
+            type: 'bar',
+            data: {
+                labels: topInv.names,
+                datasets: [{ label: 'Quantity', data: topInv.quantities, backgroundColor: '#8BC34A' }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: { ticks: { callback: (v) => v } }
+                }
+            }
+        });
+        console.log('Top products by quantity chart created');
+    }
+    
     // Delivery performance chart
     if (document.getElementById('deliveryPerformanceChart')) {
         const delCanvas = document.getElementById('deliveryPerformanceChart');
@@ -344,6 +369,34 @@ function initializeReportCharts() {
         });
         console.log('Delivery performance chart created');
         generateDeliverySummary();
+    }
+    // Delivery timeline chart (deliveries per day)
+    if (document.getElementById('deliveryTimelineChart')) {
+        const delTCanvas = document.getElementById('deliveryTimelineChart');
+        delTCanvas.width = delTCanvas.offsetWidth;
+        delTCanvas.height = delTCanvas.offsetHeight || 300;
+        const timeline = getDeliveryTimelineCounts(data.deliveries, 30);
+        const delTCtx = delTCanvas.getContext('2d');
+        new Chart(delTCtx, {
+            type: 'line',
+            data: {
+                labels: timeline.labels,
+                datasets: [{
+                    label: 'Deliveries',
+                    data: timeline.counts,
+                    borderColor: '#FF5722',
+                    backgroundColor: 'rgba(255,87,34,0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+        console.log('Delivery timeline chart created');
     }
     
     // Customer activity chart
@@ -375,7 +428,77 @@ function initializeReportCharts() {
         console.log('Customer activity chart created');
         generateCustomerSummary();
     }
+
+    // Order distribution chart (by status)
+    if (document.getElementById('orderDistributionChart')) {
+        const odCanvas = document.getElementById('orderDistributionChart');
+        odCanvas.width = odCanvas.offsetWidth;
+        odCanvas.height = odCanvas.offsetHeight || 300;
+        const orders = data.orders || [];
+        const statusCounts = orders.reduce((acc, o) => {
+            const s = (o.status || 'unknown').toLowerCase();
+            acc[s] = (acc[s] || 0) + 1;
+            return acc;
+        }, {});
+        const labels = Object.keys(statusCounts).map(k => k.charAt(0).toUpperCase() + k.slice(1));
+        const counts = Object.values(statusCounts);
+        const odCtx = odCanvas.getContext('2d');
+        new Chart(odCtx, {
+            type: 'pie',
+            data: { labels, datasets: [{ data: counts, backgroundColor: ['#4CAF50','#FFC107','#FF6B6B','#2196F3'] }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
+        console.log('Order distribution chart created');
+    }
     } catch (error) {
         console.error('Error initializing report charts:', error);
     }
+
+// Helper: top products by inventory quantity
+function getTopProductsByQuantity(inventory, products, limit = 8) {
+    const map = {};
+    (inventory || []).forEach(inv => {
+        const pid = inv.productID;
+        map[pid] = (map[pid] || 0) + (inv.stockLevel || 0);
+    });
+    const items = Object.keys(map).map(pid => ({ productID: parseInt(pid, 10), qty: map[pid] }));
+    items.sort((a, b) => b.qty - a.qty);
+    const top = items.slice(0, limit);
+    const names = top.map(i => {
+        const p = (products || []).find(pr => pr.productID === i.productID);
+        return p ? (p.name || `#${i.productID}`) : `#${i.productID}`;
+    });
+    const quantities = top.map(i => i.qty);
+    return { names, quantities };
+}
+
+// Helper: delivery counts per day for last N days
+function getDeliveryTimelineCounts(deliveries, days = 30) {
+    const labels = [];
+    const counts = [];
+    const today = new Date();
+    for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const key = d.toISOString().slice(0, 10);
+        labels.push(key);
+        counts.push(0);
+    }
+    (deliveries || []).forEach(del => {
+        const t = del.estimatedTime || del.date || del.deliveryDate || '';
+        if (!t) return;
+        // try to parse date portion
+        let parsed = new Date(t);
+        if (isNaN(parsed)) {
+            // attempt to extract YYYY-MM-DD from string
+            const m = t.match(/(\d{4}-\d{2}-\d{2})/);
+            if (m) parsed = new Date(m[1]);
+        }
+        if (isNaN(parsed)) return;
+        const key = parsed.toISOString().slice(0, 10);
+        const idx = labels.indexOf(key);
+        if (idx !== -1) counts[idx]++;
+    });
+    return { labels, counts };
+}
 }

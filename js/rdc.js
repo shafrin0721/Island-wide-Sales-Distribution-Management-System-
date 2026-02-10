@@ -4,6 +4,8 @@
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Setup navigation immediately so nav buttons work even if systemData is still loading
+    try { setupRDCNavigation(); } catch (e) { /* ignore if not yet defined */ }
     // Wait for systemData to be available (loaded from data.js)
     if (typeof systemData === 'undefined') {
         console.warn('systemData not yet loaded, waiting...');
