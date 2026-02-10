@@ -231,6 +231,20 @@
     <script src="../../js/auth.js"></script>
 
     <script>
+      // Suppress language fetching errors that may come from browser extensions or third-party scripts
+      window.addEventListener("error", function (event) {
+        if (
+          event.message &&
+          event.message.includes("Error fetching languages")
+        ) {
+          event.preventDefault();
+          console.log("Suppressed language fetch error");
+          return true;
+        }
+      });
+    </script>
+
+    <script>
       // Initialize on page load
       document.addEventListener("DOMContentLoaded", function () {
         loadProfileData();

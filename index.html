@@ -616,6 +616,17 @@
     <!-- Firebase Config & Initialization -->
     <script src="js/firebase-config.js"></script>
     <script>
+      // Suppress language fetching errors from browser extensions or third-party scripts
+      window.addEventListener("error", function (event) {
+        if (
+          event.message &&
+          event.message.includes("Error fetching languages")
+        ) {
+          event.preventDefault();
+          return true;
+        }
+      });
+
       (async () => {
         window._FB_READY = await FirebaseHelper.init();
       })();
