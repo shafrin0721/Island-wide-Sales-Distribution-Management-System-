@@ -432,8 +432,11 @@ function initializeReportCharts() {
     // Order distribution chart (by status)
     if (document.getElementById('orderDistributionChart')) {
         const odCanvas = document.getElementById('orderDistributionChart');
-        odCanvas.width = odCanvas.offsetWidth;
-        odCanvas.height = odCanvas.offsetHeight || 300;
+        // fallback sizing in case parent container is hidden when charts initialize
+        const cw = odCanvas.offsetWidth || 400;
+        const ch = odCanvas.offsetHeight || 300;
+        odCanvas.width = cw;
+        odCanvas.height = ch;
         const orders = data.orders || [];
         const statusCounts = orders.reduce((acc, o) => {
             const s = (o.status || 'unknown').toLowerCase();
@@ -442,12 +445,17 @@ function initializeReportCharts() {
         }, {});
         const labels = Object.keys(statusCounts).map(k => k.charAt(0).toUpperCase() + k.slice(1));
         const counts = Object.values(statusCounts);
+        console.log('OrderDistribution debug:', { elementFound: !!odCanvas, size: [cw, ch], labels, counts });
         const odCtx = odCanvas.getContext('2d');
-        new Chart(odCtx, {
+        // destroy existing chart instance if present to avoid duplicates
+        try { if (odCanvas._chartInstance) odCanvas._chartInstance.destroy(); } catch (e) {}
+        const odChart = new Chart(odCtx, {
             type: 'pie',
             data: { labels, datasets: [{ data: counts, backgroundColor: ['#4CAF50','#FFC107','#FF6B6B','#2196F3'] }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
         });
+        // store instance for possible future destroy
+        odCanvas._chartInstance = odChart;
         console.log('Order distribution chart created');
     }
     } catch (error) {
