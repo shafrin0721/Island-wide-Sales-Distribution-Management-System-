@@ -200,20 +200,13 @@
         <div class="profile-section">
           <h3>Change Password</h3>
           <form id="change-password-form" class="form-grid">
-            <!-- Hidden username field to assist password managers and satisfy accessibility/autocomplete requirements -->
-            <div class="left-minus-9999-full">
-              <label for="pw-username" class="left-minus-9999-full"
-                >Username for password managers</label
-              >
-              <input
-                type="text"
-                id="pw-username"
-                name="username"
-                autocomplete="username"
-                tabindex="-1"
-                aria-hidden="true"
-              />
-            </div>
+            <!-- Hidden username field for accessibility/password manager support -->
+            <input
+              type="hidden"
+              id="pw-username"
+              name="username"
+              autocomplete="username"
+            />
             <div class="form-group form-grid-full">
               <label for="current-password">Current Password</label>
               <input
