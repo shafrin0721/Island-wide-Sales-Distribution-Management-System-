@@ -1,0 +1,21 @@
+{
+  "welcome": "Welcome",
+  "login": "Login",
+  "logout": "Logout",
+  "profile": "Profile",
+  "settings": "Settings",
+  "error": "Error",
+  "success": "Success",
+  "home": "Home",
+  "about": "About",
+  "contact": "Contact",
+  "help": "Help",
+  "delivery": "Delivery",
+  "dashboard": "Dashboard",
+  "myDeliveries": "My Deliveries",
+  "status": "Status",
+  "address": "Address",
+  "customer": "Customer",
+  "eta": "Estimated Time of Arrival",
+  "route": "Route"
+}
