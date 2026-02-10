@@ -48,7 +48,7 @@ async function apiRequest(endpoint, options = {}) {
       headers
     });
 
-    // Handle 401 Unauthorized
+    // Handle 401 Unauthorized - ONLY redirect on explicit 401
     if (response.status === 401) {
       console.warn('Token expired or invalid, redirecting to login');
       clearAuth();
@@ -62,13 +62,21 @@ async function apiRequest(endpoint, options = {}) {
       throw new Error('Forbidden: Insufficient permissions');
     }
 
+    // Handle 404 Not Found - don't treat as critical error
+    if (response.status === 404) {
+      console.warn(`Endpoint not found: ${endpoint}`);
+      throw new Error(`Endpoint not found: ${endpoint}`);
+    }
+
+    // Handle other errors but don't redirect
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`API Error ${response.status}: ${errorText || response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error('API request error:', error);
+    console.error(`API request error for ${endpoint}:`, error);
     throw error;
   }
 }
@@ -228,7 +236,58 @@ async function verifyToken(token) {
   }
 }
 
-// Check authentication on page load
+/**
+ * Fetch available languages
+ */
+async function fetchLanguages() {
+  try {
+    const data = await apiRequest('/languages', {
+      method: 'GET'
+    });
+    return data.languages || [];
+  } catch (error) {
+    console.error('Languages fetch error:', error);
+    // Return fallback languages if API fails
+    return [
+      { code: 'en', name: 'English' },
+      { code: 'si', name: 'Sinhala' },
+      { code: 'ta', name: 'Tamil' },
+      { code: 'es', name: 'Spanish' },
+      { code: 'fr', name: 'French' }
+    ];
+  }
+}
+
+/**
+ * Fetch language translations
+ */
+async function fetchLanguageTranslations(languageCode = 'en') {
+  try {
+    const data = await apiRequest(`/languages/${languageCode}`, {
+      method: 'GET'
+    });
+    return data.translations || {};
+  } catch (error) {
+    console.error('Translations fetch error:', error);
+    return {}; // Return empty object if fetch fails
+  }
+}
+
+/**
+ * Save user language preference
+ */
+async function saveLanguagePreference(languageCode) {
+  try {
+    const data = await apiRequest('/languages/preference', {
+      method: 'POST',
+      body: JSON.stringify({ languageCode })
+    });
+    return data;
+  } catch (error) {
+    console.error('Language preference save error:', error);
+    throw error;
+  }
+}
 document.addEventListener('DOMContentLoaded', async function() {
   const token = getAuthToken();
   const role = localStorage.getItem('role');
