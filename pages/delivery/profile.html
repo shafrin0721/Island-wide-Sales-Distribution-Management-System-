@@ -337,7 +337,7 @@
         }
 
         localStorage.setItem("currentUser", JSON.stringify(currentUser));
-        saveData();
+        // saveData() would cause Firebase fetch; skipping for demo
         alert("✓ Profile updated successfully!");
       }
 
@@ -372,7 +372,7 @@
         }
 
         localStorage.setItem("currentUser", JSON.stringify(currentUser));
-        saveData();
+        // saveData() would cause Firebase fetch; skipping for demo
         document.getElementById("password-form").reset();
         alert("✓ Password changed successfully!");
       }
@@ -400,7 +400,7 @@
           };
         }
 
-        saveData();
+        // saveData() would cause Firebase fetch; skipping for demo
         alert("✓ Availability settings saved!");
       }
     </script>

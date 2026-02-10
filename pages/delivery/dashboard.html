@@ -221,18 +221,115 @@
         });
       }
 
-      // Show delivery map view
+      // Show delivery map view with assigned deliveries
       function viewAssignedDeliveries() {
-        alert(
-          "Map view feature coming soon. You can view locations in the detailed delivery page.",
+        const userId = currentUser?.userID || 4;
+        const assigned = systemData.deliveries.filter(
+          (d) => d.assignedStaff === userId,
         );
+
+        if (assigned.length === 0) {
+          alert("No deliveries assigned to you.");
+          return;
+        }
+
+        let mapContent = '<div style="padding: 20px;">';
+        mapContent += "<h3>🗺️ Your Assigned Deliveries Map</h3>";
+        mapContent +=
+          '<div style="background:#f0f0f0; padding:15px; border-radius:8px; margin-top:15px;">';
+        mapContent += "<p><strong>📍 Delivery Locations:</strong></p>";
+
+        assigned.forEach((delivery, idx) => {
+          const order = systemData.orders.find(
+            (o) => o.orderID === delivery.orderID,
+          );
+          const customer = systemData.users.find(
+            (u) => u.userID === order?.userID,
+          );
+          mapContent += `<div style="margin:10px 0; padding:10px; background:white; border-left:4px solid #007bff;">`;
+          mapContent += `<strong>#${delivery.deliveryID}</strong> - ${delivery.route}<br>`;
+          mapContent += `Customer: ${customer?.name || "Unknown"}<br>`;
+          mapContent += `ETA: ${delivery.estimatedTime}<br>`;
+          mapContent += `Status: <span style="color: #27ae60; font-weight:bold;">${delivery.status}</span>`;
+          mapContent += `</div>`;
+        });
+
+        mapContent += "</div></div>";
+
+        const modal = document.getElementById("delivery-details-modal");
+        document.getElementById("delivery-details-content").innerHTML =
+          mapContent;
+        modal.style.display = "block";
+        modal.classList.add("active");
       }
 
-      // Update delivery status modal
+      // Quick status update modal
       function updateDeliveryStatus() {
-        alert(
-          'Quick status update feature coming soon. Use the "My Deliveries" page for detailed updates.',
+        const userId = currentUser?.userID || 4;
+        const assigned = systemData.deliveries.filter(
+          (d) => d.assignedStaff === userId,
         );
+
+        if (assigned.length === 0) {
+          alert("No deliveries assigned to you.");
+          return;
+        }
+
+        let statusContent = '<div style="padding: 20px;">';
+        statusContent += "<h3>✏️ Quick Status Update</h3>";
+        statusContent +=
+          '<p style="color:#666; margin-bottom:15px;">Select a delivery to update its status:</p>';
+
+        assigned.forEach((delivery) => {
+          const order = systemData.orders.find(
+            (o) => o.orderID === delivery.orderID,
+          );
+          const customer = systemData.users.find(
+            (u) => u.userID === order?.userID,
+          );
+          const statuses = [
+            "assigned",
+            "out for delivery",
+            "delivered",
+            "failed",
+          ];
+          const currentIdx = statuses.indexOf(delivery.status);
+          const nextStatus = statuses[(currentIdx + 1) % statuses.length];
+
+          statusContent += `<div style="margin:10px 0; padding:12px; background:#f9f9f9; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">`;
+          statusContent += `<div><strong>#${delivery.deliveryID}</strong> - ${customer?.name || "Unknown"}<br><small>Current: <span style="color:#27ae60;">${delivery.status}</span></small></div>`;
+          statusContent += `<button class="btn btn-primary" style="padding:6px 12px; white-space:nowrap;" onclick="quickUpdateStatus(${delivery.deliveryID}, '${nextStatus}')">Update to ${nextStatus}</button>`;
+          statusContent += `</div>`;
+        });
+
+        statusContent += "</div>";
+
+        const modal = document.getElementById("delivery-details-modal");
+        document.getElementById("delivery-details-content").innerHTML =
+          statusContent;
+        modal.style.display = "block";
+        modal.classList.add("active");
+      }
+
+      // Quick update status helper
+      function quickUpdateStatus(deliveryID, newStatus) {
+        const delivery = systemData.deliveries.find(
+          (d) => d.deliveryID === deliveryID,
+        );
+        if (delivery) {
+          delivery.status = newStatus;
+          if (newStatus === "delivered") {
+            const order = systemData.orders.find(
+              (o) => o.orderID === delivery.orderID,
+            );
+            if (order) order.status = "delivered";
+          }
+          updateDeliveryStats();
+          updateDeliveryStatus(); // Refresh modal
+          console.log(
+            `Delivery #${deliveryID} status updated to "${newStatus}"`,
+          );
+        }
       }
 
       // Close modal helper
