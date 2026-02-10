@@ -86,9 +86,11 @@ function initializeDeliveryPage() {
 
 function updateDeliveryStaffTable() {
     const tbody = document.getElementById('delivery-staff-table');
-    if (!tbody) return;
+    if (!tbody || !systemData || !systemData.deliveries) return;
 
-    const assignedDeliveries = systemData.deliveries.filter(d => d.assignedStaff === currentUser.userID);
+    // Use current user ID if logged in, else default to staff ID 4 for demo
+    const userId = currentUser?.userID || 4;
+    const assignedDeliveries = systemData.deliveries.filter(d => d.assignedStaff === userId);
 
     if (assignedDeliveries.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #999;">No deliveries assigned</td></tr>';

@@ -152,8 +152,20 @@
     <script>
       // Initialize dashboard on page load
       document.addEventListener("DOMContentLoaded", function () {
-        updateDeliveryStats();
-        updateDeliveryStaffTable();
+        // Wait for systemData to be available
+        (async () => {
+          let attempts = 0;
+          while (!window.systemData && attempts < 50) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            attempts++;
+          }
+          if (window.systemData) {
+            updateDeliveryStats();
+            updateDeliveryStaffTable();
+          } else {
+            console.warn("systemData not loaded after timeout");
+          }
+        })();
 
         // Setup navigation
         document.addEventListener("click", function (e) {
@@ -170,9 +182,20 @@
 
       // Update dashboard stats
       function updateDeliveryStats() {
+        if (!systemData || !systemData.deliveries) {
+          console.warn("systemData.deliveries not available yet");
+          return;
+        }
+
+        // Filter by currentUser ID if logged in, otherwise show all deliveries (demo mode)
+        const userId = currentUser?.userID || 4; // Default to staff ID 4 for demo
         const assignedDeliveries = systemData.deliveries.filter(
-          (d) => d.assignedStaff === currentUser?.userID,
+          (d) =>
+            d.assignedStaff === userId ||
+            (d.assignedStaff !== null && !currentUser),
         );
+
+        // Count by status
         const completed = assignedDeliveries.filter(
           (d) => d.status === "delivered",
         ).length;
@@ -183,11 +206,19 @@
           (d) => d.status === "failed",
         ).length;
 
+        // Update DOM with actual counts
         document.getElementById("total-assigned").textContent =
           assignedDeliveries.length;
         document.getElementById("total-completed").textContent = completed;
         document.getElementById("total-in-transit").textContent = inTransit;
         document.getElementById("total-failed").textContent = failed;
+
+        console.log("Delivery stats updated:", {
+          assigned: assignedDeliveries.length,
+          completed,
+          inTransit,
+          failed,
+        });
       }
 
       // Show delivery map view
