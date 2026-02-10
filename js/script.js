@@ -891,23 +891,9 @@ function editProduct(productID) {
     alert('Product editing feature coming soon');
 }
 
-        const inventory = getInventoryForProduct(product.productID) || {};
-        const inStock = inventory.stockLevel > 0;
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        const imgSrc = (product.image && typeof product.image === 'string') ? product.image : getSafePlaceholder(200, 160, product.name || 'Product');
-        card.innerHTML = `
-            <div class="product-card-image"><img src="${imgSrc}" alt="${product.name}" loading="lazy" onerror="this.onerror=null;this.src=getSafePlaceholder(200,160,'${product.name.replace(/'/g, "\'")}')"></div>
-            <div class="product-card-body">
-                <h3>${product.name}</h3>
-                <div class="product-card-price">₨${(parseFloat(product.price)||0).toFixed(2)}</div>
-                <div class="product-card-actions">
-                    <button class="btn btn-small" onclick="showProductDetails(${product.productID})">Details</button>
-                    <button class="btn btn-primary" onclick="addToCart(${product.productID})" ${!inStock ? 'disabled' : ''}>Add</button>
-                </div>
-            </div>
-        `;
-document.getElementById('generate-report-btn')?.addEventListener('click', function() {
+// Note: Product card rendering code removed (orphaned/incomplete). 
+// Use loadProducts() from customer.js or implement a dedicated product card function if needed.
+
     const reportType = document.getElementById('report-type').value;
     const startDate = document.getElementById('report-start-date').value;
     const endDate = document.getElementById('report-end-date').value;
