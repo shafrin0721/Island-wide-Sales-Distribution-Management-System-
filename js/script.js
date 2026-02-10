@@ -12,6 +12,17 @@ function getSafePlaceholder(width = 200, height = 200, text = 'Image') {
     return 'data:image/svg+xml;base64,' + btoa(svg);
 }
 
+// Helper: get inventory record for a given productID (safe when systemData isn't ready)
+function getInventoryForProduct(productID) {
+    try {
+        if (typeof window.systemData === 'undefined' || !window.systemData || !window.systemData.inventory) return null;
+        return window.systemData.inventory.find(inv => inv.productID === productID) || null;
+    } catch (e) {
+        console.warn('getInventoryForProduct error', e);
+        return null;
+    }
+}
+
 // ================== DATA STORAGE ==================
 // Ensure a single global `systemData` object exists. Attach to `window` and create
 // a `var systemData` binding so other non-module scripts can use the plain identifier.
