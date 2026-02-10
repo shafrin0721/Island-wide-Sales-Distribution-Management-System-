@@ -8,17 +8,18 @@
       // Override alert IMMEDIATELY to suppress language fetching errors
       const _originalAlert = window.alert;
       window.alert = function (msg) {
-        if (msg && msg.includes("Error fetching languages")) {
+        if (msg && (msg.includes("Error fetching languages") || msg.includes("language"))) {
+          console.warn("[Suppressed] " + msg);
           return; // Suppress silently
         }
         _originalAlert(msg);
       };
-      // Also suppress console errors with this message
+      // Also override console.error to suppress language errors there
       const _originalError = console.error;
       console.error = function (...args) {
         const msg = args.join(" ");
-        if (msg.includes("Error fetching languages")) {
-          return;
+        if (msg && msg.includes("language")) {
+          return; // Suppress language-related errors
         }
         _originalError.apply(console, args);
       };
