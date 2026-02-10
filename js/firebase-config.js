@@ -3,17 +3,19 @@
  * Frontend Firebase SDK Setup
  */
 
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBX7R9qfnkCTFAP-cDYYI611E-TUr3L4_w",
-  authDomain: "isdn-6291c.firebaseapp.com",
-  databaseURL: "https://isdn-6291c-default-rtdb.firebaseio.com",
-  projectId: "isdn-6291c",
-  storageBucket: "isdn-6291c.firebasestorage.app",
-  messagingSenderId: "962394501475",
-  appId: "1:962394501475:web:7bb0230e8caf9a8adba356",
-  measurementId: "G-FYND6D8QPK"
-};
+// Firebase configuration (attach to window to avoid redeclaration if script loads twice)
+if (typeof window.firebaseConfig === 'undefined') {
+  window.firebaseConfig = {
+    apiKey: "AIzaSyBX7R9qfnkCTFAP-cDYYI611E-TUr3L4_w",
+    authDomain: "isdn-6291c.firebaseapp.com",
+    databaseURL: "https://isdn-6291c-default-rtdb.firebaseio.com",
+    projectId: "isdn-6291c",
+    storageBucket: "isdn-6291c.firebasestorage.app",
+    messagingSenderId: "962394501475",
+    appId: "1:962394501475:web:7bb0230e8caf9a8adba356",
+    measurementId: "G-FYND6D8QPK"
+  };
+}
 
 // Ensure Firebase Auth usage flag is available early so pages prefer Firebase auth flows
 try { window.__USE_FIREBASE_AUTH__ = true; } catch (e) {}
@@ -22,7 +24,8 @@ try { window.__USE_FIREBASE_AUTH__ = true; } catch (e) {}
  * Firebase Helper Functions
  * Provides utility methods for Firebase operations
  */
-const FirebaseHelper = {
+if (typeof window.FirebaseHelper === 'undefined') {
+  window.FirebaseHelper = {
   /**
    * Initialize Firebase (with fallback to local storage if unavailable)
    */
@@ -225,9 +228,10 @@ const FirebaseHelper = {
       return false;
     }
   }
-};
+  };
+}
 
-// Export for use in other modules
+// Export for use in other modules (CommonJS environments)
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { firebaseConfig, FirebaseHelper };
+  module.exports = { firebaseConfig: window.firebaseConfig, FirebaseHelper: window.FirebaseHelper };
 }
