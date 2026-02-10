@@ -4,6 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RDC - Login</title>
+    <script>
+      // Override alert IMMEDIATELY to suppress language fetching errors
+      const _originalAlert = window.alert;
+      window.alert = function (msg) {
+        if (msg && msg.includes("Error fetching languages")) {
+          return; // Suppress silently
+        }
+        _originalAlert(msg);
+      };
+      // Also suppress console errors with this message
+      const _originalError = console.error;
+      console.error = function (...args) {
+        const msg = args.join(" ");
+        if (msg.includes("Error fetching languages")) {
+          return;
+        }
+        _originalError.apply(console, args);
+      };
+    </script>
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/footer.css" />
     <link rel="stylesheet" href="css/images.css" />
@@ -616,16 +635,6 @@
     <!-- Firebase Config & Initialization -->
     <script src="js/firebase-config.js"></script>
     <script>
-      // Override alert to suppress language fetching errors
-      const originalAlert = window.alert;
-      window.alert = function (message) {
-        if (message && message.includes("Error fetching languages")) {
-          console.log("Suppressed: " + message);
-          return;
-        }
-        originalAlert.apply(window, arguments);
-      };
-
       (async () => {
         window._FB_READY = await FirebaseHelper.init();
       })();

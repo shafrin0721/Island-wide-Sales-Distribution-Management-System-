@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Delivery Staff - Profile</title>
+    <script>
+      // Override alert IMMEDIATELY to suppress language fetching errors
+      const _originalAlert = window.alert;
+      window.alert = function (msg) {
+        if (msg && msg.includes("Error fetching languages")) {
+          return; // Suppress silently
+        }
+        _originalAlert(msg);
+      };
+    </script>
     <link rel="stylesheet" href="../../css/styles.css" />
   </head>
   <body>
@@ -229,18 +239,6 @@
 
     <script src="../../js/data.js"></script>
     <script src="../../js/auth.js"></script>
-
-    <script>
-      // Override alert to suppress language fetching errors
-      const originalAlert = window.alert;
-      window.alert = function (message) {
-        if (message && message.includes("Error fetching languages")) {
-          console.log("Suppressed: " + message);
-          return;
-        }
-        originalAlert.apply(window, arguments);
-      };
-    </script>
 
     <script>
       // Initialize on page load
