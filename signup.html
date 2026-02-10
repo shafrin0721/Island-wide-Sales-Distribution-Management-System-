@@ -235,6 +235,13 @@
           <p class="subtitle">Join RDC for fast deliveries</p>
 
           <form id="signup-form" class="signup-form">
+            <!-- Hidden username field for accessibility -->
+            <input
+              type="hidden"
+              id="username"
+              name="username"
+              autocomplete="username"
+            />
             <div class="form-group">
               <label for="first_name">First Name *</label>
               <input type="text" id="first_name" placeholder="John" required />
