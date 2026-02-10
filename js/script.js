@@ -891,20 +891,28 @@ function editProduct(productID) {
     alert('Product editing feature coming soon');
 }
 
-// Note: Product card rendering code removed (orphaned/incomplete). 
-// Use loadProducts() from customer.js or implement a dedicated product card function if needed.
+function deleteProduct(productID) {
+    alert('Product deletion feature coming soon');
+}
 
-    const reportType = document.getElementById('report-type').value;
-    const startDate = document.getElementById('report-start-date').value;
-    const endDate = document.getElementById('report-end-date').value;
+// Setup report generation event listener
+(function() {
+    const btn = document.getElementById('generate-report-btn');
+    if (btn) {
+        btn.addEventListener('click', function() {
+            const reportType = document.getElementById('report-type').value;
+            const startDate = document.getElementById('report-start-date').value;
+            const endDate = document.getElementById('report-end-date').value;
 
-    if (!startDate || !endDate) {
-        alert('Please select date range');
-        return;
+            if (!startDate || !endDate) {
+                alert('Please select date range');
+                return;
+            }
+
+            generateReport(reportType, startDate, endDate);
+        });
     }
-
-    generateReport(reportType, startDate, endDate);
-});
+})();
 
 function generateReport(reportType, startDate, endDate) {
     const reportDiv = document.getElementById('report-display');
