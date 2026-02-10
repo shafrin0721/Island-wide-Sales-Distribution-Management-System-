@@ -1588,6 +1588,16 @@ function saveProfileChanges() {
 }
 
 function changePassword() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    // Populate hidden username field for accessibility/autofill
+    if (currentUser) {
+        const usernameField = document.getElementById('pw-username');
+        if (usernameField) {
+            usernameField.value = currentUser.email || currentUser.username || '';
+        }
+    }
+    
     const currentPassword = document.getElementById('current-password')?.value?.trim() || '';
     const newPassword = document.getElementById('new-password')?.value?.trim() || '';
     const confirmPassword = document.getElementById('confirm-new-password')?.value?.trim() || '';

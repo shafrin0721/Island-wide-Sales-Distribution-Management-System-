@@ -290,6 +290,14 @@
               >
             </div>
 
+            <!-- Hidden username field for accessibility/autofill -->
+            <input
+              type="hidden"
+              id="signup-username"
+              name="username"
+              autocomplete="username"
+            />
+
             <div class="form-group-full">
               <label for="password">Password *</label>
               <input
@@ -394,6 +402,9 @@
           document.getElementById("confirm_password")?.value || "";
         const key = document.getElementById("key")?.value.trim() || "";
         const terms = document.getElementById("terms")?.checked || false;
+
+        // Populate hidden username field for accessibility/autofill
+        document.getElementById("signup-username").value = email;
 
         console.log("Form values:", {
           firstName,
