@@ -150,16 +150,15 @@
     <script src="../../js/delivery.js"></script>
 
     <script>
-      // Suppress language fetching errors from browser extensions or third-party scripts
-      window.addEventListener("error", function (event) {
-        if (
-          event.message &&
-          event.message.includes("Error fetching languages")
-        ) {
-          event.preventDefault();
-          return true;
+      // Override alert to suppress language fetching errors
+      const originalAlert = window.alert;
+      window.alert = function (message) {
+        if (message && message.includes("Error fetching languages")) {
+          console.log("Suppressed: " + message);
+          return;
         }
-      });
+        originalAlert.apply(window, arguments);
+      };
     </script>
 
     <script>
